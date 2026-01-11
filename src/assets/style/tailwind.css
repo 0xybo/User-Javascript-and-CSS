@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+
+/* @plugin "tailwindcss-animate";
+@import 'tw-animate-css'; */
+
+@custom-variant dark false;
+
+@import './theme.css';
+@import './colors.css';
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+    #app {
+        @apply text-sm;
+    }
+}

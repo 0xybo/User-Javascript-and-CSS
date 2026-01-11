@@ -1,0 +1,9 @@
+@import '@/assets/style/tailwind.css';
+
+@layer base {
+    body,
+    html,
+    #app {
+        @apply h-dvh;
+    }
+}

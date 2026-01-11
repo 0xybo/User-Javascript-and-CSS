@@ -1,0 +1,99 @@
+:root {
+    --radius: 0.625rem;
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --primary: color-mix(in oklab, var(--background) 90%, var(--foreground));
+    --primary-foreground: color-mix(in hsl, var(--foreground) 90%, var(--background));
+    --secondary: color-mix(in oklab, var(--background) 75%, var(--foreground));
+    --secondary-foreground: color-mix(in hsl, var(--foreground) 75%, var(--background));
+    --popover: var(--primary);
+    --popover-foreground: var(--primary-foreground);
+    --muted: oklch(55.553% 0.00006 271.152);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: rgb(251 191 36);
+    --accent-foreground: oklch(0.205 0 0);
+    --success: #4ade80;
+    --destructive: #f87171;
+    --border: var(--secondary);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+}
+
+/* LIGHT */
+:root,
+[data-theme='light'],
+[data-theme-palette='chrome'] {
+    --background: hsl(0, 0%, 100%);
+    --foreground: hsl(0, 0%, 0%);
+}
+
+[data-theme-palette='dawn'] {
+    --background: hsl(0deg 0% 97.64%);
+    --foreground: hsl(0deg 0% 3.13%);
+}
+
+[data-theme-palette='tomorrow'] {
+    --background: hsl(0deg 0% 100%);
+    --foreground: hsl(60deg 0.65% 30%);
+}
+
+[data-theme-palette='xcode'] {
+    --background: hsl(0deg 0% 100%);
+    --foreground: hsl(0deg 0% 0%);
+}
+
+[data-theme-palette='cloud_editor'] {
+    --background: hsl(0deg 0% 100%);
+    --foreground: hsl(240deg 6.45% 24.31%);
+}
+
+/* DARK */
+
+[data-theme-palette='dracula'] {
+    --background: hsl(231.42deg 14.89% 18.43%);
+    --foreground: hsl(60deg 29.99% 96.07%);
+}
+
+[data-theme='dark'],
+[data-theme-palette='monokai'] {
+    --background: hsl(69.99deg 8.1% 14.5%);
+    --foreground: hsl(60deg 29.99% 96.07%);
+}
+
+[data-theme-palette='one_dark'] {
+    --background: hsl(220deg 13.04% 18.03%);
+    --foreground: hsl(219deg 13.51% 70.98%);
+}
+
+[data-theme-palette='solarized_dark'] {
+    --background: hsl(192.22deg 100% 10.58%);
+    --foreground: hsl(186.31deg 8.29% 55.09%);
+}
+
+[data-theme-palette='tomorrow_night'] {
+    --background: hsl(210deg 6.45% 12.15%);
+    --foreground: hsl(140deg 2.65% 77.84%);
+}
+
+[data-theme-palette='twilight'] {
+    --background: hsl(0deg 0% 7.84%);
+    --foreground: hsl(0deg 0% 97.25%);
+}
+
+[data-theme-palette='cloud_editor_dark'] {
+    --background: hsl(220deg 13.04% 18.03%);
+    --foreground: hsl(217.5deg 12.9% 87.84%);
+}
