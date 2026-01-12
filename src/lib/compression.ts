@@ -3,7 +3,7 @@ export async function compress(data: object): Promise<string> {
     const json = JSON.stringify(data);
     const input = new TextEncoder().encode(json);
 
-    // Stream through Brotli
+    // Stream through GZIP
     const compressedStream = new Blob([input]).stream().pipeThrough(new CompressionStream('gzip'));
 
     const compressedBlob = await new Response(compressedStream).blob();
@@ -27,7 +27,7 @@ export async function decompress(base64: string): Promise<object> {
         bytes[i] = binary.charCodeAt(i);
     }
 
-    // Stream through Brotli decompressor
+    // Stream through GZIP decompressor
     const decompressedStream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
 
     const decompressedBlob = await new Response(decompressedStream).blob();

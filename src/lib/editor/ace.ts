@@ -1,5 +1,4 @@
 import z, { ZodObject } from 'zod';
-import { zEditorBase } from '.';
 
 export function zEditorAceFactory(zEditorBase: ZodObject) {
     return zEditorBase.extend({
