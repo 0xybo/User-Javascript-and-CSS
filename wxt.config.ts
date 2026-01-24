@@ -1,5 +1,7 @@
 import tailwindcss from '@tailwindcss/vite';
+import vueDevTools from 'vite-plugin-vue-devtools';
 import { defineConfig } from 'wxt';
+import { monaco } from './config/monaco';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
@@ -27,6 +29,16 @@ export default defineConfig({
     publicDir: 'src/public',
     targetBrowsers: ['firefox', 'chrome'],
     vite: () => ({
-        plugins: [tailwindcss()],
+        plugins: [
+            tailwindcss(),
+            monaco(),
+            vueDevTools({
+                appendTo: '/entrypoints/options/main.ts',
+            }),
+        ],
+        define: {
+            __DEV__: true,
+        },
     }),
+    imports: false,
 });

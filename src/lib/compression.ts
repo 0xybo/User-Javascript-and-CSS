@@ -1,4 +1,6 @@
-export async function compress(data: object): Promise<string> {
+import { JSONComposite } from '@/types/json';
+
+export async function compress(data: JSONComposite): Promise<string> {
     // Convert object → JSON → Uint8Array
     const json = JSON.stringify(data);
     const input = new TextEncoder().encode(json);
@@ -19,7 +21,7 @@ export async function compress(data: object): Promise<string> {
     return btoa(binary); // Base64 string
 }
 
-export async function decompress(base64: string): Promise<object> {
+export async function decompress(base64: string): Promise<JSONComposite> {
     // Base64 → binary
     const binary = atob(base64);
     const bytes = new Uint8Array(binary.length);
@@ -28,7 +30,9 @@ export async function decompress(base64: string): Promise<object> {
     }
 
     // Stream through GZIP decompressor
-    const decompressedStream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    const decompressedStream = new Blob([bytes])
+        .stream()
+        .pipeThrough(new DecompressionStream('gzip'));
 
     const decompressedBlob = await new Response(decompressedStream).blob();
     const text = await decompressedBlob.text();

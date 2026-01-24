@@ -1,6 +1,5 @@
-import { createPinia } from 'pinia';
-import { createApp } from 'vue';
-import Options from './Options.vue';
+import { mountNewApp } from '@/lib/app';
+import Options from './OptionsContainer.vue';
 import './style.css';
 
-createApp(Options).use(createPinia()).mount('#app');
+mountNewApp(Options);

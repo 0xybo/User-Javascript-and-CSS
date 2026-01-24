@@ -1,8 +1,5 @@
 {
   "extends": "./.wxt/tsconfig.json",
-  "compilerOptions": {
-    "resolveJsonModule": true
-  },
   "exclude": [
     "./dist",
     "./resources"

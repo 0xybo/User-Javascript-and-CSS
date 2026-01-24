@@ -34,7 +34,7 @@ export class Logger {
         debug: 'background:purple; color:white; padding:2px 4px; border-radius:3px;',
     };
 
-    private static async log(level: LogLevel, ...messages: any[]) {
+    private static async log(level: LogLevel, ...messages: unknown[]) {
         const header = `%c[UJC][${level.toUpperCase()}]`;
         LOG_LEVELS_METHOD[level](header, Logger.FORMATS[level], ...messages);
     }

@@ -1,0 +1,54 @@
+<script setup lang="ts">
+import { browser, computed, i18n, ref } from '#imports';
+import { useCurrentTab } from '@/composables/popup/useCurrentTab';
+import { useStorage } from '@/composables/useStorage';
+import { filterRulesByUrl } from '@/lib/rules';
+import { RuleT } from '@/lib/storage/types';
+import { RefreshCcwIcon } from 'lucide-vue-next';
+import RuleList from '../RuleList.vue';
+import Button from '../ui/button/Button.vue';
+
+const storage = useStorage();
+const tab = useCurrentTab();
+const rules = computed(() =>
+    tab?.value?.url ? filterRulesByUrl(storage.rules, tab.value.url) : storage.rules,
+);
+const hasChanged = ref(false);
+
+function reloadTab() {
+    if (tab.value?.id) {
+        browser.tabs.reload(tab.value?.id);
+        hasChanged.value = false;
+    }
+}
+
+function onRuleListChange() {
+    hasChanged.value = true;
+}
+
+function onRuleListOpen(rule: RuleT) {
+    if (!tab.value?.url) return;
+    const optionUrl = new URL(browser.runtime.getURL('/options.html'));
+    optionUrl.hash = 'r:' + rule.id;
+    window.open(optionUrl);
+}
+</script>
+
+<template>
+    <RuleList v-if="rules" :rules="rules" @change="onRuleListChange" @open="onRuleListOpen" />
+    <div v-else class="text-muted min-h-15 px-4 py-5 text-sm">
+        {{ i18n.t('POPUP_NO_RULES') }}
+    </div>
+    <div v-if="hasChanged" class="flex flex-row items-center gap-3 bg-blue-500/10 px-4 py-2">
+        <RefreshCcwIcon class="size-7" :stroke-width="1.5" />
+        <div class="inline w-full pr-4">
+            {{ i18n.t('POPUP_REFRESH_NEEDED_PREFIX')
+            }}<Button
+                variant="link"
+                @click="reloadTab"
+                class="text-foreground h-auto p-0 pb-2 font-normal underline"
+                >{{ i18n.t('POPUP_REFRESH_NEEDED_LINK') }}</Button
+            >{{ i18n.t('POPUP_REFRESH_NEEDED_SUFFIX') }}
+        </div>
+    </div>
+</template>

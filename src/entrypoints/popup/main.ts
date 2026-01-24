@@ -1,6 +1,5 @@
-import { createPinia } from 'pinia';
-import { createApp } from 'vue';
-import Popup from './Popup.vue';
+import { mountNewApp } from '@/lib/app';
+import Popup from './PopupContainer.vue';
 import './style.css';
 
-createApp(Popup).use(createPinia()).mount('#app');
+mountNewApp(Popup);

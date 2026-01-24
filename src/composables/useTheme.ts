@@ -1,4 +1,5 @@
-import { Theme, ThemePalette as ThemePaletteT } from '@/lib/theme';
+import { computed, Ref, watchEffect } from '#imports';
+import { Theme, ThemePalette as ThemePaletteT } from '@/lib/storage/theme';
 import { usePreferredColorScheme } from '@vueuse/core';
 import { useSettings } from './useStorage';
 

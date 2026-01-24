@@ -1,7 +1,6 @@
 export enum Tab {
     Rules = 'rules',
-    ExternalModules = 'external_modules',
-    PersonnalModules = 'personnal_modules',
+    Modules = 'modules',
     Settings = 'settings',
     About = 'about',
 }
