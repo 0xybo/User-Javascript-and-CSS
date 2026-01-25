@@ -110,3 +110,7 @@ export function diff(a: object, b: object) {
 
     return Object.keys(result).length > 0 ? result : NOT_CHANGED;
 }
+
+export function clone<T extends object>(obj: T): T {
+    return JSON.parse(JSON.stringify(obj));
+}

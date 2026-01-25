@@ -1,5 +1,6 @@
 import { PlainObject } from '@/types/json';
 import { compress as _compress } from '../compression';
+import { clone } from '../utils';
 import { zDraft, zInfo, zModule, zRemoteSettingsInfo, zRule, zSettings, zStorage } from './schema';
 import { DraftT, FileT, ItemT, ItemType, ModuleT, RuleT, StorageT } from './types';
 
@@ -34,10 +35,6 @@ export function isModule(itemOrDraftOrType: ItemT | DraftT | ItemType): boolean 
     if ('item' in (itemOrDraftOrType as DraftT))
         return (itemOrDraftOrType as DraftT).item.type === ItemType.Module;
     return (itemOrDraftOrType as ItemT).type === ItemType.Module;
-}
-
-export function clone<T extends object>(obj: T): T {
-    return JSON.parse(JSON.stringify(obj));
 }
 
 export function clean(settings: StorageT, sync: boolean = false): StorageT {

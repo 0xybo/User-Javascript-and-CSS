@@ -10,6 +10,7 @@ const props = withDefaults(
     defineProps<{
         language: 'scss' | 'typescript';
         minimap?: boolean;
+        placeholder?: string;
     }>(),
     {
         minimap: true,
@@ -32,6 +33,7 @@ const options = computed<editor.IStandaloneEditorConstructionOptions>(() => ({
     fontLigatures: settings.ligatures,
     theme: 'vs-dark', // TODO à changer
     automaticLayout: true,
+    placeholder: props.placeholder,
 }));
 
 const containerRef = useTemplateRef('container');
@@ -39,11 +41,6 @@ const containerRef = useTemplateRef('container');
 
 <template>
     <div ref="container" class="h-full w-full min-w-0 grow-0">
-        <CodeEditor
-            v-if="containerRef"
-            v-model:value="model"
-            :language="props.language"
-            :options="options"
-        />
+        <CodeEditor v-if="containerRef" v-model:value="model" :options="options" />
     </div>
 </template>

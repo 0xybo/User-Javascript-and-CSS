@@ -1,7 +1,8 @@
 import { reactive } from '#imports';
+import { clone } from '@/lib/utils';
 import type { Reactive } from 'vue';
 import { DraftT, ItemT, ItemType, RuleT, StorageStoreBase, StorageStoreDraft } from '../types';
-import { clone, DEFAULTS, isModule, isRule } from '../utils';
+import { DEFAULTS, isModule, isRule } from '../utils';
 
 export function withDraftUtils(store: StorageStoreBase): StorageStoreDraft {
     const { drafts, modules, rules } = store;

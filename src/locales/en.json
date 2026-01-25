@@ -36,5 +36,7 @@
     "RULES_REVERT": "Cancel changes",
     "RULES_ENABLED": "Rule enabled",
     "RULES_SYNC": "Save to cloud",
-    "RULES_SYNC_DESCRIPTION": "Can be turned off to save space. Synchronisation works only in manual mode."
+    "RULES_SYNC_DESCRIPTION": "Can be turned off to save space. Synchronisation works only in manual mode.",
+    "RULES_PLACEHOLDER_SCRIPT": "Start typing Typescript here ...",
+    "RULES_PLACEHOLDER_STYLE": "Start typing SCSS here ..."
 }

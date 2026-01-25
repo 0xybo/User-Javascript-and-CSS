@@ -15,14 +15,14 @@ import {
     StorageRemoteMoreRecentError,
 } from '../errors';
 import { Logger } from '../logger';
-import { deepMerge, diff, IS_DEV, isPlainObject } from '../utils';
+import { clone, deepMerge, diff, IS_DEV, isPlainObject } from '../utils';
 import {
     type RemoteSettings,
     type StorageChanges,
     type StorageStoreBase,
     type StorageT,
 } from './types';
-import { clean, clone, compress, DEFAULTS, parse } from './utils';
+import { clean, compress, DEFAULTS, parse } from './utils';
 
 type Extension<TBase extends StorageStoreBase = StorageStoreBase> = (base: TBase) => TBase;
 type StoreDefinition<TBase extends StorageStoreBase = StorageStoreBase> = _StoreDefinition<

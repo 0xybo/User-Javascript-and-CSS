@@ -36,5 +36,7 @@
     "RULES_REVERT": "Annuler les changements",
     "RULES_ENABLED": "Règle activé",
     "RULES_SYNC": "Sauvegarder dans le cloud",
-    "RULES_SYNC_DESCRIPTION": "Peut être désactivé pour économiser de la place. La synchronisation fonctionne uniquement manuellement."
+    "RULES_SYNC_DESCRIPTION": "Peut être désactivé pour économiser de la place. La synchronisation fonctionne uniquement manuellement.",
+    "RULES_PLACEHOLDER_SCRIPT": "Commencer à développer votre script Typescript ici ...",
+    "RULES_PLACEHOLDER_STYLE": "Commencer à développer votre style SCSS ici ..."
 }
