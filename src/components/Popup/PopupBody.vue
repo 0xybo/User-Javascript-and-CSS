@@ -35,7 +35,12 @@ function onRuleListOpen(rule: RuleT) {
 </script>
 
 <template>
-    <RuleList v-if="rules" :rules="rules" @change="onRuleListChange" @open="onRuleListOpen" />
+    <RuleList
+        v-if="rules.length"
+        :rules="rules"
+        @change="onRuleListChange"
+        @open="onRuleListOpen"
+    />
     <div v-else class="text-muted min-h-15 px-4 py-5 text-sm">
         {{ i18n.t('POPUP_NO_RULES') }}
     </div>
