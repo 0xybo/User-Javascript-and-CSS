@@ -34,6 +34,7 @@ const options = computed<editor.IStandaloneEditorConstructionOptions>(() => ({
     theme: 'vs-dark', // TODO à changer
     automaticLayout: true,
     placeholder: props.placeholder,
+    language: props.language,
 }));
 
 const containerRef = useTemplateRef('container');
