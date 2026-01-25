@@ -4,7 +4,7 @@ import CodeEditor from '@/components/Editor/CodeEditor.vue';
 import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import ResizableHandle from '@/components/ui/resizable/ResizableHandle.vue';
 import { useState } from '@/composables/options/useState';
-import { RuleT } from '@/lib/storage/types';
+import { FileType, RuleT } from '@/lib/storage/types';
 
 const state = useState();
 const scriptContent = computed({
@@ -26,7 +26,7 @@ function onResizableHandleDragging(isDragging: boolean) {
     <ResizablePanelGroup direction="horizontal" class="flex h-full w-full min-w-0 grow-0 flex-row">
         <ResizablePanel :default-size="50" :min-size="5">
             <CodeEditor
-                language="typescript"
+                :language="FileType.Script"
                 v-model="scriptContent"
                 :resizing="resizing"
                 :placeholder="i18n.t('RULES_PLACEHOLDER_SCRIPT')"
@@ -38,7 +38,7 @@ function onResizableHandleDragging(isDragging: boolean) {
         />
         <ResizablePanel :default-size="50" :min-size="5">
             <CodeEditor
-                language="scss"
+                :language="FileType.Style"
                 v-model="styleContent"
                 :resizing="resizing"
                 :placeholder="i18n.t('RULES_PLACEHOLDER_STYLE')"

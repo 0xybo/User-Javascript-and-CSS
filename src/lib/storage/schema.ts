@@ -22,6 +22,7 @@ export const zScript = zFile.extend({
     type: z.literal(FileType.Script).default(FileType.Script),
     isolated: z.boolean().default(false),
     recursive: z.boolean().default(false),
+    atStart: z.boolean().default(false),
 });
 
 export const zStyle = zFile.extend({

@@ -1,24 +1,34 @@
 <script setup lang="ts">
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { TooltipContentProps } from 'reka-ui';
+import { TooltipContentProps, type TooltipRootProps, type TooltipTriggerProps } from 'reka-ui';
 import { HTMLAttributes } from 'vue';
 
-const { content, ...props } = defineProps<
-    TooltipContentProps & {
-        content: string;
+const props = withDefaults(
+    defineProps<{
+        contentProps?: TooltipContentProps;
+        rootProps?: TooltipRootProps;
+        triggerProps?: TooltipTriggerProps;
+        content?: string;
         class?: HTMLAttributes['class'];
-    }
->();
+    }>(),
+    {
+        contentProps: () => ({}),
+        rootProps: () => ({}),
+        triggerProps: () => ({}),
+    },
+);
 </script>
 
 <template>
-    <Tooltip>
-        <TooltipTrigger as-child>
+    <Tooltip v-bind="props.rootProps">
+        <TooltipTrigger v-bind="props.triggerProps" as-child>
             <slot />
         </TooltipTrigger>
 
-        <TooltipContent v-bind="props">
-            {{ content }}
+        <TooltipContent v-bind="props.contentProps" :class="props.class">
+            <slot name="content" :content="props.content">
+                {{ props.content }}
+            </slot>
         </TooltipContent>
     </Tooltip>
 </template>

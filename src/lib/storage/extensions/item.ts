@@ -10,8 +10,17 @@ export function withItemUtils(store: StorageStoreDraft): StorageStoreItem {
         if (draft) store.removeDraft(draft);
     };
 
+    const getItemFromId = (id: string): ItemT | null => {
+        return (
+            store.rules.find((rule) => rule.id === id) ??
+            store.modules.find((module) => module.id === id) ??
+            null
+        );
+    };
+
     return {
         ...store,
         removeItem,
+        getItemFromId,
     };
 }

@@ -28,7 +28,7 @@ export enum ItemType {
 
 export enum FileType {
     Style = 'scss',
-    Script = 'ts',
+    Script = 'typescript',
 }
 
 export type FileT = z.infer<typeof zFile>;
@@ -91,10 +91,12 @@ export interface StorageStoreDraft extends StorageStoreBase {
     saveDraft: (draft: DraftT) => void;
     getDraftFromItem: <TItem extends ItemT>(item: TItem) => DraftT<TItem> | null;
     getDraftNewFromType: <TType extends ItemType>(type: TType) => DraftT<TType> | null;
+    getDraftFromId: (id: string) => DraftT | null;
     clearDrafts: () => void;
     removeDraft: (draft: DraftT) => void;
 }
 
 export interface StorageStoreItem extends StorageStoreDraft {
     removeItem: (item: ItemT) => void;
+    getItemFromId: (id: string) => ItemT | null;
 }

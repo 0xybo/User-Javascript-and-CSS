@@ -94,7 +94,7 @@ function onTabClick(tab: Tab) {
         </div>
         <div
             v-if="state.tab !== null"
-            class="bg-background absolute top-0 left-full z-10 h-full w-72 border-r lg:relative lg:left-0"
+            class="bg-background absolute top-0 left-full z-100 h-full w-72 border-r lg:relative lg:left-0"
         >
             <component :is="TABS[state.tab].content" />
             <div

@@ -26,25 +26,23 @@ export const useState = defineStore('state', () => {
         () => storage.loaded,
         () => {
             const [typeLetter, id] = location.hash.slice(1).split(':');
-            if (!typeLetter || !id) return void (location.hash = '');
-            const type = TYPES[typeLetter];
-            if (!type) return void (location.hash = '');
+            if (typeLetter && id) {
+                const type = TYPES[typeLetter];
+                if (type) {
+                    let draft = storage.getDraftFromId(id);
+                    if (!draft) {
+                        const item = storage.getItemFromId(id);
+                        if (item) draft = storage.createDraftFromItem(item);
+                        else draft = storage.createDraftFromType(type);
+                    }
 
-            let draft = storage.drafts.find((d) => d.item.id === id);
-            if (!draft) {
-                const list = type === ItemType.Rule ? storage.rules : storage.modules;
-                const item = list.find((i) => i.id === id);
-                if (item) draft = useDraft(item);
+                    if (isRule(draft)) rule.value = draft;
+                    else module.value = draft as DraftT<ItemType.Module>;
+                }
             }
-            if (!draft) return void (location.hash = '');
 
-            if (type === ItemType.Rule) {
-                if (draft) rule.value = draft;
-                else rule.value = draft;
-            } else {
-                if (draft) module.value = draft;
-                else module.value = draft;
-            }
+            location.hash = '';
+            return;
         },
         { once: true },
     );
@@ -73,7 +71,7 @@ export const useState = defineStore('state', () => {
             tab.value = Tab.Rules;
         } else {
             oldDraft = module.value;
-            module.value = draft;
+            module.value = draft as DraftT<ItemType.Module>;
             watchOnceForSave(module);
             tab.value = Tab.Modules;
         }

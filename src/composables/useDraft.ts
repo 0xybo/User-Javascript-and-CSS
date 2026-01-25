@@ -2,8 +2,8 @@ import { DraftT, ItemT, ItemType, type ModuleT } from '@/lib/storage/types';
 import { isRule } from '@/lib/storage/utils';
 import { useStorage } from './useStorage';
 
-export function useDraft(item: ItemT): DraftT;
-export function useDraft(ItemType: ItemType): DraftT;
+export function useDraft<TItem extends ItemT>(item: TItem): DraftT<TItem>;
+export function useDraft<TType extends ItemType>(ItemType: TType): DraftT<TType>;
 export function useDraft(obj: ItemT | ItemType): DraftT {
     const storage = useStorage();
 

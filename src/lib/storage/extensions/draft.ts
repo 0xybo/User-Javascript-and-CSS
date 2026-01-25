@@ -82,6 +82,10 @@ export function withDraftUtils(store: StorageStoreBase): StorageStoreDraft {
         );
     };
 
+    const getDraftFromId = (id: string): DraftT | null => {
+        return drafts.find((draft) => draft.item.id === id) ?? null;
+    };
+
     const clearDrafts = () => {
         drafts.splice(0);
     };
@@ -99,6 +103,7 @@ export function withDraftUtils(store: StorageStoreBase): StorageStoreDraft {
         saveDraft,
         getDraftFromItem,
         getDraftNewFromType,
+        getDraftFromId,
         clearDrafts,
         removeDraft,
     } as const satisfies StorageStoreDraft;
