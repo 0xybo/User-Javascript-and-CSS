@@ -17,13 +17,13 @@ export const useDialog = defineStore('dialog', () => {
 
     function open(options: {
         title: string;
-        message: string;
+        message?: string;
         actions?: Omit<Action, 'id'>[];
     }): Promise<void> {
         if (isOpen.value) isOpen.value = false; // Close previous opened dialog
 
         title.value = options.title;
-        message.value = options.message;
+        message.value = options.message ?? '';
         actions.splice(0, actions.length);
         actions.push(
             ...(options.actions?.map((action) => ({ ...action, id: crypto.randomUUID() })) || []),

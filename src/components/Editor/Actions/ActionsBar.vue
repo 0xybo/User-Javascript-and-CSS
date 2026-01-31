@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { computed, i18n } from '#imports';
+import { computed, i18n, reactive } from '#imports';
+import PreviewDialog from '@/components/Dialog/PreviewDialog.vue';
 import TooltipWrapper from '@/components/TooltipWrapper.vue';
 import { useState } from '@/composables/options/useState';
+import { useStorage } from '@/composables/useStorage';
+import { compileSCSS } from '@/lib/compiler/scss';
+import { compileTS } from '@/lib/compiler/typescript';
 import { FileType } from '@/lib/storage/types';
 import {
     BoxIcon,
@@ -12,26 +16,65 @@ import {
     TerminalIcon,
     WandSparklesIcon,
 } from 'lucide-vue-next';
+import estreePlugin from 'prettier/plugins/estree';
+import scssPlugin from 'prettier/plugins/postcss';
+import typecriptPlugin from 'prettier/plugins/typescript';
+import prettier from 'prettier/standalone';
 import ActionButton from './ActionButton.vue';
 
 const state = useState();
+const storage = useStorage();
 const props = defineProps<{
     type: FileType;
 }>();
-const type = computed(() => (props.type === FileType.Style ? 'STYLE' : 'SCRIPT'));
+const type = computed(() => (props.type === FileType.Scss ? 'STYLE' : 'SCRIPT'));
 const title = computed(() => i18n.t(`COMMON_${type.value}`));
 const tooltip = computed(() => ({
     title: i18n.t(`EDITOR_ACTION_PANEL_${type.value}_TITLE`),
     description: i18n.t(`EDITOR_ACTION_PANEL_${type.value}_DESCRIPTION`),
 }));
 
-function onBeautifyButtonClick() {
-    // TODO Beautify code
+const preview = reactive({
+    opened: false,
+    content: '',
+    type: computed(() => {
+        switch (props.type) {
+            case FileType.Typeccript:
+            case FileType.Javascript:
+                return FileType.Javascript;
+            case FileType.Scss:
+            case FileType.Css:
+                return FileType.Css;
+            default:
+                return props.type;
+        }
+    }),
+});
+
+async function onBeautifyButtonClick() {
+    const fileId =
+        props.type === FileType.Typeccript ? state.rule.item.script.id : state.rule.item.style.id;
+    state.rule.files[fileId] = await prettier.format(state.rule.files[fileId], {
+        parser: props.type === FileType.Typeccript ? 'typescript' : 'scss',
+        plugins: [typecriptPlugin, estreePlugin, scssPlugin],
+        tabWidth: storage.settings.editor.tabSize,
+    });
 }
-function onPreviewButtonClick() {
+
+async function onPreviewButtonClick() {
     // TODO Preview compiled code
     // Recompile code and show it
     // Add save button in the modal at the top next to close button
+    if (props.type === FileType.Typeccript) {
+        const id = state.rule.item.script.id;
+        const result = await compileTS(state.rule.files[id]);
+        preview.content = result.output;
+    } else {
+        const id = state.rule.item.style.id;
+        const result = await compileSCSS(state.rule.files[id]);
+        preview.content = result.output;
+    }
+    preview.opened = true;
 }
 </script>
 
@@ -63,7 +106,7 @@ function onPreviewButtonClick() {
             }"
             @click="onBeautifyButtonClick"
         />
-        <template v-if="props.type === FileType.Style">
+        <template v-if="props.type === FileType.Scss">
             <ActionButton
                 :icon="TerminalIcon"
                 :tooltip="{
@@ -120,4 +163,6 @@ function onPreviewButtonClick() {
             @click="onPreviewButtonClick"
         />
     </div>
+
+    <PreviewDialog v-bind="preview" v-model="preview.opened" />
 </template>

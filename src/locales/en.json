@@ -1,5 +1,6 @@
 {
     "COMMON_ABOUT": "About",
+    "COMMON_CLOSE": "Close",
     "COMMON_DRAFT": "Draft",
     "COMMON_FIND": "Find",
     "COMMON_MODULES": "Modules",
@@ -18,6 +19,7 @@
     "DIALOG_CONFIRM_CANCEL": "Cancel",
     "DIALOG_CONFIRM_CONFIRM": "Continue",
     "DIALOG_CONFIRM_TITLE": "Confirmation",
+    "DIALOG_PREVIEW_TITLE": "Preview",
     "DRAFT_ALREADY_EXISTS": "A draft already exists. If you continue, it will be deleted. Do you want to continue?",
     "DRAFT_OPEN_EXISTING": "Open existing draft",
     "EDITOR_ACTION_PANEL_SCRIPT_DESCRIPTION": "The script editor supports Typescript and therefore, by extension, Javascript. The code is then compiled into Javascript when saved.",

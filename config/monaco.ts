@@ -103,7 +103,7 @@ export function monaco() {
             // 'gpu',                       // GPU‑accelerated rendering pipeline
             // 'internal',                  // Internal Monaco utilities not intended for public use
         ],
-        languages: ['typescript', 'scss'],
+        languages: ['javascript', 'typescript', 'css', 'scss'],
         globalAPI: true,
     })
 }

@@ -1,5 +1,6 @@
 {
     "COMMON_ABOUT": "À propos",
+    "COMMON_CLOSE": "Fermer",
     "COMMON_DRAFT": "Brouillon",
     "COMMON_FIND": "Rechercher",
     "COMMON_MODULES": "Modules",
@@ -18,6 +19,7 @@
     "DIALOG_CONFIRM_CANCEL": "Annuler",
     "DIALOG_CONFIRM_CONFIRM": "Continuer",
     "DIALOG_CONFIRM_TITLE": "Confirmation",
+    "DIALOG_PREVIEW_TITLE": "Aperçu",
     "DRAFT_ALREADY_EXISTS": "Un brouillon existe déjà. Si vous continuez, il sera supprimé. Voulez-vous continuer ?",
     "DRAFT_OPEN_EXISTING": "Ouvrir le brouillon existant",
     "EDITOR_ACTION_PANEL_SCRIPT_DESCRIPTION": "L'éditeur de script support Typescript et donc par extension Javascript. Le code est ensuite compilé en Javascript au moment de l'enregistrement.",

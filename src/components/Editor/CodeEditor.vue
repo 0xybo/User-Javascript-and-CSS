@@ -8,11 +8,13 @@ import MonacoEditor from './MonacoEditor.vue';
 const storage = useStorage();
 const props = withDefaults(
     defineProps<{
-        placeholder?: string;
         language: FileType;
-        resizing: boolean;
+        placeholder?: string;
+        resizing?: boolean;
+        readonly?: boolean;
+        actionsBar?: boolean;
     }>(),
-    { resizing: false },
+    { resizing: false, readonly: false, actionsBar: true },
 );
 const model = defineModel<string>({ required: true });
 </script>
@@ -25,7 +27,8 @@ const model = defineModel<string>({ required: true });
             :minimap="!resizing"
             :language="props.language"
             :placeholder="props.placeholder"
+            :readonly="props.readonly"
         />
-        <ActionsBar :type="props.language" />
+        <ActionsBar v-if="props.actionsBar" :type="props.language" />
     </div>
 </template>

@@ -2,18 +2,21 @@
 import { computed } from '#imports';
 import { useEditorSettings } from '@/composables/useStorage';
 import { EditorMonacoT } from '@/lib/storage/editor';
+import type { FileType } from '@/lib/storage/types';
 import { CodeEditor } from 'monaco-editor-vue3';
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
 import { useTemplateRef } from 'vue';
 
 const props = withDefaults(
     defineProps<{
-        language: 'scss' | 'typescript';
+        language: FileType;
         minimap?: boolean;
         placeholder?: string;
+        readonly?: boolean;
     }>(),
     {
         minimap: true,
+        readonly: false,
     },
 );
 const model = defineModel<string>({ required: true });
@@ -35,6 +38,7 @@ const options = computed<editor.IStandaloneEditorConstructionOptions>(() => ({
     automaticLayout: true,
     placeholder: props.placeholder,
     language: props.language,
+    readOnly: props.readonly,
 }));
 
 const containerRef = useTemplateRef('container');

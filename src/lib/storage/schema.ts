@@ -19,14 +19,14 @@ export const zFile = z.object({
 });
 
 export const zScript = zFile.extend({
-    type: z.literal(FileType.Script).default(FileType.Script),
+    type: z.literal(FileType.Typeccript).default(FileType.Typeccript),
     isolated: z.boolean().default(false),
     recursive: z.boolean().default(false),
     atStart: z.boolean().default(false),
 });
 
 export const zStyle = zFile.extend({
-    type: z.literal(FileType.Style).default(FileType.Style),
+    type: z.literal(FileType.Scss).default(FileType.Scss),
     injected: z.boolean().default(false),
     important: z.boolean().default(false),
 });

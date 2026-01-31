@@ -1,2 +1,3 @@
 - FIX Proposition de sauvegarde à l'ouverture d'un brouillon vide
 - TODO Synchroniser les changements entre les fenêtres notamment les brouillons
+- TODO Add linter

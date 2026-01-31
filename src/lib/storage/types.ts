@@ -27,8 +27,10 @@ export enum ItemType {
 }
 
 export enum FileType {
-    Style = 'scss',
-    Script = 'typescript',
+    Scss = 'scss',
+    Typeccript = 'typescript',
+    Javascript = 'javascript',
+    Css = 'css',
 }
 
 export type FileT = z.infer<typeof zFile>;

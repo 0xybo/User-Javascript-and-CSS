@@ -26,7 +26,7 @@ function onResizableHandleDragging(isDragging: boolean) {
     <ResizablePanelGroup direction="horizontal" class="flex h-full w-full min-w-0 grow-0 flex-row">
         <ResizablePanel :default-size="50" :min-size="5">
             <CodeEditor
-                :language="FileType.Script"
+                :language="FileType.Typeccript"
                 v-model="scriptContent"
                 :resizing="resizing"
                 :placeholder="i18n.t('RULES_PLACEHOLDER_SCRIPT')"
@@ -38,7 +38,7 @@ function onResizableHandleDragging(isDragging: boolean) {
         />
         <ResizablePanel :default-size="50" :min-size="5">
             <CodeEditor
-                :language="FileType.Style"
+                :language="FileType.Scss"
                 v-model="styleContent"
                 :resizing="resizing"
                 :placeholder="i18n.t('RULES_PLACEHOLDER_STYLE')"
