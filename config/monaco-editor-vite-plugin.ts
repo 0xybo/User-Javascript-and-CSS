@@ -200,7 +200,7 @@ function resolveWorkers(
  */
 function resolveModule(file: string): string {
     const url = import.meta.resolve(file).toString();
-    return decodeURI(url.replace(/^file:\/\/\/?/, ''));
+    return decodeURI(url.replace(/^file:\/\//, ''));
 }
 
 /**
