@@ -17,10 +17,10 @@ export async function compileTS(
         },
     });
     let output = result.outputText;
-    if (output?.length) output = await format(source);
+    if (output?.length) output = await format(output);
 
     return {
-        output: result.outputText,
+        output,
         errors: [],
     };
 }

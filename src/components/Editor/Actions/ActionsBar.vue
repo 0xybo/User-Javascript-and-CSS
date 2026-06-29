@@ -37,7 +37,7 @@ const preview = reactive({
     content: '',
     type: computed(() => {
         switch (props.type) {
-            case FileType.Typeccript:
+            case FileType.Typescript:
             case FileType.Javascript:
                 return FileType.Javascript;
             case FileType.Scss:
@@ -51,9 +51,9 @@ const preview = reactive({
 
 async function onBeautifyButtonClick() {
     const fileId =
-        props.type === FileType.Typeccript ? state.rule.item.script.id : state.rule.item.style.id;
+        props.type === FileType.Typescript ? state.rule.item.script.id : state.rule.item.style.id;
     state.rule.files[fileId] = await prettier.format(state.rule.files[fileId], {
-        parser: props.type === FileType.Typeccript ? 'typescript' : 'scss',
+        parser: props.type === FileType.Typescript ? 'typescript' : 'scss',
         plugins: [typecriptPlugin, estreePlugin, scssPlugin],
         tabWidth: storage.settings.editor.tabSize,
     });
@@ -63,7 +63,7 @@ async function onPreviewButtonClick() {
     // TODO Preview compiled code
     // Recompile code and show it
     // Add save button in the modal at the top next to close button
-    // if (props.type === FileType.Typeccript) {
+    // if (props.type === FileType.Typescript) {
     //     const id = state.rule.item.script.id;
     //     const result = await compileTS(state.rule.files[id]);
     //     preview.content = result.output;

@@ -28,7 +28,7 @@ export enum ItemType {
 
 export enum FileType {
     Scss = 'scss',
-    Typeccript = 'typescript',
+    Typescript = 'typescript',
     Javascript = 'javascript',
     Css = 'css',
 }

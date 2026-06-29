@@ -26,7 +26,7 @@ function onResizableHandleDragging(isDragging: boolean) {
     <ResizablePanelGroup direction="horizontal" class="flex h-full w-full min-w-0 grow-0 flex-row">
         <ResizablePanel :default-size="50" :min-size="5">
             <CodeEditor
-                :language="FileType.Typeccript"
+                :language="FileType.Typescript"
                 v-model="scriptContent"
                 :resizing="resizing"
                 :placeholder="i18n.t('RULES_PLACEHOLDER_SCRIPT')"

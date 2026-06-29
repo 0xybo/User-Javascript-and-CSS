@@ -53,7 +53,7 @@ export function withDraftUtils(store: StorageStoreBase): StorageStoreDraft {
     };
 
     const discardDraft = (draft: DraftT) => {
-        const index = drafts.findIndex((d) => d.item.id !== draft.item.id);
+        const index = drafts.findIndex((d) => d.item.id === draft.item.id);
         if (index !== -1) drafts.splice(index, 1);
     };
 
@@ -63,6 +63,7 @@ export function withDraftUtils(store: StorageStoreBase): StorageStoreDraft {
             const rule = draft.item;
             rule.script.content = draft.files[rule.script.id];
             rule.style.content = draft.files[rule.style.id];
+            rule.updated = Date.now();
         } else if (isModule(draft)) {
             if (draft.isNew) modules.push(draft.item);
             const module = draft.item;

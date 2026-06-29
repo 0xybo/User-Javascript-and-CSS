@@ -30,7 +30,9 @@ export const useDialog = defineStore('dialog', () => {
         );
         isOpen.value = true;
 
-        watch(isOpen, () => resolver, { once: true });
+        watch(isOpen, (open) => {
+            if (!open) resolver?.();
+        }, { once: true });
 
         return new Promise((resolve) => (resolver = resolve));
     }

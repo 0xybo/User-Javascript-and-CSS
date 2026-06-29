@@ -1,6 +1,13 @@
 import sass from 'sass';
-import type { CompilerError } from 'vue/compiler-sfc';
+import type { CompilerResult } from './utils';
 
-export async function compileSCSS(source: string): CompilerError {
-    const result = await sass.compileStringAsync(source);
+export async function compileSCSS(source: string): Promise<CompilerResult> {
+    const result = await sass.compileStringAsync(source, {
+        style: 'expanded',
+        sourceMap: false,
+    });
+    return {
+        output: result.css,
+        errors: [],
+    };
 }

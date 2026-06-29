@@ -65,7 +65,7 @@ export function clean(settings: StorageT, sync: boolean = false): StorageT {
         cleaned[`f:${rule.script.id}`] = rule.script.content;
         delete rule.script.content;
         cleaned[`f:${rule.style.id}`] = rule.style.content;
-        delete rule.style.id.content;
+        delete rule.style.content;
     }
     for (const module of cleaned.modules as ModuleT[]) {
         for (const file of module.files) {
@@ -84,7 +84,7 @@ export function parse(settings: PlainObject): StorageT {
     }
     for (const module of (settings.modules || []) as ModuleT[]) {
         for (const file of module.files) {
-            file.content = settings[`${file.id}`] as string;
+            file.content = settings[`f:${file.id}`] as string;
         }
     }
     for (const draft of (settings.drafts || []) as DraftT[]) {

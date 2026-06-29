@@ -19,7 +19,7 @@ export const zFile = z.object({
 });
 
 export const zScript = zFile.extend({
-    type: z.literal(FileType.Typeccript).default(FileType.Typeccript),
+    type: z.literal(FileType.Typescript).default(FileType.Typescript),
     isolated: z.boolean().default(false),
     recursive: z.boolean().default(false),
     atStart: z.boolean().default(false),

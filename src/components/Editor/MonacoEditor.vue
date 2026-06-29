@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from '#imports';
 import { useEditorSettings } from '@/composables/useStorage';
+import { useTheme } from '@/composables/useTheme';
 import { EditorMonacoT } from '@/lib/storage/editor';
 import type { FileType } from '@/lib/storage/types';
 import { CodeEditor } from 'monaco-editor-vue3';
@@ -21,6 +22,9 @@ const props = withDefaults(
 );
 const model = defineModel<string>({ required: true });
 const settings = useEditorSettings<EditorMonacoT>();
+const theme = useTheme();
+
+const monacoTheme = computed(() => (theme.value === 'dark' ? 'vs-dark' : 'vs'));
 
 const options = computed<editor.IStandaloneEditorConstructionOptions>(() => ({
     fontSize: settings.fontSize,
@@ -34,7 +38,7 @@ const options = computed<editor.IStandaloneEditorConstructionOptions>(() => ({
     tabSize: settings.tabSize,
     fontFamily: settings.fontFamily,
     fontLigatures: settings.ligatures,
-    theme: 'vs-dark', // TODO à changer
+    theme: monacoTheme.value,
     automaticLayout: true,
     placeholder: props.placeholder,
     language: props.language,

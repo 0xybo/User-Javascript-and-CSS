@@ -79,10 +79,13 @@ function onSwitchClick(e: MouseEvent) {
             :class="
                 cn(
                     'bg-secondary! h-4 w-7',
-                    '[&>span]:size-2 [&>span[data-state=unchecked]]:translate-x-0.5',
+                    '[&>span]:size-2 [&>span]:transition-all [&>span[data-state=unchecked]]:translate-x-0.5',
                     {
-                        'group-hover:bg-primary-foreground/50!': !props.opened,
-                        'pointer-events-none': props.opened,
+                        'border-primary [&>span]:bg-primary border-2 bg-transparent!':
+                            !props.rule.enabled,
+                        'hover:border-primary-foreground/50 hover:[&>span]:bg-primary-foreground/50':
+                            !props.rule.enabled,
+                        'hover:bg-primary-foreground/50!': props.rule.enabled,
                     },
                 )
             "
