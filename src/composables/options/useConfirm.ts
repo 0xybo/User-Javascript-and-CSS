@@ -1,35 +1,34 @@
-import { ref } from '#imports';
-import { defineStore } from 'pinia';
+import { reactive } from '#imports';
 
-export const useConfirm = defineStore('confirm', () => {
-    const isOpen = ref(false);
-    const message = ref('');
-    let resolver: ((value: boolean) => void) | null = null;
+class Confirm {
+    public isOpen: boolean = false;
+    public message: string = '';
+    public resolver: ((value: boolean) => void) | null = null;
 
-    function open(msg: string): Promise<boolean> {
-        message.value = msg;
-        isOpen.value = true;
-
-        return new Promise((resolve) => (resolver = resolve));
+    constructor() {
+        return reactive(this) as unknown as Confirm;
     }
 
-    function confirm() {
-        isOpen.value = false;
-        resolver?.(true);
-        resolver = null;
+    public open(msg: string): Promise<boolean> {
+        this.message = msg;
+        this.isOpen = true;
+
+        return new Promise((resolve) => (this.resolver = resolve));
     }
 
-    function cancel() {
-        isOpen.value = false;
-        resolver?.(false);
-        resolver = null;
+    public confirm() {
+        this.isOpen = false;
+        this.resolver?.(true);
+        this.resolver = null;
     }
 
-    return {
-        isOpen,
-        message,
-        open,
-        confirm,
-        cancel,
-    };
-});
+    public cancel() {
+        this.isOpen = false;
+        this.resolver?.(false);
+        this.resolver = null;
+    }
+}
+
+export function useConfirm() {
+    return new Confirm();
+}

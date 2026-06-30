@@ -66,6 +66,14 @@ export function clean(settings: StorageT, sync: boolean = false): StorageT {
         delete rule.script.content;
         cleaned[`f:${rule.style.id}`] = rule.style.content;
         delete rule.style.content;
+        if (rule.script.compiled) {
+            cleaned[`f:${rule.script.id}:c`] = rule.script.compiled;
+            delete rule.script.compiled;
+        }
+        if (rule.style.compiled) {
+            cleaned[`f:${rule.style.id}:c`] = rule.style.compiled;
+            delete rule.style.compiled;
+        }
     }
     for (const module of cleaned.modules as ModuleT[]) {
         for (const file of module.files) {
@@ -81,6 +89,8 @@ export function parse(settings: PlainObject): StorageT {
     for (const rule of (settings.rules || []) as RuleT[]) {
         rule.script.content = settings[`f:${rule.script.id}`] as string;
         rule.style.content = settings[`f:${rule.style.id}`] as string;
+        rule.script.compiled = (settings[`f:${rule.script.id}:c`] as string) || '';
+        rule.style.compiled = (settings[`f:${rule.style.id}:c`] as string) || '';
     }
     for (const module of (settings.modules || []) as ModuleT[]) {
         for (const file of module.files) {

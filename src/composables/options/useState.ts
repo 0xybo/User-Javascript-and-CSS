@@ -1,9 +1,8 @@
-import { computed, MaybeRef, ref, unref, watch } from '#imports';
+import { computed, MaybeRef, reactive, unref, watch } from '#imports';
 import { Tab } from '@/lib/options';
 import { Panel } from '@/lib/options/panel';
 import { DraftT, ItemType } from '@/lib/storage/types';
 import { isRule } from '@/lib/storage/utils';
-import { defineStore } from 'pinia';
 import { hasChanged, useDraft } from '../useDraft';
 import { useStorage } from '../useStorage';
 
@@ -12,42 +11,49 @@ const TYPES: Record<string, ItemType> = {
     m: ItemType.Module,
 };
 
-export const useState = defineStore('state', () => {
-    const storage = useStorage();
+const storage = useStorage();
 
-    const tab = ref<Tab | null>(Tab.Rules);
-    const rule = ref(useDraft(ItemType.Rule));
-    const module = ref(useDraft(ItemType.Module));
-    const panel = ref<Panel>(Panel.Rule);
-    const ruleChanged = computed(() => hasChanged(rule.value));
-    const moduleChanged = computed(() => hasChanged(module.value));
+class State {
+    public tab: Tab | null = Tab.Rules;
+    public rule: DraftT<ItemType.Rule> = useDraft(ItemType.Rule);
+    public module: DraftT<ItemType.Module> = useDraft(ItemType.Module);
+    public panel: Panel = Panel.Rule;
+    public ruleChanged = computed(() => hasChanged(this.rule));
+    public moduleChanged = computed(() => hasChanged(this.module));
 
-    watch(
-        () => storage.loaded,
-        () => {
-            const [typeLetter, id] = location.hash.slice(1).split(':');
-            if (typeLetter && id) {
-                const type = TYPES[typeLetter];
-                if (type) {
-                    let draft = storage.getDraftFromId(id);
-                    if (!draft) {
-                        const item = storage.getItemFromId(id);
-                        if (item) draft = storage.createDraftFromItem(item);
-                        else draft = storage.createDraftFromType(type);
+    constructor() {
+        watch(
+            () => storage.loaded,
+            () => {
+                const [typeLetter, id] = location.hash.slice(1).split(':');
+                if (typeLetter && id) {
+                    const type = TYPES[typeLetter];
+                    if (type) {
+                        let draft = storage.getDraftFromId(id);
+                        if (!draft) {
+                            const item = storage.getItemFromId(id);
+                            if (item) draft = storage.createDraftFromItem(item);
+                            else draft = storage.createDraftFromType(type);
+                        }
+
+                        if (isRule(draft)) this.rule = draft;
+                        else this.module = draft as DraftT<ItemType.Module>;
                     }
-
-                    if (isRule(draft)) rule.value = draft;
-                    else module.value = draft as DraftT<ItemType.Module>;
                 }
-            }
 
-            location.hash = '';
-            return;
-        },
-        { once: true },
-    );
+                location.hash = '';
+                return;
+            },
+            { once: true },
+        );
 
-    function watchOnceForSave(draft: MaybeRef<DraftT>) {
+        this.watchOnceForSave(this.rule);
+        this.watchOnceForSave(this.module);
+
+        return reactive(this) as unknown as State;
+    }
+
+    private watchOnceForSave(draft: MaybeRef<DraftT>) {
         const noRefDraft = unref(draft);
         watch(
             noRefDraft.item,
@@ -59,35 +65,28 @@ export const useState = defineStore('state', () => {
         );
     }
 
-    watchOnceForSave(rule);
-    watchOnceForSave(module);
-
-    function switchDraft(draft: DraftT) {
+    public switchDraft(draft: DraftT) {
         let oldDraft: DraftT;
         if (isRule(draft)) {
-            oldDraft = rule.value;
-            rule.value = draft;
-            watchOnceForSave(rule);
-            tab.value = Tab.Rules;
+            oldDraft = this.rule;
+            this.rule = draft;
+            this.watchOnceForSave(this.rule);
+            this.tab = Tab.Rules;
         } else {
-            oldDraft = module.value;
-            module.value = draft as DraftT<ItemType.Module>;
-            watchOnceForSave(module);
-            tab.value = Tab.Modules;
+            oldDraft = this.module;
+            this.module = draft as DraftT<ItemType.Module>;
+            this.watchOnceForSave(this.module);
+            this.tab = Tab.Modules;
         }
 
         if (!hasChanged(oldDraft)) storage.removeDraft(oldDraft);
 
         location.hash = draft.item.type.at(0) + ':' + draft.item.id;
     }
+}
 
-    return {
-        tab,
-        rule,
-        ruleChanged,
-        module,
-        moduleChanged,
-        panel,
-        switchDraft,
-    };
-});
+const state = new State();
+
+export function useState() {
+    return state;
+}

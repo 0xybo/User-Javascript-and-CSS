@@ -20,6 +20,7 @@ export const zFile = z.object({
 
 export const zScript = zFile.extend({
     type: z.literal(FileType.Typescript).default(FileType.Typescript),
+    compiled: z.string().default(''),
     isolated: z.boolean().default(false),
     recursive: z.boolean().default(false),
     atStart: z.boolean().default(false),
@@ -27,6 +28,7 @@ export const zScript = zFile.extend({
 
 export const zStyle = zFile.extend({
     type: z.literal(FileType.Scss).default(FileType.Scss),
+    compiled: z.string().default(''),
     injected: z.boolean().default(false),
     important: z.boolean().default(false),
 });

@@ -20,7 +20,6 @@
         "clsx": "^2.1.1",
         "lucide-vue-next": "^0.562.0",
         "monaco-editor-vue3": "^1.0.5",
-        "pinia": "^3.0.4",
         "reka-ui": "^2.10.1",
         "sass": "^1.101.0",
         "tailwind-merge": "^3.6.0",

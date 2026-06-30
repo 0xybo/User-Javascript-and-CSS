@@ -1,5 +1,4 @@
 import { reactive, ref, watch } from '#imports';
-import { defineStore } from 'pinia';
 
 interface Action {
     id: string;
@@ -8,35 +7,39 @@ interface Action {
     class?: string;
 }
 
-export const useDialog = defineStore('dialog', () => {
-    const isOpen = ref(false);
-    const title = ref('');
-    const message = ref('');
-    const actions = reactive<Action[]>([]);
-    let resolver: (() => void) | null = null;
+const isOpen = ref(false);
+const title = ref('');
+const message = ref('');
+const actions = reactive<Action[]>([]);
+let resolver: (() => void) | null = null;
 
-    function open(options: {
-        title: string;
-        message?: string;
-        actions?: Omit<Action, 'id'>[];
-    }): Promise<void> {
-        if (isOpen.value) isOpen.value = false; // Close previous opened dialog
+function open(options: {
+    title: string;
+    message?: string;
+    actions?: Omit<Action, 'id'>[];
+}): Promise<void> {
+    if (isOpen.value) isOpen.value = false;
 
-        title.value = options.title;
-        message.value = options.message ?? '';
-        actions.splice(0, actions.length);
-        actions.push(
-            ...(options.actions?.map((action) => ({ ...action, id: crypto.randomUUID() })) || []),
-        );
-        isOpen.value = true;
+    title.value = options.title;
+    message.value = options.message ?? '';
+    actions.splice(0, actions.length);
+    actions.push(
+        ...(options.actions?.map((action) => ({ ...action, id: crypto.randomUUID() })) || []),
+    );
+    isOpen.value = true;
 
-        watch(isOpen, (open) => {
+    watch(
+        isOpen,
+        (open) => {
             if (!open) resolver?.();
-        }, { once: true });
+        },
+        { once: true },
+    );
 
-        return new Promise((resolve) => (resolver = resolve));
-    }
+    return new Promise((resolve) => (resolver = resolve));
+}
 
+export function useDialog() {
     return {
         isOpen,
         title,
@@ -44,4 +47,4 @@ export const useDialog = defineStore('dialog', () => {
         actions,
         open,
     };
-});
+}
