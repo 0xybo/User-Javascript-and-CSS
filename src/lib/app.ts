@@ -1,7 +1,7 @@
-import { Component, createApp as createVueApp } from '#imports';
+import { createApp, type Component } from 'vue';
 
 export function mountNewApp(component: Component) {
-    const app = createVueApp(component);
+    const app = createApp(component);
 
     app.mount('#app');
 }

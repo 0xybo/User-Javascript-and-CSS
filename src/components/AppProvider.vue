@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from '#imports';
 import { useStorage } from '@/composables/useStorage';
 import { watchTheme } from '@/composables/useTheme';
+import { ref } from 'vue';
 import GlobalConfirmDialog from './GlobalConfirmDialog.vue';
 import GlobalDialog from './GlobalDialog.vue';
 import Spinner from './ui/spinner/Spinner.vue';
