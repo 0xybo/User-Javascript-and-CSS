@@ -38,7 +38,7 @@ function onResizableHandleDragging(isDragging: boolean) {
         />
         <ResizablePanel :default-size="50" :min-size="5">
             <CodeEditor
-                :language="FileType.Scss"
+                :language="FileType.Css"
                 v-model="styleContent"
                 :resizing="resizing"
                 :placeholder="i18n.t('RULES_PLACEHOLDER_STYLE')"

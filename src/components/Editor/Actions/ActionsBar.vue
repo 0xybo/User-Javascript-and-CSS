@@ -25,7 +25,7 @@ const storage = useStorage();
 const props = defineProps<{
     type: FileType;
 }>();
-const type = computed(() => (props.type === FileType.Scss ? 'STYLE' : 'SCRIPT'));
+const type = computed(() => (props.type === FileType.Css ? 'STYLE' : 'SCRIPT'));
 const title = computed(() => i18n.t(`COMMON_${type.value}`));
 const tooltip = computed(() => ({
     title: i18n.t(`EDITOR_ACTION_PANEL_${type.value}_TITLE`),
@@ -40,7 +40,6 @@ const preview = reactive({
             case FileType.Typescript:
             case FileType.Javascript:
                 return FileType.Javascript;
-            case FileType.Scss:
             case FileType.Css:
                 return FileType.Css;
             default:
@@ -53,7 +52,7 @@ async function onBeautifyButtonClick() {
     const fileId =
         props.type === FileType.Typescript ? state.rule.item.script.id : state.rule.item.style.id;
     state.rule.files[fileId] = await prettier.format(state.rule.files[fileId], {
-        parser: props.type === FileType.Typescript ? 'typescript' : 'scss',
+        parser: props.type === FileType.Typescript ? 'typescript' : 'css',
         plugins: [typecriptPlugin, estreePlugin, scssPlugin],
         tabWidth: storage.settings.editor.tabSize,
     });
@@ -104,7 +103,7 @@ async function onPreviewButtonClick() {
             }"
             @click="onBeautifyButtonClick"
         />
-        <template v-if="props.type === FileType.Scss">
+        <template v-if="props.type === FileType.Css">
             <ActionButton
                 :icon="TerminalIcon"
                 :tooltip="{

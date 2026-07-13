@@ -10,6 +10,10 @@ import {
 } from './theme';
 import { FileType, ItemType, SortBy } from './types';
 
+z.config({
+    jitless: true, // Disable JIT mode to avoid issues with environments that disallow eval, such as browser extensions with manifest v3.
+});
+
 export const zFile = z.object({
     type: z.enum(FileType),
     name: z.string().optional(),
@@ -27,7 +31,7 @@ export const zScript = zFile.extend({
 });
 
 export const zStyle = zFile.extend({
-    type: z.literal(FileType.Scss).default(FileType.Scss),
+    type: z.literal(FileType.Css).default(FileType.Css),
     compiled: z.string().default(''),
     injected: z.boolean().default(false),
     important: z.boolean().default(false),
