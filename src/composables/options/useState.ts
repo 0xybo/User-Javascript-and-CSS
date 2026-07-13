@@ -18,6 +18,7 @@ class State {
     public rule: DraftT<ItemType.Rule> = useDraft(ItemType.Rule);
     public module: DraftT<ItemType.Module> = useDraft(ItemType.Module);
     public panel: Panel = Panel.Rule;
+    public settingsSection: string | null = null;
     public ruleChanged = computed(() => hasChanged(this.rule));
     public moduleChanged = computed(() => hasChanged(this.module));
 
