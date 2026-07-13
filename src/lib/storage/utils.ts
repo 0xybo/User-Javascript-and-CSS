@@ -99,7 +99,10 @@ export function parse(settings: PlainObject): StorageT {
     }
     for (const draft of (settings.drafts || []) as DraftT[]) {
         draft.files = Object.fromEntries(
-            (draft.files as unknown as string[]).map((id) => [id, settings[`d:${id}`] as string]),
+            (draft.files as unknown as string[])?.map((id) => [
+                id,
+                settings[`d:${id}`] as string,
+            ]) || [],
         );
         draft.item =
             (settings.rules as RuleT[]).find(

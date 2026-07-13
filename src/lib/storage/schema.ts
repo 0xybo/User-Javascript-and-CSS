@@ -81,6 +81,9 @@ export const zSettings = z.object({
             [Theme.Light]: LightThemePalette.Chrome,
             [Theme.Dark]: DarkThemePalette.Monokai,
         })),
+    language: z.enum(['en', 'fr']).default('en'),
+    syncEnabled: z.boolean().default(true),
+    autoEnableDevMode: z.boolean().default(false),
 });
 
 export const zDraft = z.object({

@@ -2,6 +2,7 @@
 import { browser, computed, i18n, ref } from '#imports';
 import { useCurrentTab } from '@/composables/popup/useCurrentTab';
 import { useStorage } from '@/composables/useStorage';
+import { Logger } from '@/lib/logger.js';
 import { filterRulesByUrl } from '@/lib/rules';
 import { RuleT } from '@/lib/storage/types';
 import { RefreshCcwIcon } from 'lucide-vue-next';
@@ -14,6 +15,8 @@ const rules = computed(() =>
     tab?.value?.url ? filterRulesByUrl(storage.rules, tab.value.url) : storage.rules,
 );
 const hasChanged = ref(false);
+
+Logger.debug(storage, tab, rules, filterRulesByUrl);
 
 function reloadTab() {
     if (tab.value?.id) {

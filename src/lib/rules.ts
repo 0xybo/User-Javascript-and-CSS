@@ -1,3 +1,4 @@
+import { Logger } from './logger';
 import { RuleT } from './storage/types';
 
 function splitPatterns(raw: string): { raw: string; pattern: string; invert: boolean }[] {
@@ -74,6 +75,11 @@ export function matchRuleByUrl(rule: RuleT, url: string): boolean {
 
 export function filterRulesByUrl(rules: RuleT[], url: string) {
     const nornamlizedUrl = url.replace('://www.', '://');
+    Logger.debug(`Filtering rules for URL: ${url} (normalized: ${nornamlizedUrl})`);
+    Logger.debug(`Total rules: ${rules.length}`);
+    Logger.debug(
+        `Matching rules: ${rules.filter((rule) => rule.patterns === '' || matchRuleByUrl(rule, nornamlizedUrl)).length}`,
+    );
     return rules.filter((rule) => rule.patterns === '' || matchRuleByUrl(rule, nornamlizedUrl));
 }
 

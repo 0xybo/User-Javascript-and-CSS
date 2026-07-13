@@ -2,11 +2,13 @@ import { format } from 'prettier';
 import { ModuleKind, ScriptTarget, transpileModule } from 'typescript';
 import type { CompilerResult } from './utils';
 
-export interface TSCompilerOptions {}
+export interface TSCompilerOptions {
+    format?: boolean;
+}
 
 export async function compileTS(
     source: string,
-    options: TSCompilerOptions,
+    options: TSCompilerOptions = { format: false },
 ): Promise<CompilerResult> {
     const result = transpileModule(source, {
         compilerOptions: {
@@ -17,7 +19,7 @@ export async function compileTS(
         },
     });
     let output = result.outputText;
-    if (output?.length) output = await format(output);
+    if (output?.length && options.format) output = await format(output);
 
     return {
         output,

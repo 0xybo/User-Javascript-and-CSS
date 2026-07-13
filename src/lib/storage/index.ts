@@ -1,7 +1,7 @@
 import { browser, nextTick, reactive, ref } from '#imports';
-import { useThrottleFn } from '@vueuse/core';
 import { PlainObject } from '@/types/json';
-import { compress as _compress, decompress as _decompress } from '../compression';
+import { useThrottleFn } from '@vueuse/core';
+import { decompress as _decompress } from '../compression';
 import {
     StorageInvalidSyncData,
     StorageLocalMoreRecentError,
@@ -23,7 +23,6 @@ import {
 } from './types';
 import { clean, compress, DEFAULTS, isModule, isRule, parse } from './utils';
 
-
 export const EMITTER = crypto.randomUUID();
 
 export class StorageService {
@@ -39,17 +38,21 @@ export class StorageService {
 
     constructor() {
         browser.storage.local.onChanged.addListener(
-            useThrottleFn(async (changes: StorageChanges<StorageT>) => {
-                if ((changes.info?.newValue?.emitter || this.info.emitter) === EMITTER) return;
-                try {
-                    const newValue = await browser.storage.local.get();
-                    this._saving = false;
-                    this._mergeIn(newValue);
-                    nextTick(() => (this._saving = true));
-                } catch (e) {
-                    Logger.error('Failed to parse storage change:', e);
-                }
-            }, 500, true),
+            useThrottleFn(
+                async (changes: StorageChanges<StorageT>) => {
+                    if ((changes.info?.newValue?.emitter || this.info.emitter) === EMITTER) return;
+                    try {
+                        const newValue = await browser.storage.local.get();
+                        this._saving = false;
+                        this._mergeIn(newValue);
+                        nextTick(() => (this._saving = true));
+                    } catch (e) {
+                        Logger.error('Failed to parse storage change:', e);
+                    }
+                },
+                500,
+                true,
+            ),
         );
     }
 
@@ -169,18 +172,7 @@ export class StorageService {
                 rule.script.compiled = '';
             }
 
-            if (rule.style.content) {
-                try {
-                    const { compileSCSS } = await import('../compiler/scss');
-                    const result = await compileSCSS(rule.style.content);
-                    rule.style.compiled = result.output;
-                } catch (e) {
-                    Logger.error('SCSS compilation failed:', e);
-                    rule.style.compiled = rule.style.content;
-                }
-            } else {
-                rule.style.compiled = '';
-            }
+            rule.style.compiled = rule.style.content;
 
             rule.updated = Date.now();
         } else if (isModule(draft)) {
@@ -197,9 +189,7 @@ export class StorageService {
     }
 
     getDraftNewFromType<TType extends ItemType>(type: TType): DraftT<TType> | null {
-        return (
-            (this.drafts.find((d) => d.isNew && d.item.type === type) as DraftT<TType>) ?? null
-        );
+        return (this.drafts.find((d) => d.isNew && d.item.type === type) as DraftT<TType>) ?? null;
     }
 
     getDraftFromId(id: string): DraftT | null {
@@ -276,3 +266,8 @@ export class StorageService {
 }
 
 export const storage = new StorageService();
+
+storage.load().catch((e) => {
+    Logger.error('Failed to load storage:', e);
+    if (IS_DEV) throw e;
+});

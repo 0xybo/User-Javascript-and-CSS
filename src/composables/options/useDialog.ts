@@ -1,50 +1,43 @@
-import { reactive, ref, watch } from '#imports';
+import { reactive, watch } from '#imports';
 
-interface Action {
-    id: string;
-    label: string;
-    callback: () => void;
-    class?: string;
-}
+class Dialog {
+    public isOpen: boolean = false;
+    public title: string = '';
+    public message: string = '';
+    public actions: { id: string; label: string; callback: () => void; class?: string }[] = [];
+    public resolver: (() => void) | null = null;
 
-const isOpen = ref(false);
-const title = ref('');
-const message = ref('');
-const actions = reactive<Action[]>([]);
-let resolver: (() => void) | null = null;
+    constructor() {
+        return reactive(this) as unknown as Dialog;
+    }
 
-function open(options: {
-    title: string;
-    message?: string;
-    actions?: Omit<Action, 'id'>[];
-}): Promise<void> {
-    if (isOpen.value) isOpen.value = false;
+    public open(options: {
+        title: string;
+        message?: string;
+        actions?: Omit<{ id: string; label: string; callback: () => void; class?: string }, 'id'>[];
+    }): Promise<void> {
+        if (this.isOpen) this.isOpen = false;
 
-    title.value = options.title;
-    message.value = options.message ?? '';
-    actions.splice(0, actions.length);
-    actions.push(
-        ...(options.actions?.map((action) => ({ ...action, id: crypto.randomUUID() })) || []),
-    );
-    isOpen.value = true;
+        this.title = options.title;
+        this.message = options.message ?? '';
+        this.actions.splice(0, this.actions.length);
+        this.actions.push(
+            ...(options.actions?.map((action) => ({ ...action, id: crypto.randomUUID() })) || []),
+        );
+        this.isOpen = true;
 
-    watch(
-        isOpen,
-        (open) => {
-            if (!open) resolver?.();
-        },
-        { once: true },
-    );
+        watch(
+            () => this.isOpen,
+            (open) => {
+                if (!open) this.resolver?.();
+            },
+            { once: true },
+        );
 
-    return new Promise((resolve) => (resolver = resolve));
+        return new Promise((resolve) => (this.resolver = resolve));
+    }
 }
 
 export function useDialog() {
-    return {
-        isOpen,
-        title,
-        message,
-        actions,
-        open,
-    };
+    return new Dialog();
 }
