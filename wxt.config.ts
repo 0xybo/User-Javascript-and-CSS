@@ -1,5 +1,5 @@
 import { defineConfig } from 'wxt';
-import { buidManifest } from './config/buildManifest';
+import { buildManifest } from './config/buildManifest';
 import { buildViteConfig } from './config/buildViteConfig';
 import monacoOptions from './config/monaco.config';
 import { withMonaco } from './config/withMonaco';
@@ -11,7 +11,8 @@ export default withMonaco(
         webExt: {
             disabled: true,
         },
-        manifest: buidManifest,
+        manifest: buildManifest,
+        manifestVersion: 3,
         srcDir: 'src',
         outDir: 'dist',
         publicDir: 'src/public',

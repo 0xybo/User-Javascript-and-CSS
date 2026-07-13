@@ -67,6 +67,7 @@ export function monaco(options?: MonacoOptions): Plugin {
                         .map((entry) => `import "${resolveMonacoPath(entry!)}";`),
                     "export * from './editor.api.js';",
                 ].join('\n');
+
                 return result;
             } else if (id.match(/esm[/\\]vs[/\\]editor[/\\]editor.all.js/)) {
                 return 'throw "Please use esm/vs/editor.main.js or monaco-editor directly instead!"';

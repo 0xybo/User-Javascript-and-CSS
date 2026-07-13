@@ -1,3 +1,9 @@
+import type {
+    EditorFeature,
+    EditorLanguage,
+    IFeatureDefinition,
+    NegatedEditorFeature,
+} from 'monaco-editor/esm/metadata.js';
 import type { ConfigEnv, WxtViteConfig } from 'wxt';
 
 /**

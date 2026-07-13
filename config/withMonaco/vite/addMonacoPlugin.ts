@@ -8,7 +8,9 @@ export function addMonacoPlugin(
 ): ViteConfigBuilder {
     return (config: ConfigEnv) => {
         const viteConfig = builder(config);
+
         viteConfig.plugins = [...(viteConfig.plugins || []), monaco(options)];
+
         return viteConfig;
     };
 }

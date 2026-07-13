@@ -103,6 +103,6 @@ export default {
         // 'gpu',                       // GPU‑accelerated rendering pipeline
         // 'internal',                  // Internal Monaco utilities not intended for public use
     ],
-    languages: ['javascript', 'typescript', 'css', 'scss'],
+    languages: ['typescript', 'css'],
     globalAPI: !isProduction,
 } as const satisfies MonacoOptions;

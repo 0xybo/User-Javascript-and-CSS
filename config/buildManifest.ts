@@ -1,4 +1,4 @@
-import type { UserManifest } from 'wxt';
+import type { ConfigEnv, UserManifest } from 'wxt';
 
 /**
  * MarkAsPresent utility type ensures that specified keys in a type are treated as required, even if they are optional in the original type. This is useful for avoiding TypeScript errors when certain properties are expected to be present in an object.
@@ -15,7 +15,9 @@ import type { UserManifest } from 'wxt';
  */
 type MarkAsPresent<T, K extends keyof T = keyof T> = T & { [P in K]-?: T[P] };
 
-export function buidManifest(browser: 'chrome' | 'firefox'): UserManifest {
+export function buildManifest({ browser }: ConfigEnv): UserManifest {
+    const isChrome = browser === 'chrome';
+
     const manifest: MarkAsPresent<UserManifest, 'optional_permissions' | 'permissions'> = {
         optional_host_permissions: ['*://*/*'],
         host_permissions: ['http://*/*', 'https://*/*'],
@@ -23,6 +25,9 @@ export function buidManifest(browser: 'chrome' | 'firefox'): UserManifest {
         browser_specific_settings: {
             gecko: {
                 id: '@userjavascriptandcss',
+                data_collection_permissions: {
+                    required: ['none'],
+                },
             },
         },
         optional_permissions: [],
@@ -38,15 +43,10 @@ export function buidManifest(browser: 'chrome' | 'firefox'): UserManifest {
         },
     };
 
-    if (browser === 'chrome') {
+    if (isChrome) {
         manifest.permissions.push('userScripts');
-    } else if (browser === 'firefox') {
-        manifest.permissions.push('data_collection_permissions');
+    } else {
         manifest.optional_permissions.push('userScripts');
-
-        manifest.content_security_policy = {
-            extension_pages: "script-src 'self' 'unsafe-eval'; object-src 'self';",
-        };
     }
 
     return manifest;

@@ -2,13 +2,12 @@ import tailwindcss from '@tailwindcss/vite';
 import VitePluginVueDevTools from 'vite-plugin-vue-devtools';
 import type { ConfigEnv, WxtViteConfig } from 'wxt';
 
-export function buildViteConfig(configEnv: ConfigEnv): WxtViteConfig {
-    const { browser } = configEnv;
+export function buildViteConfig({ mode }: ConfigEnv): WxtViteConfig {
+    const isProduction = mode === 'production';
 
     const config: WxtViteConfig = {
         plugins: [
             tailwindcss(),
-            // monaco({ browser: browser as 'chrome' | 'firefox' }),
             VitePluginVueDevTools({
                 appendTo: '/entrypoints/options/main.ts',
             }),
@@ -26,6 +25,7 @@ export function buildViteConfig(configEnv: ConfigEnv): WxtViteConfig {
                     '**/resources/**',
                 ],
             },
+            cors: !isProduction,
         },
         build: {
             rollupOptions: {
@@ -35,9 +35,7 @@ export function buildViteConfig(configEnv: ConfigEnv): WxtViteConfig {
                     warn(warning);
                 },
             },
-        },
-        optimizeDeps: {
-            exclude: ['monaco-editor'],
+            sourcemap: isProduction ? false : 'inline',
         },
     };
 
