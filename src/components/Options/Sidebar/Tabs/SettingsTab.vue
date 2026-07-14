@@ -4,13 +4,7 @@ import Button from '@/components/ui/button/Button.vue';
 import { useState } from '@/composables/options/useState';
 import { Panel } from '@/lib/options/panel';
 import { cn } from '@/lib/tailwind';
-import {
-    CloudIcon,
-    DatabaseIcon,
-    PaintbrushIcon,
-    PaletteIcon,
-    PuzzleIcon,
-} from 'lucide-vue-next';
+import { CloudIcon, DatabaseIcon, PaintbrushIcon, PaletteIcon, PuzzleIcon } from 'lucide-vue-next';
 
 const state = useState();
 
@@ -48,7 +42,8 @@ function onSectionClick(id: string) {
                     cn(
                         'text-foreground flex w-full flex-row items-center justify-start gap-3 px-3 py-2 text-sm!',
                         {
-                            'text-accent! bg-accent/10': state.settingsSection === section.id,
+                            'text-accent-foreground! bg-accent hover:bg-accent/90':
+                                state.settingsSection === section.id,
                         },
                     )
                 "

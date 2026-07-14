@@ -19,3 +19,5 @@
         @apply text-sm;
     }
 }
+
+@import './main.css';

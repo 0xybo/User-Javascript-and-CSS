@@ -1,0 +1,16 @@
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-accent/80 rounded-md transition-colors;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent;
+}

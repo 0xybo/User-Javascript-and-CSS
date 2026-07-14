@@ -5,8 +5,9 @@ import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
 import Separator from '@/components/ui/separator/Separator.vue';
 import Switch from '@/components/ui/switch/Switch.vue';
-import { Editor } from '@/lib/storage/editor';
 import { useStorage } from '@/composables/useStorage';
+import { Editor } from '@/lib/storage/editor';
+import { cn } from '@/lib/tailwind';
 
 const storage = useStorage();
 
@@ -30,10 +31,12 @@ const EDITOR_TYPES = [
                     <Button
                         v-for="ed in EDITOR_TYPES"
                         :key="ed.value"
-                        :variant="
-                            storage.settings.editor.name === ed.value
-                                ? 'default'
-                                : 'outline'
+                        :variant="storage.settings.editor.name === ed.value ? 'default' : 'outline'"
+                        :class="
+                            cn({
+                                'bg-accent text-accent-foreground hover:bg-accent/90':
+                                    storage.settings.editor.name === ed.value,
+                            })
                         "
                         size="sm"
                         @click="() => (storage.settings.editor.name = ed.value)"
@@ -63,8 +66,7 @@ const EDITOR_TYPES = [
                         :model-value="storage.settings.editor.fontFamily"
                         placeholder="JetBrains Mono"
                         @update:model-value="
-                            (v: unknown) =>
-                                (storage.settings.editor.fontFamily = String(v))
+                            (v: unknown) => (storage.settings.editor.fontFamily = String(v))
                         "
                     />
                 </div>
@@ -88,18 +90,14 @@ const EDITOR_TYPES = [
                     <Label>{{ i18n.t('SETTINGS_WORD_WRAP') }}</Label>
                     <Switch
                         :checked="storage.settings.editor.wrap"
-                        @update:checked="
-                            (v: boolean) => (storage.settings.editor.wrap = v)
-                        "
+                        @update:checked="(v: boolean) => (storage.settings.editor.wrap = v)"
                     />
                 </div>
                 <div class="flex items-center justify-between">
                     <Label>{{ i18n.t('SETTINGS_LIGATURES') }}</Label>
                     <Switch
                         :checked="storage.settings.editor.ligatures"
-                        @update:checked="
-                            (v: boolean) => (storage.settings.editor.ligatures = v)
-                        "
+                        @update:checked="(v: boolean) => (storage.settings.editor.ligatures = v)"
                     />
                 </div>
                 <div class="flex items-center justify-between">
@@ -115,9 +113,7 @@ const EDITOR_TYPES = [
                     <Label>{{ i18n.t('SETTINGS_SOFT_TABS') }}</Label>
                     <Switch
                         :checked="storage.settings.editor.softTabs"
-                        @update:checked="
-                            (v: boolean) => (storage.settings.editor.softTabs = v)
-                        "
+                        @update:checked="(v: boolean) => (storage.settings.editor.softTabs = v)"
                     />
                 </div>
                 <div
@@ -128,8 +124,7 @@ const EDITOR_TYPES = [
                     <Switch
                         :checked="(storage.settings.editor as any).minimap"
                         @update:checked="
-                            (v: boolean) =>
-                                ((storage.settings.editor as any).minimap = v)
+                            (v: boolean) => ((storage.settings.editor as any).minimap = v)
                         "
                     />
                 </div>
