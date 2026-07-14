@@ -2,7 +2,7 @@ import type { ConfigEnv } from 'wxt';
 import type { MonacoOptions, ViteConfigBuilder } from '../types';
 import { monaco } from './plugin';
 
-export function addMonacoPlugin(
+export function updateConfig(
     builder: ViteConfigBuilder,
     options: MonacoOptions,
 ): ViteConfigBuilder {
