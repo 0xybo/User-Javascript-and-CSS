@@ -4,6 +4,14 @@ import { clone } from '../utils';
 import { zDraft, zInfo, zModule, zRemoteSettingsInfo, zRule, zSettings, zStorage } from './schema';
 import { DraftT, FileT, ItemT, ItemType, ModuleT, RuleT, StorageT } from './types';
 
+/**
+ * A unique identifier for the current instance of the storage service. This is used to identify changes made by this instance when listening for changes in the browser's local storage.
+ */
+export const EMITTER = crypto.randomUUID();
+
+/**
+ * Default values for various storage-related entities. Each property is a function that returns a default instance of the corresponding type.
+ */
 export const DEFAULTS = {
     RULES: () => [] as RuleT[],
     MODULES: () => [] as ModuleT[],
@@ -17,8 +25,26 @@ export const DEFAULTS = {
     STORAGE: () => zStorage.parse({}),
 };
 
+/**
+ * Type guard to check if the given item, draft, or type is a Rule.
+ *
+ * @param item The item to check.
+ * @returns True if the item is a Rule, false otherwise.
+ */
 export function isRule(item: ItemT): item is RuleT;
+/**
+ * Type guard to check if the given draft is a Rule draft.
+ *
+ * @param draft The draft to check.
+ * @returns True if the draft is a Rule draft, false otherwise.
+ */
 export function isRule(draft: DraftT): draft is DraftT<RuleT>;
+/**
+ * Type guard to check if the given type is a Rule type.
+ *
+ * @param type The type to check.
+ * @returns True if the type is a Rule type, false otherwise.
+ */
 export function isRule(type: ItemType): type is ItemType.Rule;
 export function isRule(itemOrDraftOrType: ItemT | DraftT | ItemType): boolean {
     if (typeof itemOrDraftOrType === 'string') return itemOrDraftOrType === ItemType.Rule;
@@ -27,8 +53,26 @@ export function isRule(itemOrDraftOrType: ItemT | DraftT | ItemType): boolean {
     return (itemOrDraftOrType as ItemT).type === ItemType.Rule;
 }
 
+/**
+ * Type guard to check if the given item, draft, or type is a Module.
+ *
+ * @param item The item to check.
+ * @returns True if the item is a Module, false otherwise.
+ */
 export function isModule(item: ItemT): item is ModuleT;
+/**
+ * Type guard to check if the given draft is a Module draft.
+ *
+ * @param draft The draft to check.
+ * @returns True if the draft is a Module draft, false otherwise.
+ */
 export function isModule(draft: DraftT): draft is DraftT<ModuleT>;
+/**
+ * Type guard to check if the given type is a Module type.
+ *
+ * @param type The type to check.
+ * @returns True if the type is a Module type, false otherwise.
+ */
 export function isModule(type: ItemType): type is ItemType.Module;
 export function isModule(itemOrDraftOrType: ItemT | DraftT | ItemType): boolean {
     if (typeof itemOrDraftOrType === 'string') return itemOrDraftOrType === ItemType.Module;
@@ -37,6 +81,15 @@ export function isModule(itemOrDraftOrType: ItemT | DraftT | ItemType): boolean 
     return (itemOrDraftOrType as ItemT).type === ItemType.Module;
 }
 
+/**
+ * Cleans the given storage settings by removing unnecessary properties and preparing it for saving or syncing.
+ *
+ * This function is needed because extension and local storage APIs have limitations on the size of data that can be stored, and we want to avoid storing unnecessary data.
+ *
+ * @param settings The storage settings to clean.
+ * @param sync Whether to prepare the settings for syncing (default: false).
+ * @returns The cleaned storage settings.
+ */
 export function clean(settings: StorageT, sync: boolean = false): StorageT {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const cleaned: any = clone(settings);
@@ -85,6 +138,12 @@ export function clean(settings: StorageT, sync: boolean = false): StorageT {
     return cleaned;
 }
 
+/**
+ * Parses the given plain object into a structured StorageT object, restoring file contents and draft items.
+ *
+ * @param settings The plain object representing storage settings.
+ * @returns The parsed StorageT object.
+ */
 export function parse(settings: PlainObject): StorageT {
     for (const rule of (settings.rules || []) as RuleT[]) {
         rule.script.content = settings[`f:${rule.script.id}`] as string;
@@ -120,6 +179,14 @@ export function parse(settings: PlainObject): StorageT {
     return zStorage.parse(settings);
 }
 
+/**
+ * Compresses the given storage settings into an array of string chunks, each with a maximum size of 4096 characters.
+ *
+ * This function is useful for preparing storage settings for syncing or saving, especially when dealing with size limitations in storage APIs.
+ *
+ * @param settings The storage settings to compress.
+ * @returns A promise that resolves to an array of compressed string chunks.
+ */
 export async function compress(settings: StorageT): Promise<string[]> {
     const cleaned = clean(settings, true);
     const compressed = await _compress(cleaned);

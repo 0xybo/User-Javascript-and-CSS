@@ -1,5 +1,3 @@
-import { Ref } from '#imports';
-import { Reactive } from 'vue';
 import z from 'zod';
 import {
     zDraft,
@@ -14,6 +12,9 @@ import {
     zStyle,
 } from './schema';
 
+/**
+ * Enumerates the possible sorting options for items in the storage.
+ */
 export enum SortBy {
     NameDescending = 'name_desc',
     NameAscending = 'name_asc',
@@ -21,83 +22,95 @@ export enum SortBy {
     Updated = 'updated',
 }
 
+/**
+ * Enumerates the possible types of items that can be stored in the storage.
+ */
 export enum ItemType {
     Rule = 'rule',
     Module = 'module',
 }
 
+/**
+ * Enumerates the possible types of files that can be stored in the storage.
+ */
 export enum FileType {
     Typescript = 'typescript',
     Javascript = 'javascript',
     Css = 'css',
 }
 
+/**
+ * Represents the structure of a file in the storage system, including its name, type, and content.
+ */
 export type FileT = z.infer<typeof zFile>;
 
+/**
+ * Represents the structure of a script file in the storage system, including its name, type, and content.
+ */
 export type ScriptT = z.infer<typeof zScript>;
 
+/**
+ * Represents the structure of a style file in the storage system, including its name, type, and content.
+ */
 export type StyleT = z.infer<typeof zStyle>;
 
+/**
+ * Represents the structure of an item in the storage system, which can be either a rule or a module.
+ */
 export type ItemT = RuleT | ModuleT;
 
+/**
+ * Represents the structure of a module in the storage system, including its properties and associated files.
+ */
 export type ModuleT = z.infer<typeof zModule>;
 
+/**
+ * Represents the structure of a rule in the storage system, including its properties and associated script and style files.
+ */
 export type RuleT = z.infer<typeof zRule>;
 
+/**
+ * Represents the structure of the information stored in the storage system, including metadata and other relevant details.
+ */
 export type InfoT = z.infer<typeof zInfo>;
 
+/**
+ * Represents the structure of the settings stored in the storage system, including configuration options and preferences.
+ */
 export type SettingsT = z.infer<typeof zSettings>;
 
+/**
+ * Represents the structure of a draft in the storage system, which can be created from an item or an item type. Drafts are used for temporary changes before they are saved to the main storage.
+ */
 export type DraftT<TItem extends ItemT | ItemType = ItemT> = z.infer<typeof zDraft> & {
+    /** The item associated with this draft. */
     item: TItem extends ItemType ? (TItem extends ItemType.Rule ? RuleT : ModuleT) : TItem;
 };
 
+/**
+ * Represents the structure of the entire storage system, including all items, drafts, settings, and information.
+ */
 export type StorageT = z.infer<typeof zStorage>;
 
+/**
+ * Represents the structure of the information related to remote storage settings, including metadata and other relevant details.
+ */
 export type RemoteSettingsInfo = z.infer<typeof zRemoteSettingsInfo>;
 
+/**
+ * Represents the structure of the remote storage settings, which includes chunks of data and associated information.
+ */
 export type RemoteSettings = {
     [chunkIndex: number]: string;
     info: RemoteSettingsInfo;
 };
 
+/**
+ * Represents the structure of the changes made to the storage, where each key corresponds to a property in the storage and contains the old and new values for that property.
+ */
 export type StorageChanges<T extends object> = {
     [K in keyof T]?: {
         oldValue: T[K];
         newValue: T[K];
     };
 };
-
-export interface StorageStoreBase {
-    info: Reactive<InfoT>;
-    settings: Reactive<SettingsT>;
-    rules: Reactive<RuleT[]>;
-    modules: Reactive<ModuleT[]>;
-    drafts: Reactive<DraftT[]>;
-    loaded: Ref<boolean>;
-
-    current: () => StorageT;
-
-    load: () => Promise<void>;
-    save: () => Promise<void>;
-    reset: () => Promise<void>;
-    upload: () => Promise<void>;
-    download: () => Promise<void>;
-}
-
-export interface StorageStoreDraft extends StorageStoreBase {
-    createDraftFromItem: <TItem extends ItemT>(item: TItem) => Reactive<DraftT<TItem>>;
-    createDraftFromType: <TType extends ItemType>(type: TType) => Reactive<DraftT<TType>>;
-    discardDraft: (draft: DraftT) => void;
-    saveDraft: (draft: DraftT) => void;
-    getDraftFromItem: <TItem extends ItemT>(item: TItem) => DraftT<TItem> | null;
-    getDraftNewFromType: <TType extends ItemType>(type: TType) => DraftT<TType> | null;
-    getDraftFromId: (id: string) => DraftT | null;
-    clearDrafts: () => void;
-    removeDraft: (draft: DraftT) => void;
-}
-
-export interface StorageStoreItem extends StorageStoreDraft {
-    removeItem: (item: ItemT) => void;
-    getItemFromId: (id: string) => ItemT | null;
-}
