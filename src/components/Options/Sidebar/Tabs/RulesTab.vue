@@ -46,7 +46,7 @@ function onRuleListOpen(rule: RuleT) {
 </script>
 
 <template>
-    <div class="flex flex-col">
+    <div class="flex h-full flex-col overflow-y-auto">
         <div class="flex min-h-8 flex-row justify-between px-4 py-2 text-xs select-none">
             <div class="flex items-center tracking-widest uppercase">
                 {{ i18n.t('COMMON_RULES') }} ({{ rules.length }})

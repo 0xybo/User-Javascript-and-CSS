@@ -2,27 +2,42 @@
 import { i18n } from '#imports';
 import Button from '@/components/ui/button/Button.vue';
 import { useState } from '@/composables/options/useState';
-import { Panel } from '@/lib/options/panel';
+import { SettingsSection } from '@/lib/options/settings';
+import { Panel } from '@/lib/options/tab';
 import { cn } from '@/lib/tailwind';
 import { CloudIcon, DatabaseIcon, PaintbrushIcon, PaletteIcon, PuzzleIcon } from 'lucide-vue-next';
 
 const state = useState();
 
+/**
+ * Represents a section in the settings tab, including its ID, label, and icon.
+ */
 interface Section {
-    id: string;
+    /** The unique identifier for the section. */
+    id: SettingsSection;
+    /** The display label for the section. */
     label: string;
+    /** The icon component associated with the section. */
     icon: typeof PaintbrushIcon;
 }
 
+/**
+ * A list of sections available in the settings tab, each with an ID, label, and icon.
+ */
 const SECTIONS: Section[] = [
-    { id: 'editor', label: i18n.t('SETTINGS_EDITOR'), icon: PaintbrushIcon },
-    { id: 'theme', label: i18n.t('SETTINGS_THEME'), icon: PaletteIcon },
-    { id: 'extension', label: i18n.t('SETTINGS_EXTENSION'), icon: PuzzleIcon },
-    { id: 'cloud-sync', label: i18n.t('SETTINGS_CLOUD_SYNC'), icon: CloudIcon },
-    { id: 'storage', label: i18n.t('SETTINGS_STORAGE'), icon: DatabaseIcon },
+    { id: SettingsSection.Editor, label: i18n.t('SETTINGS_EDITOR'), icon: PaintbrushIcon },
+    { id: SettingsSection.Theme, label: i18n.t('SETTINGS_THEME'), icon: PaletteIcon },
+    { id: SettingsSection.Extension, label: i18n.t('SETTINGS_EXTENSION'), icon: PuzzleIcon },
+    { id: SettingsSection.CloudSync, label: i18n.t('SETTINGS_CLOUD_SYNC'), icon: CloudIcon },
+    { id: SettingsSection.Storage, label: i18n.t('SETTINGS_STORAGE'), icon: DatabaseIcon },
 ];
 
-function onSectionClick(id: string) {
+/**
+ * Handles the click event for a section in the settings tab.
+ *
+ * @param id The ID of the section that was clicked.
+ */
+function onSectionClick(id: SettingsSection) {
     state.panel = Panel.Settings;
     state.settingsSection = id;
 }

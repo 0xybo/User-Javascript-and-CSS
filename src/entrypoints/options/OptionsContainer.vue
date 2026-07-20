@@ -8,7 +8,7 @@ import { useState } from '@/composables/options/useState';
 import { hasChanged } from '@/composables/useDraft';
 import { useStorage } from '@/composables/useStorage';
 import { watchThemePalette } from '@/composables/useTheme';
-import { Panel } from '@/lib/options/panel';
+import { Panel } from '@/lib/options/tab';
 import type { DraftT } from '@/lib/storage/types';
 import { useEventListener } from '@vueuse/core';
 
@@ -17,6 +17,12 @@ watchThemePalette();
 const state = useState();
 const storage = useStorage();
 
+/**
+ * Handles the beforeunload event to warn the user about unsaved drafts.
+ *
+ * @param event The beforeunload event.
+ * @returns true if there are unsaved drafts, undefined otherwise.
+ */
 function onBeforeUnload(event: BeforeUnloadEvent): true | undefined {
     const unsavedDrafts: DraftT[] = storage.drafts.filter((draft) => hasChanged(draft));
     if (unsavedDrafts.length) {

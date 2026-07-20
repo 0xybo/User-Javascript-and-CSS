@@ -11,6 +11,9 @@ import { cn } from '@/lib/tailwind';
 
 const storage = useStorage();
 
+/**
+ * A list of available editor types, each with a value and a label for display.
+ */
 const EDITOR_TYPES = [
     { value: Editor.Monaco, label: i18n.t('SETTINGS_EDITOR_MONACO') },
     { value: Editor.Ace, label: i18n.t('SETTINGS_EDITOR_ACE') },

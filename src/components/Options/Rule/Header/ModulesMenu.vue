@@ -9,7 +9,7 @@ import PopoverContent from '@/components/ui/popover/PopoverContent.vue';
 import PopoverTrigger from '@/components/ui/popover/PopoverTrigger.vue';
 import { useState } from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
-import { Tab } from '@/lib/options';
+import { Tab } from '@/lib/options/tab';
 import { ModuleT, RuleT } from '@/lib/storage/types';
 import { cn } from '@/lib/tailwind';
 import { EllipsisVerticalIcon } from 'lucide-vue-next';
@@ -18,6 +18,12 @@ import { PopoverClose } from 'reka-ui';
 const state = useState();
 const storage = useStorage();
 
+/**
+ * Handles the change event for a module checkbox in the modules menu.
+ *
+ * @param checked The new checked state of the checkbox. Can be true, false, or 'indeterminate'.
+ * @param module The module associated with the checkbox that was changed.
+ */
 function onCheckboxChange(checked: boolean | 'indeterminate', module: ModuleT) {
     if (typeof checked === 'boolean' && checked) (state.rule.item as RuleT).modules.push(module.id);
     else
