@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import { resolve } from 'path';
+import type { PluginContext } from 'rollup';
 import { Plugin } from 'vite';
 import { resolveFeatures } from '../resolvers/features';
 import { resolveLanguages } from '../resolvers/languages';
@@ -7,7 +8,7 @@ import { resolveMonacoPath } from '../resolvers/paths';
 import { resolveWorkers } from '../resolvers/workers';
 import type { MonacoOptions } from '../types';
 
-const TEMPLATE = ({
+const generateMain = ({
     workersImports,
     workersObject,
     featuresImports,
@@ -47,19 +48,19 @@ export function monaco(options?: MonacoOptions): Plugin {
     const workers = resolveWorkers(languages, features);
     const isProduction = process.env.NODE_ENV === 'production';
 
+    const isHtmlEntrypoint = (ctx: PluginContext) => {
+        return ctx.environment.config.define?.['import.meta.env.ENTRYPOINT'] === '"html"';
+    };
+
     return {
-        name: 'monaco',
+        name: 'vite-plugin-monaco-editor',
         enforce: 'pre',
 
         config(config) {
-            if (!config.optimizeDeps) {
-                config.optimizeDeps = {};
-            }
+            if (!config.optimizeDeps) config.optimizeDeps = {};
             const optimizeDeps = config.optimizeDeps;
 
-            if (!optimizeDeps.exclude) {
-                optimizeDeps.exclude = [];
-            }
+            if (!optimizeDeps.exclude) optimizeDeps.exclude = [];
             optimizeDeps.exclude.push('monaco-editor');
 
             if (optimizeDeps.include?.includes('monaco-editor')) {
@@ -72,7 +73,7 @@ export function monaco(options?: MonacoOptions): Plugin {
 
         load(id) {
             if (id.match(/esm[/\\]vs[/\\]editor[/\\]editor.main.js/)) {
-                return TEMPLATE({
+                return generateMain({
                     workersImports: workers.map(
                         (worker) =>
                             `import ${worker.label} from '${resolveMonacoPath(worker.entry)}?worker&url';`,
@@ -99,6 +100,8 @@ export function monaco(options?: MonacoOptions): Plugin {
 
         buildEnd() {
             if (isProduction) return;
+            // Only target html entrypoints (options and popup)
+            if (!isHtmlEntrypoint(this)) return;
 
             // DEV ONLY: Copy the monaco-editor (monaco-editor/esm) folder to the dist folder for development purposes
             const monacoPath = resolve(process.cwd(), 'node_modules', 'monaco-editor', 'esm');
