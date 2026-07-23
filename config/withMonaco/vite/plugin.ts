@@ -8,33 +8,13 @@ import { resolveMonacoPath } from '../resolvers/paths';
 import { resolveWorkers } from '../resolvers/workers';
 import type { MonacoOptions } from '../types';
 
-const generateMain = ({
-    workersImports,
-    workersObject,
-    featuresImports,
-    languagesImports,
-    globalAPI,
-}: {
-    workersImports: string[];
-    workersObject: string[];
-    featuresImports: string[];
-    languagesImports: string[];
-    globalAPI: boolean;
-}) => `
-${workersImports.join('\n')}
+import { filterNull, unique } from '../utils';
+import { generateMain as generateMainDev } from './templates/editorMain.dev';
+import { generateMain as generateMainProd } from './templates/editorMain.prod';
 
-self['MonacoEnvironment'] = {
-    globalAPI: ${globalAPI || false},
-    getWorker: ((workers) => (_, label) => workers[label]())({
-        ${workersObject.join(',\n        ')}
-    })
-};
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
-${featuresImports.join('\n')}
-${languagesImports.join('\n')}
-
-export * from './editor.api.js';
-`;
+const generateMain = IS_PRODUCTION ? generateMainProd : generateMainDev;
 
 /**
  * Plugin to control monaco-editor bundeling
@@ -46,7 +26,6 @@ export function monaco(options?: MonacoOptions): Plugin {
     const languages = resolveLanguages(options?.languages || [], options?.customLanguages || []);
     const features = resolveFeatures(options?.features);
     const workers = resolveWorkers(languages, features);
-    const isProduction = process.env.NODE_ENV === 'production';
 
     const isHtmlEntrypoint = (ctx: PluginContext) => {
         return ctx.environment.config.define?.['import.meta.env.ENTRYPOINT'] === '"html"';
@@ -72,25 +51,30 @@ export function monaco(options?: MonacoOptions): Plugin {
         },
 
         load(id) {
+            const outputDir = this.environment.config.build?.outDir || 'dist';
+
             if (id.match(/esm[/\\]vs[/\\]editor[/\\]editor.main.js/)) {
-                return generateMain({
+                const result = generateMain({
                     workersImports: workers.map(
                         (worker) =>
-                            `import ${worker.label} from '${resolveMonacoPath(worker.entry)}?worker&url';`,
+                            `import ${worker.label} from '${resolveMonacoPath(worker.entry, outputDir)}?worker';`,
                     ),
-                    workersObject: workers.map(
-                        (worker) => `'${worker.label}': () => new ${worker.label}()`,
-                    ),
-                    featuresImports: features
-                        .flatMap((feature) => feature.entry)
-                        .filter(Boolean)
-                        .map((entry) => `import "${resolveMonacoPath(entry!)}";`),
-                    languagesImports: languages
-                        .flatMap((lang) => lang.entry)
-                        .filter(Boolean)
-                        .map((entry) => `import "${resolveMonacoPath(entry!)}";`),
+                    workersObject: IS_PRODUCTION
+                        ? workers.map((worker) => `'${worker.label}': () => new ${worker.label}()`)
+                        : workers.map(
+                              (worker) => `'${worker.label}': '/monaco-editor/${worker.entry}.js'`,
+                          ),
+                    featuresImports: filterNull(
+                        unique(features.flatMap((feature) => feature.entry)),
+                    ).map((entry) => `import "${resolveMonacoPath(entry!, outputDir)}";`),
+                    languagesImports: filterNull(
+                        unique(languages.flatMap((lang) => lang.entry)),
+                    ).map((entry) => `import "${resolveMonacoPath(entry!, outputDir)}";`),
                     globalAPI: options?.globalAPI || false,
                 });
+
+                console.log('[monaco] generated editor.main.js');
+                return result;
             } else if (id.match(/esm[/\\]vs[/\\]editor[/\\]editor.all.js/)) {
                 return 'throw "Please use esm/vs/editor.main.js or monaco-editor directly instead!"';
             } else if (id.match(/esm[/\\]vs[/\\]editor[/\\]edcore.main.js/)) {
@@ -99,13 +83,15 @@ export function monaco(options?: MonacoOptions): Plugin {
         },
 
         buildEnd() {
-            if (isProduction) return;
+            if (IS_PRODUCTION) return;
             // Only target html entrypoints (options and popup)
             if (!isHtmlEntrypoint(this)) return;
 
+            const outputDir = this.environment.config.build?.outDir || 'dist';
+
             // DEV ONLY: Copy the monaco-editor (monaco-editor/esm) folder to the dist folder for development purposes
             const monacoPath = resolve(process.cwd(), 'node_modules', 'monaco-editor', 'esm');
-            const distPath = resolve(process.cwd(), 'dist', 'monaco-editor');
+            const distPath = resolve(process.cwd(), outputDir, 'monaco-editor');
 
             fs.copySync(monacoPath, distPath, { overwrite: true });
 

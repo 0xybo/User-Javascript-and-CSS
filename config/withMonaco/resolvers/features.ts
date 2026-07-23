@@ -43,12 +43,12 @@ export function resolveFeatures(features?: Features): IFeatureDefinition[] {
     }
 
     const excluded = features.filter((f) => f[0] === '!').map((f) => f.slice(1));
-    if (excluded.length > 0) {
+    if (excluded.length > 0)
         return filterNull(
             Object.keys(featureById)
                 .filter((f) => !excluded.includes(f))
                 .map(resolveFeature),
         );
-    }
+
     return filterNull(features.map(resolveFeature));
 }
