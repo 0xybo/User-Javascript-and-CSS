@@ -105,3 +105,28 @@ export const zRemoteSettingsInfo = z.object({
     chunkLength: z.number().default(0),
     updated: z.number().default(0),
 });
+
+/**
+ * On-disk format for rules (content stored separately in f:<UUID> keys).
+ */
+export const zRuleStored = zRule.omit({ script: true, style: true }).extend({
+    scriptId: z.string(),
+    styleId: z.string(),
+});
+
+/**
+ * On-disk format for modules (files stored separately in f:<UUID> keys).
+ */
+export const zModuleStored = zModule.omit({ files: true }).extend({
+    fileIds: z.array(z.string()),
+});
+
+/**
+ * On-disk format for drafts (files stored separately in d:<UUID> keys).
+ */
+export const zDraftStored = z.object({
+    isNew: z.boolean(),
+    itemId: z.string(),
+    itemType: z.enum(ItemType),
+    fileIds: z.array(z.string()),
+});

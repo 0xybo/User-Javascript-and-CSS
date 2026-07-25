@@ -6,10 +6,8 @@ import {
     zModule,
     zRemoteSettingsInfo,
     zRule,
-    zScript,
     zSettings,
     zStorage,
-    zStyle,
 } from './schema';
 
 /**
@@ -43,16 +41,6 @@ export enum FileType {
  * Represents the structure of a file in the storage system, including its name, type, and content.
  */
 export type FileT = z.infer<typeof zFile>;
-
-/**
- * Represents the structure of a script file in the storage system, including its name, type, and content.
- */
-export type ScriptT = z.infer<typeof zScript>;
-
-/**
- * Represents the structure of a style file in the storage system, including its name, type, and content.
- */
-export type StyleT = z.infer<typeof zStyle>;
 
 /**
  * Represents the structure of an item in the storage system, which can be either a rule or a module.
@@ -113,4 +101,29 @@ export type StorageChanges<T extends object> = {
         oldValue: T[K];
         newValue: T[K];
     };
+};
+
+/**
+ * On-disk format for rules (content stored separately in f:<UUID> keys).
+ */
+export type RuleStored = Omit<RuleT, 'script' | 'style'> & {
+    scriptId: string;
+    styleId: string;
+};
+
+/**
+ * On-disk format for modules (files stored separately in f:<UUID> keys).
+ */
+export type ModuleStored = Omit<ModuleT, 'files'> & {
+    fileIds: string[];
+};
+
+/**
+ * On-disk format for drafts (files stored separately in d:<UUID> keys).
+ */
+export type DraftStored = {
+    isNew: boolean;
+    itemId: string;
+    itemType: ItemType;
+    fileIds: string[];
 };
