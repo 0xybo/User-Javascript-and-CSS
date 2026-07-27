@@ -218,17 +218,18 @@ diff.UPDATED = UPDATED;
  * @param diffResult The difference object returned by the {@link diff} function.
  * @returns A string representation of the differences.
  */
-export function printDiff(diffResult: object | typeof UNCHANGED): string {
+export function printDiff(diffResult: object | typeof UNCHANGED): any[] {
     if (diffResult === UNCHANGED) {
-        return 'No changes detected.';
+        return ['No changes detected.'];
     }
 
     const lines: string[] = [];
+    const substitutions: any[] = [];
 
-    function formatValue(value: unknown): string {
+    function formatValue(value: unknown): any {
         if (typeof value === 'string') return `"${value}"`;
         if (value === undefined) return 'undefined';
-        if (typeof value === 'object') return JSON.stringify(value);
+        if (typeof value === 'object') return value;
         return String(value);
     }
 
@@ -239,10 +240,12 @@ export function printDiff(diffResult: object | typeof UNCHANGED): string {
 
             switch (entry.type) {
                 case ADDED:
-                    lines.push(`+ ${path}: ${formatValue(entry.value)}`);
+                    lines.push(`+ ${path}: %o`);
+                    substitutions.push(formatValue(entry.value));
                     break;
                 case REMOVED:
-                    lines.push(`- ${path}: ${formatValue(entry.value)}`);
+                    lines.push(`- ${path}: %o`);
+                    substitutions.push(formatValue(entry.value));
                     break;
                 case UPDATED:
                     if (
@@ -253,9 +256,9 @@ export function printDiff(diffResult: object | typeof UNCHANGED): string {
                         // nested diff object
                         walk(entry.value, path);
                     } else {
-                        lines.push(
-                            `~ ${path}: ${formatValue(entry.oldValue)} -> ${formatValue(entry.newValue)}`,
-                        );
+                        lines.push(`~ ${path}: %o -> %o`);
+                        substitutions.push(formatValue(entry.oldValue));
+                        substitutions.push(formatValue(entry.newValue));
                     }
                     break;
             }
@@ -264,7 +267,7 @@ export function printDiff(diffResult: object | typeof UNCHANGED): string {
 
     walk(diffResult as Record<string, any>, '');
 
-    return lines.length > 0 ? lines.join('\n') : 'No changes detected.';
+    return lines.length > 0 ? [lines.join('\n'), ...substitutions] : ['No changes detected.'];
 }
 
 /**

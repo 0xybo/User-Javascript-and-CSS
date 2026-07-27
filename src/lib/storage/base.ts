@@ -77,8 +77,10 @@ export class StorageServiceBase {
 
             watch(
                 this.computedCurrentToBeWatched,
-                (newValue, oldValue) =>
-                    Logger.debug('Storage changed:\n', printDiff(diff(oldValue, newValue))),
+                (newValue, oldValue) => {
+                    const [message, ...substitutions] = printDiff(diff(oldValue, newValue));
+                    Logger.debug('Storage changed:\n' + message, ...substitutions);
+                },
                 { deep: true, flush: 'sync' },
             );
         }
