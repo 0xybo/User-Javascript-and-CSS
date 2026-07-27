@@ -4,6 +4,8 @@ import PreviewDialog from '@/components/Dialog/PreviewDialog.vue';
 import TooltipWrapper from '@/components/TooltipWrapper.vue';
 import { useState } from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
+import { compileSCSS } from '@/lib/compiler/scss';
+import { compileTS } from '@/lib/compiler/typescript';
 import { FileType } from '@/lib/storage/types';
 import {
     BoxIcon,
@@ -59,19 +61,21 @@ async function onBeautifyButtonClick() {
 }
 
 async function onPreviewButtonClick() {
-    // TODO Preview compiled code
-    // Recompile code and show it
-    // Add save button in the modal at the top next to close button
-    // if (props.type === FileType.Typescript) {
-    //     const id = state.rule.item.script.id;
-    //     const result = await compileTS(state.rule.files[id]);
-    //     preview.content = result.output;
-    // } else {
-    //     const id = state.rule.item.style.id;
-    //     const result = await compileSCSS(state.rule.files[id]);
-    //     preview.content = result.output;
-    // }
-    preview.opened = true;
+    if (props.type === FileType.Typescript) {
+        const id = state.rule.item.script.id;
+        const result = await compileTS(state.rule.files[id]);
+        preview.content = result.output;
+    } else {
+        const id = state.rule.item.style.id;
+        const result = await compileSCSS(state.rule.files[id], {
+            important: state.rule.item.style.important,
+        });
+        preview.content = result.output;
+    }
+
+    if (preview.content) {
+        preview.opened = true;
+    }
 }
 </script>
 

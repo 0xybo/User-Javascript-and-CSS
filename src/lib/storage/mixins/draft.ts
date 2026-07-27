@@ -1,4 +1,7 @@
 import { reactive } from '#imports';
+// import { compileSCSS } from '@/lib/compiler/scss';
+import { compileSCSS } from '@/lib/compiler/scss';
+import { compileTS } from '@/lib/compiler/typescript';
 import { Logger } from '../../logger';
 import { clone, type Constructor } from '../../utils';
 import type { StorageServiceBase } from '../base';
@@ -86,18 +89,25 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
 
                 if (rule.script.content) {
                     try {
-                        const { compileTS } = await import('../../compiler/typescript');
                         const result = await compileTS(rule.script.content, {});
                         rule.script.compiled = result.output;
                     } catch (e) {
                         Logger.error('TS compilation failed:', e);
                         rule.script.compiled = rule.script.content;
                     }
-                } else {
-                    rule.script.compiled = '';
-                }
+                } else rule.script.compiled = '';
 
-                rule.style.compiled = rule.style.content;
+                if (rule.style.content) {
+                    try {
+                        const result = await compileSCSS(rule.style.content, {
+                            important: rule.style.important,
+                        });
+                        rule.style.compiled = result.output;
+                    } catch (e) {
+                        Logger.error('SCSS compilation failed:', e);
+                        rule.style.compiled = rule.style.content;
+                    }
+                } else rule.style.compiled = '';
 
                 rule.updated = Date.now();
             } else if (isModule(draft)) {
