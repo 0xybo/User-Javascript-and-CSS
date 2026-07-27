@@ -3,7 +3,7 @@ import { PlainObject } from '@/types/json';
 import { useThrottleFn } from '@vueuse/core';
 import { watch } from 'vue';
 import { Logger } from '../logger';
-import { deepMerge, diff, IS_DEV, printDiff } from '../utils';
+import { deepMerge, diff, IS_DEVELOPMENT, printDiff } from '../utils';
 import { DraftT, InfoT, ModuleT, RuleT, SettingsT, StorageChanges, StorageT } from './types';
 import { clean, DEFAULTS, EMITTER, parse } from './utils';
 
@@ -70,7 +70,7 @@ export class StorageServiceBase {
 
     constructor() {
         // Watch for changes in the storage and log them if in development mode.
-        if (IS_DEV) {
+        if (IS_DEVELOPMENT) {
             this.computedCurrentToBeWatched = computed(() =>
                 JSON.parse(JSON.stringify(this.current)),
             );

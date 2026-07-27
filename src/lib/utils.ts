@@ -7,9 +7,13 @@ export type Constructor<T = {}> = new (...args: any[]) => T;
 
 /**
  * A constant indicating whether the application is running in development mode.
- * This is determined by the `import.meta.env.DEV` property, which is set by the build tool (e.g., Vite) based on the current environment.
  */
-export const IS_DEV = import.meta.env.DEV;
+export const IS_DEVELOPMENT = import.meta.env.DEV;
+
+/**
+ * A constant indicating whether the application is running in production mode.
+ */
+export const IS_PRODUCTION = import.meta.env.PROD;
 
 /**
  * Picks the specified keys from an object and returns a new object with only those keys.
