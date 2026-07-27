@@ -1,7 +1,10 @@
 {
-  "extends": "./.wxt/tsconfig.json",
-  "exclude": [
-    "./dist",
-    "./resources"
-  ],
+    "extends": "./.wxt/tsconfig.json",
+    "exclude": [
+        "./dist",
+        "./resources"
+    ],
+    "compilerOptions": {
+        "allowImportingTsExtensions": true
+    }
 }

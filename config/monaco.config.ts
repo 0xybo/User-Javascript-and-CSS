@@ -1,6 +1,6 @@
 import type { MonacoOptions } from './withMonaco/types';
 
-const isProduction = process.env.NODE_ENV === 'production';
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 export default {
     features: [
@@ -104,5 +104,5 @@ export default {
         // 'internal',                  // Internal Monaco utilities not intended for public use
     ],
     languages: ['javascript', 'typescript', 'css', 'scss'],
-    globalAPI: !isProduction,
+    globalAPI: !IS_PRODUCTION,
 } as const satisfies MonacoOptions;

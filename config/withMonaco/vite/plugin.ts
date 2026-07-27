@@ -1,6 +1,5 @@
 import fs from 'fs-extra';
 import { resolve } from 'path';
-import type { PluginContext } from 'rollup';
 import { Plugin } from 'vite';
 import { resolveFeatures } from '../resolvers/features';
 import { resolveLanguages } from '../resolvers/languages';
@@ -13,7 +12,6 @@ import { generateMain as generateMainDev } from './templates/editorMain.dev';
 import { generateMain as generateMainProd } from './templates/editorMain.prod';
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
-
 const generateMain = IS_PRODUCTION ? generateMainProd : generateMainDev;
 
 /**
@@ -26,10 +24,7 @@ export function monaco(options?: MonacoOptions): Plugin {
     const languages = resolveLanguages(options?.languages || [], options?.customLanguages || []);
     const features = resolveFeatures(options?.features);
     const workers = resolveWorkers(languages, features);
-
-    const isHtmlEntrypoint = (ctx: PluginContext) => {
-        return ctx.environment.config.define?.['import.meta.env.ENTRYPOINT'] === '"html"';
-    };
+    let cache: string | null = null;
 
     return {
         name: 'vite-plugin-monaco-editor',
@@ -54,6 +49,8 @@ export function monaco(options?: MonacoOptions): Plugin {
             const outputDir = this.environment.config.build?.outDir || 'dist';
 
             if (id.match(/esm[/\\]vs[/\\]editor[/\\]editor.main.js/)) {
+                if (cache) return cache;
+
                 const result = generateMain({
                     workersImports: workers.map(
                         (worker) =>
@@ -74,7 +71,8 @@ export function monaco(options?: MonacoOptions): Plugin {
                 });
 
                 console.log('[monaco] generated editor.main.js');
-                return result;
+
+                return (cache = result);
             } else if (id.match(/esm[/\\]vs[/\\]editor[/\\]editor.all.js/)) {
                 return 'throw "Please use esm/vs/editor.main.js or monaco-editor directly instead!"';
             } else if (id.match(/esm[/\\]vs[/\\]editor[/\\]edcore.main.js/)) {
@@ -82,10 +80,8 @@ export function monaco(options?: MonacoOptions): Plugin {
             }
         },
 
-        buildEnd() {
+        buildStart() {
             if (IS_PRODUCTION) return;
-            // Only target html entrypoints (options and popup)
-            if (!isHtmlEntrypoint(this)) return;
 
             const outputDir = this.environment.config.build?.outDir || 'dist';
 
@@ -93,7 +89,13 @@ export function monaco(options?: MonacoOptions): Plugin {
             const monacoPath = resolve(process.cwd(), 'node_modules', 'monaco-editor', 'esm');
             const distPath = resolve(process.cwd(), outputDir, 'monaco-editor');
 
-            fs.copySync(monacoPath, distPath, { overwrite: true });
+            if (!fs.existsSync(monacoPath))
+                throw new Error(
+                    `[monaco] monaco-editor not found at ${monacoPath}. Please install it first.`,
+                );
+            if (fs.existsSync(distPath)) return;
+
+            fs.copySync(monacoPath, distPath);
 
             console.log(`[monaco] Copied monaco-editor to ${distPath}`);
         },

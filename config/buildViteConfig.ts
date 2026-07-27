@@ -3,7 +3,7 @@ import VitePluginVueDevTools from 'vite-plugin-vue-devtools';
 import type { ConfigEnv, WxtViteConfig } from 'wxt';
 
 export function buildViteConfig({ mode }: ConfigEnv): WxtViteConfig {
-    const isProduction = mode === 'production';
+    const IS_PRODUCTION = mode === 'production';
 
     const config: WxtViteConfig = {
         plugins: [
@@ -25,7 +25,7 @@ export function buildViteConfig({ mode }: ConfigEnv): WxtViteConfig {
                     '**/resources/**',
                 ],
             },
-            cors: !isProduction,
+            cors: !IS_PRODUCTION,
         },
         build: {
             rollupOptions: {
@@ -35,7 +35,7 @@ export function buildViteConfig({ mode }: ConfigEnv): WxtViteConfig {
                     warn(warning);
                 },
             },
-            sourcemap: isProduction ? false : 'inline',
+            sourcemap: IS_PRODUCTION ? false : 'inline',
         },
     };
 
