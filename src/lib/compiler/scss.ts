@@ -1,12 +1,19 @@
+/// <reference types="../../types/sass.js.d.ts" />
+
+import { browser } from '#imports';
+import type Sass from 'sass.js/dist/sass.js';
+import type { SassCompileError, SassCompileResult, SassCompileSuccess } from 'sass.js/dist/sass.js';
 import type { CompilerResult } from './utils';
 
-import type Sass from '@/lib/compiler/sass.js.d.ts';
-import type {
-    SassCompileError,
-    SassCompileResult,
-    SassCompileSuccess,
-} from '@/lib/compiler/sass.js.d.ts';
-import { SassStyleEnum } from '@/lib/compiler/sass.js.ts';
+/**
+ * Output formatting styles for compiled CSS.
+ */
+enum SassStyleEnum {
+    nested = 0,
+    expanded = 1,
+    compact = 2,
+    compressed = 3,
+}
 
 /**
  * Options for SCSS compilation.
@@ -20,11 +27,32 @@ export interface SCSSCompilerOptions {
     important?: boolean;
 }
 
+/** The Sass module instance. */
 let sass: Sass | null = null;
 
-/* @ts-ignore */
-const resolveSassModule = async () => (sass ??= (await import('sass.js/dist/sass.js')) as Sass);
+declare module 'wxt/browser' {
+    export interface WxtRuntime {
+        getURL(path: 'sass.worker.js'): string;
+    }
+}
 
+async function resolveSassModule(): Promise<Sass> {
+    if (!sass) {
+        /* @ts-ignore */
+        const { default: SassModule } = await import('sass.js/dist/sass.js');
+        const url = browser.runtime.getURL('sass.worker.js');
+        sass = new SassModule(url);
+    }
+    return sass!;
+}
+
+/**
+ * Compiles SCSS code into CSS.
+ *
+ * @param source The SCSS source code to compile.
+ * @param options Compilation options.
+ * @returns A promise that resolves to the compilation result, including the output CSS and any errors.
+ */
 export async function compileSCSS(
     source: string,
     options: SCSSCompilerOptions = {},
