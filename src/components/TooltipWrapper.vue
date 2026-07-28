@@ -21,7 +21,7 @@ const props = withDefaults(
 
 <template>
     <Tooltip v-bind="props.rootProps">
-        <TooltipTrigger v-bind="props.triggerProps" as-child>
+        <TooltipTrigger v-bind="props.triggerProps">
             <slot />
         </TooltipTrigger>
 

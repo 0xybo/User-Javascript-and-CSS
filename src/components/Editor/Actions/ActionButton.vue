@@ -12,6 +12,7 @@ const props = withDefaults(
             title: string;
             description?: string;
         };
+        disabled?: boolean;
     }>(),
     {
         bubble: false,
@@ -47,6 +48,7 @@ function onButtonClick() {
             variant="ghost"
             @click="onButtonClick"
             class="hover:bg-primary hover:text-primary-foreground relative size-9 p-2"
+            :disabled="props.disabled"
         >
             <component :is="props.icon" />
             <div

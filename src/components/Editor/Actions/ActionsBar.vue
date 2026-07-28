@@ -2,6 +2,7 @@
 import { computed, i18n, reactive } from '#imports';
 import PreviewDialog from '@/components/Dialog/PreviewDialog.vue';
 import TooltipWrapper from '@/components/TooltipWrapper.vue';
+import { useDialog } from '@/composables/options/useDialog.ts';
 import { useState } from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
 import { compileSCSS } from '@/lib/compiler/scss';
@@ -27,7 +28,21 @@ const storage = useStorage();
 const props = defineProps<{
     type: FileType;
 }>();
-const type = computed(() => (props.type === FileType.Css ? 'STYLE' : 'SCRIPT'));
+const type = computed(() =>
+    props.type === FileType.Css || props.type === FileType.Scss ? 'STYLE' : 'SCRIPT',
+);
+const content = computed(() => {
+    switch (props.type) {
+        case FileType.Typescript:
+        case FileType.Javascript:
+            return state.rule.files[state.rule.item.script.id];
+        case FileType.Css:
+        case FileType.Scss:
+            return state.rule.files[state.rule.item.style.id];
+        default:
+            return '';
+    }
+});
 const title = computed(() => i18n.t(`COMMON_${type.value}`));
 const tooltip = computed(() => ({
     title: i18n.t(`EDITOR_ACTION_PANEL_${type.value}_TITLE`),
@@ -43,6 +58,7 @@ const preview = reactive({
             case FileType.Javascript:
                 return FileType.Javascript;
             case FileType.Css:
+            case FileType.Scss:
                 return FileType.Css;
             default:
                 return props.type;
@@ -60,6 +76,13 @@ async function onBeautifyButtonClick() {
     });
 }
 
+/**
+ * Handles the click event for the preview button.
+ *
+ * If the file type is TypeScript, it compiles the TypeScript code and sets the preview content.
+ * If the file type is CSS, it compiles the SCSS code and sets the preview content.
+ * If the compilation fails, it opens a dialog to inform the user about the error.
+ */
 async function onPreviewButtonClick() {
     if (props.type === FileType.Typescript) {
         const id = state.rule.item.script.id;
@@ -73,8 +96,17 @@ async function onPreviewButtonClick() {
         preview.content = result.output;
     }
 
-    if (preview.content) {
-        preview.opened = true;
+    if (preview.content) preview.opened = true;
+    else {
+        preview.opened = false;
+        const dialog = useDialog();
+        await dialog.open({
+            // title: i18n.t('EDITOR_PREVIEW_ERROR_TITLE'),
+            // message: i18n.t('EDITOR_PREVIEW_ERROR_DESCRIPTION'),
+            // TODO remove the following line when the translation is added
+            title: 'Error',
+            message: 'An error occurred while generating the preview.',
+        });
     }
 }
 </script>
@@ -162,6 +194,7 @@ async function onPreviewButtonClick() {
                 title: i18n.t('EDITOR_PREVIEW'),
             }"
             @click="onPreviewButtonClick"
+            :disabled="!content"
         />
     </div>
 

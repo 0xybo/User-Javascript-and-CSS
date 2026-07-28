@@ -35,6 +35,7 @@ export enum FileType {
     Typescript = 'typescript',
     Javascript = 'javascript',
     Css = 'css',
+    Scss = 'scss',
 }
 
 /**
