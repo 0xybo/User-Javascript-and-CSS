@@ -14,6 +14,11 @@ export const generateMain = ({
 self['MonacoEnvironment'] = {
     globalAPI: ${globalAPI || false},
     getWorker: ((workers) => (_, label) => {
+        if (!workers[label]) {
+            console.warn('[monaco] no worker found for label', label);
+            return null;
+        }
+        
         const url = browser.runtime.getURL(workers[label]);
         console.log('[monaco] loading worker', label, url);
         return new Worker(url, { type: 'module' });

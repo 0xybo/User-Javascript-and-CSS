@@ -31,6 +31,11 @@ export interface MonacoOptions {
     languages?: Languages;
 
     /**
+     * Configures the fallback languages for workers. For example, if a worker for a language is not available, it can fallback to another language's worker.
+     */
+    workerFallback?: Record<EditorLanguage, EditorLanguage>;
+
+    /**
      * Configures custom languages
      */
     customLanguages?: IFeatureDefinition[];

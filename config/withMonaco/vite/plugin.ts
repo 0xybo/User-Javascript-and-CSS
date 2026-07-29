@@ -1,12 +1,12 @@
 import fs from 'fs-extra';
+import type { EditorLanguage } from 'monaco-editor/esm/metadata.js';
 import { resolve } from 'path';
 import { Plugin } from 'vite';
 import { resolveFeatures } from '../resolvers/features';
 import { resolveLanguages } from '../resolvers/languages';
 import { resolveMonacoPath } from '../resolvers/paths';
 import { resolveWorkers } from '../resolvers/workers';
-import type { MonacoOptions } from '../types';
-
+import type { IWorkerDefinition, MonacoOptions } from '../types';
 import { filterNull, unique } from '../utils';
 import { generateMain as generateMainDev } from './templates/editorMain.dev';
 import { generateMain as generateMainProd } from './templates/editorMain.prod';
@@ -24,6 +24,25 @@ export function monaco(options?: MonacoOptions): Plugin {
     const languages = resolveLanguages(options?.languages || [], options?.customLanguages || []);
     const features = resolveFeatures(options?.features);
     const workers = resolveWorkers(languages, features);
+    const workersFullList = languages.reduce(
+        (acc, language) => {
+            if (language.worker) return acc;
+            const fallbackLabel = options?.workerFallback?.[language.label as EditorLanguage];
+            if (!fallbackLabel) return acc;
+
+            const fallback = workers.find((w) => w.label === fallbackLabel);
+
+            return [
+                ...acc,
+                {
+                    ...fallback,
+                    label: language.label,
+                } as IWorkerDefinition,
+            ];
+        },
+        [...workers],
+    );
+
     let cache: string | null = null;
 
     return {
@@ -57,8 +76,10 @@ export function monaco(options?: MonacoOptions): Plugin {
                             `import ${worker.label} from '${resolveMonacoPath(worker.entry, outputDir)}?worker';`,
                     ),
                     workersObject: IS_PRODUCTION
-                        ? workers.map((worker) => `'${worker.label}': () => new ${worker.label}()`)
-                        : workers.map(
+                        ? workersFullList.map(
+                              (worker) => `'${worker.label}': () => new ${worker.label}()`,
+                          )
+                        : workersFullList.map(
                               (worker) => `'${worker.label}': '/monaco-editor/${worker.entry}.js'`,
                           ),
                     featuresImports: filterNull(

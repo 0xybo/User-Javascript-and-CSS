@@ -104,5 +104,9 @@ export default {
         // 'internal',                  // Internal Monaco utilities not intended for public use
     ],
     languages: ['javascript', 'typescript', 'css', 'scss'],
+    workerFallback: {
+        scss: 'css',
+        javascript: 'typescript',
+    },
     globalAPI: !IS_PRODUCTION,
-} as const satisfies MonacoOptions;
+} as MonacoOptions;
