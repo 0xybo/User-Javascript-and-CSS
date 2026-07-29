@@ -1,24 +1,28 @@
 <script setup lang="ts">
 // import { useDraft } from '@/composables/useDraft';
 import { computed, i18n } from '#imports';
+import { useState } from '@/composables/options/useState.ts';
 import { useStorage } from '@/composables/useStorage';
 import { getName } from '@/lib/rules';
-import { RuleT } from '@/lib/storage/types';
+import { IRule } from '@/lib/storage/types';
 import { cn } from '@/lib/tailwind';
 import TooltipWrapper from './TooltipWrapper.vue';
 import Switch from './ui/switch/Switch.vue';
 
-const props = withDefaults(defineProps<{ rule: RuleT; opened?: boolean }>(), { opened: false });
+const props = withDefaults(defineProps<{ rule: IRule; opened?: boolean }>(), { opened: false });
 const emits = defineEmits<{
     disable: [];
     enable: [];
     change: [boolean];
     open: [];
 }>();
+const state = useState();
 const storage = useStorage();
 
 const name = computed(() => getName(props.rule));
 const draft = computed(() => storage.getDraftFromItem(props.rule));
+const isCurrentDraft = computed(() => draft.value?.item.id === state.rule.item.id);
+const hasChanged = computed(() => draft.value?.changed || draft.value?.isNew);
 
 function open() {
     if (props.opened) return;
@@ -48,15 +52,12 @@ function onSwitchClick(e: MouseEvent) {
     >
         <div class="flex min-h-8 flex-row items-center justify-center gap-3 overflow-hidden">
             <TooltipWrapper :content="i18n.t('COMMON_DRAFT')">
-                <div
-                    v-if="draft?.changed || draft?.isNew"
-                    class="bg-accent size-3 shrink-0 rounded-full p-0"
-                />
+                <div v-if="hasChanged" class="bg-accent size-3 shrink-0 rounded-full p-0" />
             </TooltipWrapper>
             <div
                 :class="
-                    cn('flex w-full flex-col overflow-hidden', {
-                        italic: draft?.changed || draft?.isNew,
+                    cn('flex w-full flex-col items-start overflow-hidden', {
+                        italic: hasChanged,
                     })
                 "
             >

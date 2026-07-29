@@ -41,45 +41,45 @@ export enum FileType {
 /**
  * Represents the structure of a file in the storage system, including its name, type, and content.
  */
-export type FileT = z.infer<typeof zFile>;
+export type IFile = z.infer<typeof zFile>;
 
 /**
  * Represents the structure of an item in the storage system, which can be either a rule or a module.
  */
-export type ItemT = RuleT | ModuleT;
+export type IItem = IRule | IModule;
 
 /**
  * Represents the structure of a module in the storage system, including its properties and associated files.
  */
-export type ModuleT = z.infer<typeof zModule>;
+export type IModule = z.infer<typeof zModule>;
 
 /**
  * Represents the structure of a rule in the storage system, including its properties and associated script and style files.
  */
-export type RuleT = z.infer<typeof zRule>;
+export type IRule = z.infer<typeof zRule>;
 
 /**
  * Represents the structure of the information stored in the storage system, including metadata and other relevant details.
  */
-export type InfoT = z.infer<typeof zInfo>;
+export type IInfo = z.infer<typeof zInfo>;
 
 /**
  * Represents the structure of the settings stored in the storage system, including configuration options and preferences.
  */
-export type SettingsT = z.infer<typeof zSettings>;
+export type ISettings = z.infer<typeof zSettings>;
 
 /**
  * Represents the structure of a draft in the storage system, which can be created from an item or an item type. Drafts are used for temporary changes before they are saved to the main storage.
  */
-export type DraftT<TItem extends ItemT | ItemType = ItemT> = z.infer<typeof zDraft> & {
+export type IDraft<TItem extends IItem | ItemType = IItem> = z.infer<typeof zDraft> & {
     /** The item associated with this draft. */
-    item: TItem extends ItemType ? (TItem extends ItemType.Rule ? RuleT : ModuleT) : TItem;
+    item: TItem extends ItemType ? (TItem extends ItemType.Rule ? IRule : IModule) : TItem;
 };
 
 /**
  * Represents the structure of the entire storage system, including all items, drafts, settings, and information.
  */
-export type StorageT = z.infer<typeof zStorage>;
+export type IStorage = z.infer<typeof zStorage>;
 
 /**
  * Represents the structure of the information related to remote storage settings, including metadata and other relevant details.
@@ -107,7 +107,7 @@ export type StorageChanges<T extends object> = {
 /**
  * On-disk format for rules (content stored separately in f:<UUID> keys).
  */
-export type RuleStored = Omit<RuleT, 'script' | 'style'> & {
+export type RuleStored = Omit<IRule, 'script' | 'style'> & {
     scriptId: string;
     styleId: string;
 };
@@ -115,7 +115,7 @@ export type RuleStored = Omit<RuleT, 'script' | 'style'> & {
 /**
  * On-disk format for modules (files stored separately in f:<UUID> keys).
  */
-export type ModuleStored = Omit<ModuleT, 'files'> & {
+export type ModuleStored = Omit<IModule, 'files'> & {
     fileIds: string[];
 };
 

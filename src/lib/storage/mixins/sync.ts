@@ -11,6 +11,13 @@ import type { StorageServiceBase } from '../base';
 import { RemoteSettings } from '../types';
 import { compress, parse } from '../utils';
 
+/**
+ * Mixin that adds synchronization functionality to the storage service, including methods for
+ * uploading and downloading storage data to and from remote storage.
+ *
+ * @param Base - The base class to extend with synchronization functionality.
+ * @returns A new class that extends the base class with synchronization methods.
+ */
 export function StorageServiceSyncMixin(Base: Constructor<StorageServiceBase>) {
     class _StorageServiceSync extends Base {
         /**
@@ -78,4 +85,8 @@ export function StorageServiceSyncMixin(Base: Constructor<StorageServiceBase>) {
     return _StorageServiceSync as Constructor<_StorageServiceSync>;
 }
 
+/**
+ * Type representing the storage service with synchronization functionality, including methods for
+ * uploading and downloading storage data to and from remote storage.
+ */
 export type StorageServiceSync = ReturnType<typeof StorageServiceSyncMixin>;

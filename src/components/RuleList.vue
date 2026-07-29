@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { RuleT } from '@/lib/storage/types';
+import { IRule } from '@/lib/storage/types';
 import RuleListItem from './RuleListItem.vue';
 
-const props = defineProps<{ rules: RuleT[]; openedRuleId?: string }>();
+const props = defineProps<{ rules: IRule[]; openedRuleId?: string }>();
 const emits = defineEmits<{
-    change: [RuleT, boolean];
-    open: [RuleT];
+    change: [IRule, boolean];
+    open: [IRule];
 }>();
 
-function onRuleListItemChange(rule: RuleT, value: boolean) {
+function onRuleListItemChange(rule: IRule, value: boolean) {
     emits('change', rule, value);
 }
 
-function onRuleListItemOpen(rule: RuleT) {
+function onRuleListItemOpen(rule: IRule) {
     emits('open', rule);
 }
 </script>

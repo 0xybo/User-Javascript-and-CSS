@@ -3,7 +3,6 @@ import { i18n } from '#imports';
 import Button from '@/components/ui/button/Button.vue';
 import { useState } from '@/composables/options/useState';
 import { SettingsSection } from '@/lib/options/settings';
-import { Panel } from '@/lib/options/tab';
 import { cn } from '@/lib/tailwind';
 import { CloudIcon, DatabaseIcon, PaintbrushIcon, PaletteIcon, PuzzleIcon } from 'lucide-vue-next';
 
@@ -38,8 +37,7 @@ const SECTIONS: Section[] = [
  * @param id The ID of the section that was clicked.
  */
 function onSectionClick(id: SettingsSection) {
-    state.panel = Panel.Settings;
-    state.settingsSection = id;
+    state.switchSettingsSection(id);
 }
 </script>
 

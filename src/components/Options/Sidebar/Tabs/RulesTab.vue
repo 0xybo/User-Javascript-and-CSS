@@ -8,7 +8,7 @@ import { useState } from '@/composables/options/useState';
 import { useDraft } from '@/composables/useDraft';
 import { useStorage } from '@/composables/useStorage';
 import { SORT } from '@/lib/options/sortRules';
-import { ItemType, RuleT } from '@/lib/storage/types';
+import { IRule, ItemType } from '@/lib/storage/types';
 import { BookPlus } from 'lucide-vue-next';
 import SortSelect from './Rules/SortSelect.vue';
 
@@ -40,7 +40,7 @@ function onNewRuleButtonClick() {
     } else state.switchDraft(storage.createDraftFromType(ItemType.Rule));
 }
 
-function onRuleListOpen(rule: RuleT) {
+function onRuleListOpen(rule: IRule) {
     state.switchDraft(useDraft(rule));
 }
 </script>

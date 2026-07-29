@@ -4,8 +4,9 @@ import { TabManager } from '@/lib/background/tab-manager';
 import { Logger } from '@/lib/logger';
 import { filterRulesByUrl } from '@/lib/rules';
 import { storage } from '@/lib/storage';
-import { RuleT } from '@/lib/storage/types';
+import { IRule } from '@/lib/storage/types';
 import { parse } from '@/lib/storage/utils';
+import { isEmptyCompiledScript } from '@/lib/utils';
 import { PlainObject } from '@/types/json';
 import { useThrottleFn } from '@vueuse/core';
 
@@ -20,7 +21,7 @@ export default defineBackground({
 
             // Register userScripts for all rules
             for (const rule of storage.rules) {
-                if (rule.enabled && rule.script.compiled) {
+                if (rule.enabled && isEmptyCompiledScript(rule.script.compiled)) {
                     await injector.registerScript(rule);
                 }
             }
@@ -32,7 +33,7 @@ export default defineBackground({
                         const data = parse(
                             (await browser.storage.local.get()) as unknown as PlainObject,
                         );
-                        const rules = (data.rules || []) as RuleT[];
+                        const rules = (data.rules || []) as IRule[];
 
                         await injector.unregisterAll();
                         for (const rule of rules) {
@@ -64,7 +65,7 @@ export default defineBackground({
             browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
                 if (changeInfo.status !== 'complete' || !tab.url || !tab.id) return;
 
-                const matching = filterRulesByUrl(storage.rules as RuleT[], tab.url).filter(
+                const matching = filterRulesByUrl(storage.rules as IRule[], tab.url).filter(
                     (r) => r.enabled,
                 );
 
@@ -92,7 +93,7 @@ export default defineBackground({
                 const url = sender.tab.url || message.url;
                 await tabManager.removeAllForTab(tabId);
 
-                const matching = filterRulesByUrl(storage.rules as RuleT[], url).filter(
+                const matching = filterRulesByUrl(storage.rules as IRule[], url).filter(
                     (r) => r.enabled,
                 );
 
@@ -111,7 +112,7 @@ export default defineBackground({
                 for (const tab of tabs) {
                     if (!tab.id || !tab.url) continue;
                     await tabManager.removeAllForTab(tab.id);
-                    const matching = filterRulesByUrl(storage.rules as RuleT[], tab.url).filter(
+                    const matching = filterRulesByUrl(storage.rules as IRule[], tab.url).filter(
                         (r) => r.enabled,
                     );
                     for (const rule of matching) {

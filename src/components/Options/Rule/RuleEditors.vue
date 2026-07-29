@@ -4,16 +4,16 @@ import CodeEditor from '@/components/Editor/CodeEditor.vue';
 import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import ResizableHandle from '@/components/ui/resizable/ResizableHandle.vue';
 import { useState } from '@/composables/options/useState';
-import { FileType, RuleT } from '@/lib/storage/types';
+import { FileType, IRule } from '@/lib/storage/types';
 
 const state = useState();
 const scriptContent = computed({
-    get: () => state.rule.files[(state.rule.item as RuleT).script.id],
-    set: (value: string) => (state.rule.files[(state.rule.item as RuleT).script.id] = value),
+    get: () => state.rule.files[(state.rule.item as IRule).script.id],
+    set: (value: string) => (state.rule.files[(state.rule.item as IRule).script.id] = value),
 });
 const styleContent = computed({
-    get: () => state.rule.files[(state.rule.item as RuleT).style.id],
-    set: (value: string) => (state.rule.files[(state.rule.item as RuleT).style.id] = value),
+    get: () => state.rule.files[(state.rule.item as IRule).style.id],
+    set: (value: string) => (state.rule.files[(state.rule.item as IRule).style.id] = value),
 });
 const resizing = ref<boolean>(false);
 

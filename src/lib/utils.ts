@@ -284,3 +284,25 @@ export function printDiff(diffResult: object | typeof UNCHANGED): any[] {
 export function clone<T extends object>(obj: T): T {
     return JSON.parse(JSON.stringify(obj));
 }
+
+/**
+ * Checks if the given value is a valid key of the specified enum object.
+ *
+ * @param enumObj The enum object to check against.
+ * @param value The value to check.
+ * @returns True if the value is a valid key of the enum, false otherwise.
+ */
+export function has(enumObj: object, value: string | number): boolean {
+    return Object.values(enumObj).includes(value);
+}
+
+/**
+ * Checks if the given script content is empty or only contains the "use strict" directive.
+ *
+ * @param script The script content to check.
+ * @returns True if the script is empty or only contains "use strict", false otherwise.
+ */
+export function isEmptyCompiledScript(script: string): boolean {
+    const trimmed = script.trim();
+    return !trimmed || trimmed == `"use strict";`;
+}

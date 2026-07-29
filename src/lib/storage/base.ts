@@ -4,7 +4,7 @@ import { useThrottleFn } from '@vueuse/core';
 import { watch } from 'vue';
 import { Logger } from '../logger';
 import { deepMerge, diff, IS_DEVELOPMENT, printDiff } from '../utils';
-import { DraftT, InfoT, ModuleT, RuleT, SettingsT, StorageChanges, StorageT } from './types';
+import { IDraft, IInfo, IModule, IRule, ISettings, IStorage, StorageChanges } from './types';
 import { clean, DEFAULTS, EMITTER, parse } from './utils';
 
 /**
@@ -14,23 +14,23 @@ export class StorageServiceBase {
     /**
      * Information about the storage, including metadata such as the last updated timestamp and the emitter ID.
      */
-    info = reactive(DEFAULTS.INFO()) as InfoT;
+    info = reactive(DEFAULTS.INFO()) as IInfo;
     /**
      * User settings for the storage, including preferences and configurations.
      */
-    settings = reactive(DEFAULTS.SETTINGS()) as SettingsT;
+    settings = reactive(DEFAULTS.SETTINGS()) as ISettings;
     /**
      * A reactive array of rules stored in the storage.
      */
-    rules = reactive(DEFAULTS.RULES()) as RuleT[];
+    rules = reactive(DEFAULTS.RULES()) as IRule[];
     /**
      * A reactive array of modules stored in the storage.
      */
-    modules = reactive(DEFAULTS.MODULES()) as ModuleT[];
+    modules = reactive(DEFAULTS.MODULES()) as IModule[];
     /**
      * A reactive array of drafts stored in the storage.
      */
-    drafts = reactive(DEFAULTS.DRAFTS()) as DraftT[];
+    drafts = reactive(DEFAULTS.DRAFTS()) as IDraft[];
     /**
      * A flag indicating whether the storage has been loaded.
      */
@@ -39,7 +39,7 @@ export class StorageServiceBase {
     /**
      * A private reactive object that holds the current state of the storage. This is used internally to track changes and provide a computed property for the current storage state.
      */
-    private _current: StorageT = reactive({
+    private _current: IStorage = reactive({
         info: this.info,
         settings: this.settings,
         rules: this.rules,
@@ -87,7 +87,7 @@ export class StorageServiceBase {
 
         browser.storage.local.onChanged.addListener(
             useThrottleFn(
-                async (changes: StorageChanges<StorageT>) => {
+                async (changes: StorageChanges<IStorage>) => {
                     if ((changes.info?.newValue?.emitter || this.info.emitter) === EMITTER) return;
                     try {
                         const newValue = await browser.storage.local.get();

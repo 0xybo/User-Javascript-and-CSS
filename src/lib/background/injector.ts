@@ -1,6 +1,6 @@
 import { browser } from '#imports';
 import { Logger } from '../logger';
-import { RuleT } from '../storage/types';
+import { IRule } from '../storage/types';
 
 export class Injector {
     private registeredIds = new Set<string>();
@@ -14,7 +14,7 @@ export class Injector {
         return this.registeredIds.has(`ujc-${ruleId}`);
     }
 
-    async registerScript(rule: RuleT) {
+    async registerScript(rule: IRule) {
         if (!rule.script.compiled) return;
 
         const id = `ujc-${rule.id}`;
@@ -48,7 +48,7 @@ export class Injector {
         Logger.debug(`Registered script (fallback): ${id}`);
     }
 
-    async injectScript(tabId: number, rule: RuleT) {
+    async injectScript(tabId: number, rule: IRule) {
         if (!rule.script.compiled) return;
         if (this.hasUserScripts && this.registeredIds.has(`ujc-${rule.id}`)) return;
 
@@ -87,7 +87,7 @@ export class Injector {
         }
     }
 
-    async injectFallback(tabId: number, rule: RuleT) {
+    async injectFallback(tabId: number, rule: IRule) {
         await this.injectScript(tabId, rule);
     }
 

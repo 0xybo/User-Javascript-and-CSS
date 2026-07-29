@@ -2,9 +2,8 @@
 import { browser, computed, i18n, ref } from '#imports';
 import { useCurrentTab } from '@/composables/popup/useCurrentTab';
 import { useStorage } from '@/composables/useStorage';
-import { Logger } from '@/lib/logger.js';
 import { filterRulesByUrl } from '@/lib/rules';
-import { RuleT } from '@/lib/storage/types';
+import { IRule } from '@/lib/storage/types';
 import { RefreshCcwIcon } from 'lucide-vue-next';
 import RuleList from '../RuleList.vue';
 import Button from '../ui/button/Button.vue';
@@ -15,8 +14,6 @@ const rules = computed(() =>
     tab?.value?.url ? filterRulesByUrl(storage.rules, tab.value.url) : storage.rules,
 );
 const hasChanged = ref(false);
-
-Logger.debug(storage, tab, rules, filterRulesByUrl);
 
 function reloadTab() {
     if (tab.value?.id) {
@@ -29,7 +26,7 @@ function onRuleListChange() {
     hasChanged.value = true;
 }
 
-function onRuleListOpen(rule: RuleT) {
+function onRuleListOpen(rule: IRule) {
     if (!tab.value?.url) return;
     const optionUrl = new URL(browser.runtime.getURL('/options.html'));
     optionUrl.hash = 'r:' + rule.id;
@@ -50,13 +47,15 @@ function onRuleListOpen(rule: RuleT) {
     <div v-if="hasChanged" class="flex flex-row items-center gap-3 bg-blue-500/10 px-4 py-2">
         <RefreshCcwIcon class="size-7" :stroke-width="1.5" />
         <div class="inline w-full pr-4">
-            {{ i18n.t('POPUP_REFRESH_NEEDED_PREFIX')
-            }}<Button
+            {{ i18n.t('POPUP_REFRESH_NEEDED_PREFIX') }}
+            <Button
                 variant="link"
                 @click="reloadTab"
                 class="text-foreground h-auto p-0 pb-2 font-normal underline"
-                >{{ i18n.t('POPUP_REFRESH_NEEDED_LINK') }}</Button
-            >{{ i18n.t('POPUP_REFRESH_NEEDED_SUFFIX') }}
+            >
+                {{ i18n.t('POPUP_REFRESH_NEEDED_LINK') }}
+            </Button>
+            {{ i18n.t('POPUP_REFRESH_NEEDED_SUFFIX') }}
         </div>
     </div>
 </template>

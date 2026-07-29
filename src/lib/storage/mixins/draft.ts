@@ -5,9 +5,16 @@ import { compileTS } from '@/lib/compiler/typescript';
 import { Logger } from '../../logger';
 import { clone, type Constructor } from '../../utils';
 import type { StorageServiceBase } from '../base';
-import { DraftT, ItemT, ItemType, RuleT } from '../types';
+import { IDraft, IItem, IRule, ItemType } from '../types';
 import { DEFAULTS, isModule, isRule } from '../utils';
 
+/**
+ * Mixin that adds draft-related functionality to the storage service, including methods for
+ * creating, saving, discarding, and retrieving drafts.
+ *
+ * @param Base - The base class to extend with draft-related functionality.
+ * @returns A new class that extends the base class with draft-related methods.
+ */
 export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>) {
     class _StorageServiceDrafts extends Base {
         /**
@@ -16,7 +23,7 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
          * @param item The item to create a draft from.
          * @returns The created draft.
          */
-        createDraftFromItem<TItem extends ItemT>(item: TItem): DraftT<TItem> {
+        createDraftFromItem<TItem extends IItem>(item: TItem): IDraft<TItem> {
             const draft = DEFAULTS.DRAFT<TItem>();
             if (isModule(item)) {
                 const module = clone(item);
@@ -28,7 +35,7 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
                     ),
                 });
             } else {
-                const rule = item as RuleT;
+                const rule = item as IRule;
                 Object.assign(draft, {
                     isNew: false,
                     item: rule,
@@ -40,7 +47,10 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
             }
             const reactiveDraft = reactive(draft);
             this.drafts.push(reactiveDraft);
-            return reactiveDraft as DraftT<TItem>;
+
+            this.save(); // Save the storage state after creating a new draft
+
+            return reactiveDraft as IDraft<TItem>;
         }
 
         /**
@@ -49,10 +59,10 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
          * @param type The type of item to create a draft for (Rule or Module).
          * @returns The created draft.
          */
-        createDraftFromType<TType extends ItemType>(type: TType): DraftT<TType> {
+        createDraftFromType<TType extends ItemType>(type: TType): IDraft<TType> {
             const draft = DEFAULTS.DRAFT<TType>();
             if (isRule(type)) {
-                const rule = draft.item as RuleT;
+                const rule = draft.item as IRule;
                 draft.files = {
                     [rule.script.id]: rule.script.content,
                     [rule.style.id]: rule.style.content,
@@ -62,7 +72,10 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
             }
             const reactiveDraft = reactive(draft);
             this.drafts.push(reactiveDraft);
-            return reactiveDraft as DraftT<TType>;
+
+            this.save(); // Save the storage state after creating a new draft
+
+            return reactiveDraft as IDraft<TType>;
         }
 
         /**
@@ -70,9 +83,11 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
          *
          * @param draft The draft to discard.
          */
-        discardDraft(draft: DraftT) {
+        discardDraft(draft: IDraft) {
             const index = this.drafts.findIndex((d) => d.item.id === draft.item.id);
             if (index !== -1) this.drafts.splice(index, 1);
+
+            this.save(); // Save the storage state after discarding a draft
         }
 
         /**
@@ -80,9 +95,9 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
          *
          * @param draft The draft to save.
          */
-        async saveDraft(draft: DraftT) {
+        async saveDraft(draft: IDraft) {
             if (isRule(draft)) {
-                if (draft.isNew) this.rules.push(draft.item as RuleT);
+                if (draft.isNew) this.rules.push(draft.item as IRule);
                 const rule = draft.item;
                 rule.script.content = draft.files[rule.script.id];
                 rule.style.content = draft.files[rule.style.id];
@@ -116,6 +131,7 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
                 module.files.forEach((f) => (f.content = draft.files[f.id]));
             }
             draft.isNew = false;
+
             await this.save();
         }
 
@@ -125,8 +141,8 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
          * @param item The item for which to retrieve the draft.
          * @returns The corresponding draft, or null if no draft exists for the item.
          */
-        getDraftFromItem<TItem extends ItemT>(item: TItem): DraftT<TItem> | null {
-            return (this.drafts.find((d) => d.item.id === item.id) as DraftT<TItem>) ?? null;
+        getDraftFromItem<TItem extends IItem>(item: TItem): IDraft<TItem> | null {
+            return (this.drafts.find((d) => d.item.id === item.id) as IDraft<TItem>) ?? null;
         }
 
         /**
@@ -135,9 +151,9 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
          * @param type The item type for which to retrieve the new draft.
          * @returns The corresponding new draft, or null if no new draft exists for the item type.
          */
-        getDraftNewFromType<TType extends ItemType>(type: TType): DraftT<TType> | null {
+        getDraftNewFromType<TType extends ItemType>(type: TType): IDraft<TType> | null {
             return (
-                (this.drafts.find((d) => d.isNew && d.item.type === type) as DraftT<TType>) ?? null
+                (this.drafts.find((d) => d.isNew && d.item.type === type) as IDraft<TType>) ?? null
             );
         }
 
@@ -147,7 +163,7 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
          * @param id The ID of the item for which to retrieve the draft.
          * @returns The corresponding draft, or null if no draft exists for the item ID.
          */
-        getDraftFromId(id: string): DraftT | null {
+        getDraftFromId(id: string): IDraft | null {
             return this.drafts.find((d) => d.item.id === id) ?? null;
         }
 
@@ -156,6 +172,8 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
          */
         clearDrafts() {
             this.drafts.splice(0);
+
+            this.save(); // Save the storage state after clearing all drafts
         }
 
         /**
@@ -163,13 +181,19 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
          *
          * @param draft The draft to remove.
          */
-        removeDraft(draft: DraftT) {
+        removeDraft(draft: IDraft) {
             const index = this.drafts.findIndex((d) => d.item.id === draft.item.id);
             if (index !== -1) this.drafts.splice(index, 1);
+
+            this.save(); // Save the storage state after removing a draft
         }
     }
 
     return _StorageServiceDrafts as Constructor<_StorageServiceDrafts>;
 }
 
+/**
+ * Type representing the storage service with draft-related functionality, including methods for
+ * creating, saving, discarding, and retrieving drafts.
+ */
 export type StorageServiceDrafts = ReturnType<typeof StorageServiceDraftsMixin>;

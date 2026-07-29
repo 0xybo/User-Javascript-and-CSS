@@ -18,4 +18,16 @@ watchThemePalette();
     </div>
 </template>
 
-<style scoped></style>
+<style>
+/*
+For development purposes, the popup is styled to have a white background and a specific width. 
+This ensures that the popup content is displayed correctly and is visually distinct from the 
+rest of the page while the popup is being opened on a new tab.
+*/
+body {
+    @apply bg-[#fff];
+}
+#app {
+    @apply w-fit bg-[hsl(69.99deg_8.1%_14.5%)];
+}
+</style>

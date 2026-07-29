@@ -1,5 +1,11 @@
 import { JSONComposite } from '@/types/json';
 
+/**
+ * Compresses a JSON object into a Base64-encoded GZIP string.
+ *
+ * @param data - The JSON object to compress.
+ * @returns A promise that resolves to a Base64-encoded GZIP string.
+ */
 export async function compress(data: JSONComposite): Promise<string> {
     // Convert object → JSON → Uint8Array
     const json = JSON.stringify(data);
@@ -21,6 +27,12 @@ export async function compress(data: JSONComposite): Promise<string> {
     return btoa(binary); // Base64 string
 }
 
+/**
+ * Decompresses a Base64-encoded GZIP string back into a JSON object.
+ *
+ * @param base64 - The Base64-encoded GZIP string to decompress.
+ * @returns A promise that resolves to the decompressed JSON object.
+ */
 export async function decompress(base64: string): Promise<JSONComposite> {
     // Base64 → binary
     const binary = atob(base64);

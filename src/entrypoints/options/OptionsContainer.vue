@@ -5,11 +5,11 @@ import Rule from '@/components/Options/Rule/RuleContainer.vue';
 import Settings from '@/components/Options/Settings/SettingsContainer.vue';
 import Sidebar from '@/components/Options/Sidebar/SidebarContainer.vue';
 import { useState } from '@/composables/options/useState';
-import { hasChanged } from '@/composables/useDraft';
 import { useStorage } from '@/composables/useStorage';
 import { watchThemePalette } from '@/composables/useTheme';
 import { Panel } from '@/lib/options/tab';
-import type { DraftT } from '@/lib/storage/types';
+import type { IDraft } from '@/lib/storage/types';
+import { isUnsaved } from '@/lib/storage/utils';
 import { useEventListener } from '@vueuse/core';
 
 watchThemePalette();
@@ -24,7 +24,7 @@ const storage = useStorage();
  * @returns true if there are unsaved drafts, undefined otherwise.
  */
 function onBeforeUnload(event: BeforeUnloadEvent): true | undefined {
-    const unsavedDrafts: DraftT[] = storage.drafts.filter((draft) => hasChanged(draft));
+    const unsavedDrafts: IDraft[] = storage.drafts.filter((draft) => isUnsaved(draft));
     if (unsavedDrafts.length) {
         event.preventDefault();
         return true;

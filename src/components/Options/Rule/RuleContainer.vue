@@ -10,7 +10,7 @@ const storage = useStorage();
 const state = useState();
 const { Ctrl_S, Alt_Z } = useMagicKeys({ preventDefault: true });
 
-whenever(Ctrl_S, () => state.ruleChanged && storage.saveDraft(state.rule));
+whenever(Ctrl_S, () => state.ruleUnsaved && storage.saveDraft(state.rule));
 whenever(Alt_Z, () => (storage.settings.editor.wrap = !storage.settings.editor.wrap));
 </script>
 

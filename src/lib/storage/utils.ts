@@ -2,7 +2,7 @@ import { PlainObject } from '@/types/json';
 import { compress as _compress } from '../compression';
 import { clone } from '../utils';
 import { zDraft, zInfo, zModule, zRemoteSettingsInfo, zRule, zSettings, zStorage } from './schema';
-import { DraftT, ItemT, ItemType, ModuleT, RuleT, StorageT } from './types';
+import { IDraft, IItem, IModule, IRule, IStorage, ItemType } from './types';
 
 /**
  * A unique identifier for the current instance of the storage service. This is used to identify changes made by this instance when listening for changes in the browser's local storage.
@@ -13,14 +13,14 @@ export const EMITTER = crypto.randomUUID();
  * Default values for various storage-related entities. Each property is a function that returns a default instance of the corresponding type.
  */
 export const DEFAULTS = {
-    RULES: () => [] as RuleT[],
-    MODULES: () => [] as ModuleT[],
-    DRAFTS: () => [] as DraftT[],
+    RULES: () => [] as IRule[],
+    MODULES: () => [] as IModule[],
+    DRAFTS: () => [] as IDraft[],
     INFO: () => zInfo.parse({}),
     SETTINGS: () => zSettings.parse({}),
     RULE: () => zRule.parse({}),
     MODULE: () => zModule.parse({}),
-    DRAFT: <TItem extends ItemT | ItemType = ItemT>() => zDraft.parse({}) as DraftT<TItem>,
+    DRAFT: <TItem extends IItem | ItemType = IItem>() => zDraft.parse({}) as IDraft<TItem>,
     REMOTE_INFO: () => zRemoteSettingsInfo.parse({}),
     STORAGE: () => zStorage.parse({}),
 };
@@ -31,14 +31,14 @@ export const DEFAULTS = {
  * @param item The item to check.
  * @returns True if the item is a Rule, false otherwise.
  */
-export function isRule(item: ItemT): item is RuleT;
+export function isRule(item: IItem): item is IRule;
 /**
  * Type guard to check if the given draft is a Rule draft.
  *
  * @param draft The draft to check.
  * @returns True if the draft is a Rule draft, false otherwise.
  */
-export function isRule(draft: DraftT): draft is DraftT<RuleT>;
+export function isRule(draft: IDraft): draft is IDraft<IRule>;
 /**
  * Type guard to check if the given type is a Rule type.
  *
@@ -46,11 +46,11 @@ export function isRule(draft: DraftT): draft is DraftT<RuleT>;
  * @returns True if the type is a Rule type, false otherwise.
  */
 export function isRule(type: ItemType): type is ItemType.Rule;
-export function isRule(itemOrDraftOrType: ItemT | DraftT | ItemType): boolean {
+export function isRule(itemOrDraftOrType: IItem | IDraft | ItemType): boolean {
     if (typeof itemOrDraftOrType === 'string') return itemOrDraftOrType === ItemType.Rule;
-    if ('item' in (itemOrDraftOrType as DraftT))
-        return (itemOrDraftOrType as DraftT).item.type === ItemType.Rule;
-    return (itemOrDraftOrType as ItemT).type === ItemType.Rule;
+    if ('item' in (itemOrDraftOrType as IDraft))
+        return (itemOrDraftOrType as IDraft).item.type === ItemType.Rule;
+    return (itemOrDraftOrType as IItem).type === ItemType.Rule;
 }
 
 /**
@@ -59,14 +59,14 @@ export function isRule(itemOrDraftOrType: ItemT | DraftT | ItemType): boolean {
  * @param item The item to check.
  * @returns True if the item is a Module, false otherwise.
  */
-export function isModule(item: ItemT): item is ModuleT;
+export function isModule(item: IItem): item is IModule;
 /**
  * Type guard to check if the given draft is a Module draft.
  *
  * @param draft The draft to check.
  * @returns True if the draft is a Module draft, false otherwise.
  */
-export function isModule(draft: DraftT): draft is DraftT<ModuleT>;
+export function isModule(draft: IDraft): draft is IDraft<IModule>;
 /**
  * Type guard to check if the given type is a Module type.
  *
@@ -74,11 +74,11 @@ export function isModule(draft: DraftT): draft is DraftT<ModuleT>;
  * @returns True if the type is a Module type, false otherwise.
  */
 export function isModule(type: ItemType): type is ItemType.Module;
-export function isModule(itemOrDraftOrType: ItemT | DraftT | ItemType): boolean {
+export function isModule(itemOrDraftOrType: IItem | IDraft | ItemType): boolean {
     if (typeof itemOrDraftOrType === 'string') return itemOrDraftOrType === ItemType.Module;
-    if ('item' in (itemOrDraftOrType as DraftT))
-        return (itemOrDraftOrType as DraftT).item.type === ItemType.Module;
-    return (itemOrDraftOrType as ItemT).type === ItemType.Module;
+    if ('item' in (itemOrDraftOrType as IDraft))
+        return (itemOrDraftOrType as IDraft).item.type === ItemType.Module;
+    return (itemOrDraftOrType as IItem).type === ItemType.Module;
 }
 
 // --- Storage helpers ---
@@ -158,18 +158,18 @@ function extractStorageKeys(settings: Record<string, unknown>): Record<string, s
  * @param sync Whether to prepare the settings for syncing (default: false).
  * @returns The cleaned storage settings.
  */
-export function clean(settings: StorageT, sync: boolean = false): Record<string, unknown> {
+export function clean(settings: IStorage, sync: boolean = false): Record<string, unknown> {
     const cleaned = clone(settings) as Record<string, unknown>;
 
     if (sync) {
-        cleaned.rules = settings.rules.filter((rule: RuleT) => rule.sync);
-        cleaned.modules = settings.modules.filter((module: ModuleT) => module.sync);
+        cleaned.rules = settings.rules.filter((rule: IRule) => rule.sync);
+        cleaned.modules = settings.modules.filter((module: IModule) => module.sync);
         delete cleaned.drafts;
         delete (cleaned.info as Record<string, unknown>).emitter;
     }
 
     // Extract rule files
-    for (const rule of cleaned.rules as RuleT[]) {
+    for (const rule of cleaned.rules as IRule[]) {
         extractFile(cleaned, rule.script);
         extractFile(cleaned, rule.style);
         extractCompiled(cleaned, rule.script);
@@ -185,7 +185,7 @@ export function clean(settings: StorageT, sync: boolean = false): Record<string,
     }
 
     // Extract module files
-    for (const module of cleaned.modules as ModuleT[]) {
+    for (const module of cleaned.modules as IModule[]) {
         for (const file of module.files) {
             extractFile(cleaned, file);
         }
@@ -195,7 +195,7 @@ export function clean(settings: StorageT, sync: boolean = false): Record<string,
 
     // Extract draft files
     if (!sync) {
-        for (const draft of cleaned.drafts as DraftT[]) {
+        for (const draft of cleaned.drafts as IDraft[]) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const d = draft as any;
             d.fileIds = extractDraftFiles(cleaned, draft.files);
@@ -215,30 +215,27 @@ export function clean(settings: StorageT, sync: boolean = false): Record<string,
  * @param settings The plain object representing storage settings.
  * @returns The parsed StorageT object.
  */
-export function parse(settings: PlainObject): StorageT {
+export function parse(settings: PlainObject): IStorage {
     const files = extractStorageKeys(settings);
 
     // Resolve rule files
-    for (const rule of (settings.rules || []) as RuleT[]) {
+    for (const rule of (settings.rules || []) as IRule[]) {
         rule.script = resolveCompiled(files, resolveFile(files, rule.script));
         rule.style = resolveCompiled(files, resolveFile(files, rule.style));
     }
 
     // Resolve module files
-    for (const module of (settings.modules || []) as ModuleT[]) {
+    for (const module of (settings.modules || []) as IModule[]) {
         module.files = module.files.map((f) => resolveFile(files, f));
     }
 
     // Resolve draft files and items
-    for (const draft of (settings.drafts || []) as DraftT[]) {
+    for (const draft of (settings.drafts || []) as IDraft[]) {
         const fileIds = (draft as Record<string, unknown>).fileIds as string[] | undefined;
-        draft.files = Object.fromEntries(
-            (fileIds || []).map((id) => [id, files[`d:${id}`] || '']),
-        );
-        draft.item =
-            ([...(settings.rules as RuleT[]), ...(settings.modules as ModuleT[])]).find(
-                (item) => item.id === (draft as Record<string, unknown>).itemId,
-            )!;
+        draft.files = Object.fromEntries((fileIds || []).map((id) => [id, files[`d:${id}`] || '']));
+        draft.item = [...(settings.rules as IRule[]), ...(settings.modules as IModule[])].find(
+            (item) => item.id === (draft as Record<string, unknown>).itemId,
+        )!;
         delete (draft as Record<string, unknown>).fileIds;
         delete (draft as Record<string, unknown>).itemId;
         delete (draft as Record<string, unknown>).itemType;
@@ -255,7 +252,7 @@ export function parse(settings: PlainObject): StorageT {
  * @param settings The storage settings to compress.
  * @returns A promise that resolves to an array of compressed string chunks.
  */
-export async function compress(settings: StorageT): Promise<string[]> {
+export async function compress(settings: IStorage): Promise<string[]> {
     const cleaned = clean(settings, true);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const compressed = await _compress(cleaned as any);
@@ -264,4 +261,41 @@ export async function compress(settings: StorageT): Promise<string[]> {
     while (i < compressed.length) chunks.push(compressed.slice(i, (i += 4096)));
 
     return chunks;
+}
+
+/**
+ * Checks if the given draft has unsaved changes compared to its original item. For rules, it
+ * compares the script and style content. For modules, it compares the content of each file in the
+ * module.
+ *
+ * @param draft The draft to check for unsaved changes.
+ * @returns True if the draft has unsaved changes, false otherwise.
+ */
+export function isRuleUnsaved(draft: IDraft<IRule>): boolean {
+    return (
+        draft.files[draft.item.script.id] !== draft.item.script.content ||
+        draft.files[draft.item.style.id] !== draft.item.style.content
+    );
+}
+
+/**
+ * Checks if the given module draft has unsaved changes compared to its original item. It compares
+ * the content of each file in the module.
+ *
+ * @param draft The draft to check for unsaved changes.
+ * @returns True if the draft has unsaved changes, false otherwise.
+ */
+export function isModuleUnsaved(draft: IDraft<IModule>): boolean {
+    return draft.item.files.some((file) => file.content !== draft.files[file.id]);
+}
+
+/**
+ * Checks if the given draft has changed compared to its original item. For rules, it compares the
+ * script and style content. For modules, it compares the content of each file in the module.
+ *
+ * @param draft The draft to check for changes.
+ * @returns True if the draft has changed, false otherwise.
+ */
+export function isUnsaved(draft: IDraft): boolean {
+    return isRule(draft) ? isRuleUnsaved(draft) : isModuleUnsaved(draft as IDraft<IModule>);
 }

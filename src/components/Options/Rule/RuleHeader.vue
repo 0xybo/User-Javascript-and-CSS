@@ -7,7 +7,7 @@ import InputGroupInput from '@/components/ui/input-group/InputGroupInput.vue';
 import Label from '@/components/ui/label/Label.vue';
 import { useState } from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
-import { ItemType, RuleT } from '@/lib/storage/types';
+import { IRule, ItemType } from '@/lib/storage/types';
 import { cn } from '@/lib/tailwind';
 import { BadgeCheckIcon, SaveIcon } from 'lucide-vue-next';
 import ModulesMenu from './Header/ModulesMenu.vue';
@@ -51,18 +51,18 @@ function onSaveButtonClick() {
                 <InputGroupInput
                     :placeholder="i18n.t('EDITOR_URL_PATTERN_EXAMPLE')"
                     class="h-11 pt-6 pb-2! pl-3!"
-                    v-model="(state.rule.item as RuleT).patterns"
+                    v-model="(state.rule.item as IRule).patterns"
                 />
             </div>
         </InputGroup>
         <ModulesMenu />
         <Button
             @click="onSaveButtonClick"
-            :disabled="!state.ruleChanged"
+            :disabled="!state.ruleUnsaved"
             variant="ghost"
             :class="
                 cn('bg-accent text-accent-foreground h-full', {
-                    'bg-primary text-primary-foreground': !state.ruleChanged,
+                    'bg-primary text-primary-foreground': !state.ruleUnsaved,
                 })
             "
         >

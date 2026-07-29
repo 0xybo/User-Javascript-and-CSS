@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, watch } from '#imports';
+import { nextTick, onMounted, watch } from '#imports';
 import { useState } from '@/composables/options/useState';
 import { SettingsSection } from '@/lib/options/settings.js';
 import { useTemplateRef, type Component } from 'vue';
@@ -13,9 +13,11 @@ const state = useState();
 
 /**
  * A mapping of settings sections to their corresponding components and template references.
- * Each section is represented by its ID, the component to render, and a reference to the DOM element.
+ * Each section is represented by its ID, the component to render, and a reference to the DOM
+ * element.
  *
- * Due to the loop in the template, the ref value is an array of HTMLDivElement, so we use useTemplateRef to get the first element.
+ * Due to the loop in the template, the ref value is an array of HTMLDivElement, so we use
+ * useTemplateRef to get the first element.
  */
 const sections: Record<
     SettingsSection,
@@ -43,16 +45,24 @@ const sections: Record<
     },
 };
 
+/**
+ * Scrolls to the specified settings section in the DOM.
+ *
+ * @param section The ID of the settings section to scroll to.
+ */
+function scrollToSection(section: SettingsSection) {
+    const sectionElement = sections[section].ref?.value?.[0];
+    if (!sectionElement) return;
+
+    nextTick(() => sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+}
+
 watch(
     () => state.settingsSection,
-    (section) => {
-        if (!section) return;
-        let sectionElement = sections[section].ref?.value?.[0];
-        if (!sectionElement) return;
-
-        nextTick(() => sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' }));
-    },
+    () => state.settingsSection && scrollToSection(state.settingsSection),
 );
+
+onMounted(() => state.settingsSection && scrollToSection(state.settingsSection));
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 import { browser } from '#imports';
-import { RuleT } from '../storage/types';
+import { IRule } from '../storage/types';
 
 interface InjectionKey {
     id: string;
@@ -10,7 +10,7 @@ interface InjectionKey {
 export class TabManager {
     private tabInjections = new Map<number, Map<string, InjectionKey>>();
 
-    async injectCSS(tabId: number, rule: RuleT) {
+    async injectCSS(tabId: number, rule: IRule) {
         if (!rule.style.compiled) return;
 
         const tabMap = this.tabInjections.get(tabId) || new Map();

@@ -11,7 +11,7 @@ import Separator from '@/components/ui/separator/Separator.vue';
 import { useState } from '@/composables/options/useState';
 import { useDraft } from '@/composables/useDraft';
 import { useStorage } from '@/composables/useStorage';
-import { ItemType, RuleT } from '@/lib/storage/types';
+import { IRule, ItemType } from '@/lib/storage/types';
 import { EllipsisVerticalIcon, Trash2Icon, Undo2Icon } from 'lucide-vue-next';
 
 const state = useState();
@@ -22,13 +22,13 @@ function onRemoveButtonClick() {
     state.switchDraft(useDraft(ItemType.Rule));
 }
 function onRevertButtonClick() {
-    const item = state.rule.item as RuleT;
+    const item = state.rule.item as IRule;
     state.rule.files[item.script.id] = item.script.content;
     state.rule.files[item.style.id] = item.style.content;
 }
 function onCheckboxUpdated(value: boolean | 'indeterminate') {
     console.log('Updated', value);
-    (state.rule.item as RuleT).enabled = value === true;
+    (state.rule.item as IRule).enabled = value === true;
 }
 </script>
 
@@ -48,7 +48,7 @@ function onCheckboxUpdated(value: boolean | 'indeterminate') {
                 class="group hover:bg-secondary text-foreground flex cursor-pointer flex-row items-center gap-2 px-4 py-2 font-normal"
             >
                 <Checkbox
-                    :default-value="(state.rule.item as RuleT).enabled"
+                    :default-value="(state.rule.item as IRule).enabled"
                     @update:model-value="onCheckboxUpdated"
                     class="border-accent group-hover: data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground size-5 border-2"
                 />
@@ -76,7 +76,7 @@ function onCheckboxUpdated(value: boolean | 'indeterminate') {
             </TooltipWrapper>
             <Separator class="my-2" />
             <Button
-                :disabled="!state.ruleChanged"
+                :disabled="!state.ruleUnsaved"
                 class="group hover:bg-secondary text-foregrond flex flex-row items-center gap-2 rounded-none px-4 py-2 font-normal"
                 @click="onRevertButtonClick"
             >
@@ -84,6 +84,7 @@ function onCheckboxUpdated(value: boolean | 'indeterminate') {
                 {{ i18n.t('RULES_REVERT') }}
             </Button>
             <Button
+                :disabled="!state.moduleUnsaved"
                 class="group hover:bg-destructive/10 text-destructive flex w-full flex-row items-center justify-start gap-2 rounded-none px-4 py-2 font-normal"
                 @click="onRemoveButtonClick"
             >

@@ -10,7 +10,7 @@ import PopoverTrigger from '@/components/ui/popover/PopoverTrigger.vue';
 import { useState } from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
 import { Tab } from '@/lib/options/tab';
-import { ModuleT, RuleT } from '@/lib/storage/types';
+import { IModule, IRule } from '@/lib/storage/types';
 import { cn } from '@/lib/tailwind';
 import { EllipsisVerticalIcon } from 'lucide-vue-next';
 import { PopoverClose } from 'reka-ui';
@@ -24,11 +24,11 @@ const storage = useStorage();
  * @param checked The new checked state of the checkbox. Can be true, false, or 'indeterminate'.
  * @param module The module associated with the checkbox that was changed.
  */
-function onCheckboxChange(checked: boolean | 'indeterminate', module: ModuleT) {
-    if (typeof checked === 'boolean' && checked) (state.rule.item as RuleT).modules.push(module.id);
+function onCheckboxChange(checked: boolean | 'indeterminate', module: IModule) {
+    if (typeof checked === 'boolean' && checked) (state.rule.item as IRule).modules.push(module.id);
     else
-        (state.rule.item as RuleT).modules.splice(
-            (state.rule.item as RuleT).modules.findIndex((id) => id === module.id),
+        (state.rule.item as IRule).modules.splice(
+            (state.rule.item as IRule).modules.findIndex((id) => id === module.id),
             1,
         );
 }
@@ -41,13 +41,13 @@ function onCheckboxChange(checked: boolean | 'indeterminate', module: ModuleT) {
                 <Badge
                     :class="
                         cn('pointer-events-none aspect-square font-mono', {
-                            'bg-accent text-accent-foreground': (state.rule.item as RuleT).modules
+                            'bg-accent text-accent-foreground': (state.rule.item as IRule).modules
                                 .length,
                         })
                     "
                     variant="outline"
                 >
-                    {{ (state.rule.item as RuleT).modules.length }}
+                    {{ (state.rule.item as IRule).modules.length }}
                 </Badge>
                 {{ i18n.t('COMMON_MODULES') }}
                 <EllipsisVerticalIcon />
@@ -65,7 +65,7 @@ function onCheckboxChange(checked: boolean | 'indeterminate', module: ModuleT) {
                     class="group hover:bg-secondary text-foreground flex cursor-pointer flex-row items-center gap-2 px-4 py-2 font-normal"
                 >
                     <Checkbox
-                        :model-value="(state.rule.item as RuleT).modules.includes(module.id)"
+                        :model-value="(state.rule.item as IRule).modules.includes(module.id)"
                         @update:model-value="(checked) => onCheckboxChange(checked, module)"
                         class="border-accent group-hover: data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground size-5 border-2"
                     />

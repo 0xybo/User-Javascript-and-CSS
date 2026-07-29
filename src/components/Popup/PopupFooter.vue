@@ -2,7 +2,7 @@
 import { browser, i18n } from '#imports';
 import { useCurrentTab, useHasAccess } from '@/composables/popup/useCurrentTab';
 import { useStorage } from '@/composables/useStorage';
-import { ItemType, RuleT } from '@/lib/storage/types';
+import { ItemType } from '@/lib/storage/types';
 import { BookPlus, TriangleAlert } from 'lucide-vue-next';
 import Button from '../ui/button/Button.vue';
 import Tooltip from '../ui/tooltip/Tooltip.vue';
@@ -13,18 +13,31 @@ const storage = useStorage();
 const tab = useCurrentTab();
 const hasAccess = useHasAccess();
 
+/**
+ * Extracts the host from a given URL string.
+ * @param url - The URL string from which to extract the host.
+ * @returns The host of the URL.
+ */
 function getHost(url: string): string {
     return new URL(url).host;
 }
 
+/**
+ * Creates a new rule based on the current tab's URL and opens the options page with the new rule's
+ * ID in the hash.
+ */
 function newRule() {
     if (!tab.value?.url) return;
+
     const tabUrl = new URL(tab.value.url);
     const draft = storage.createDraftFromType(ItemType.Rule);
-    (draft.item as RuleT).patterns = `${tabUrl.protocol}//${tabUrl.host}/*`;
+
+    draft.item.patterns = tabUrl.host;
     draft.item.name = tabUrl.host;
+
     const optionUrl = new URL(browser.runtime.getURL('/options.html'));
-    optionUrl.hash = 'r:' + draft.item.id;
+    optionUrl.hash = 'rule:' + draft.item.id;
+
     window.open(optionUrl);
 }
 </script>

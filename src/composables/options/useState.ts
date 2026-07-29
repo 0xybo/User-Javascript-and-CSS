@@ -1,9 +1,11 @@
 import { computed, MaybeRef, reactive, unref, watch } from '#imports';
-import type { SettingsSection } from '@/lib/options/settings';
+import { SettingsSection } from '@/lib/options/settings';
 import { Panel, Tab, TAB_TO_PANEL_MAP } from '@/lib/options/tab';
-import { DraftT, ItemType } from '@/lib/storage/types';
-import { isRule } from '@/lib/storage/utils';
-import { hasChanged, useDraft } from '../useDraft';
+import { IDraft, ItemType } from '@/lib/storage/types';
+import { isModuleUnsaved, isRule, isRuleUnsaved, isUnsaved } from '@/lib/storage/utils';
+import { has } from '@/lib/utils';
+import { useThrottleFn } from '@vueuse/core';
+import { useDraft } from '../useDraft';
 import { useStorage } from '../useStorage';
 
 /** A mapping of type letters to item types */
@@ -23,44 +25,24 @@ class State {
     /** The current panel */
     public panel: Panel = Panel.Rule;
     /** The current rule draft */
-    public rule: DraftT<ItemType.Rule> = useDraft(ItemType.Rule);
+    public rule: IDraft<ItemType.Rule> = useDraft(ItemType.Rule);
     /** The current module draft */
-    public module: DraftT<ItemType.Module> = useDraft(ItemType.Module);
+    public module: IDraft<ItemType.Module> = useDraft(ItemType.Module);
     /** The current settings section */
     public settingsSection: SettingsSection | null = null;
     /** Computed property that indicates whether the current rule draft has changed */
-    public ruleChanged = computed(() => hasChanged(this.rule));
+    public ruleUnsaved = computed(() => isRuleUnsaved(this.rule));
     /** Computed property that indicates whether the current module draft has changed */
-    public moduleChanged = computed(() => hasChanged(this.module));
+    public moduleUnsaved = computed(() => isModuleUnsaved(this.module));
+
+    private _ruleDraftWatcher: ReturnType<typeof watch> | null = null;
+    private _moduleDraftWatcher: ReturnType<typeof watch> | null = null;
 
     constructor() {
-        watch(
-            () => storage.loaded,
-            () => {
-                const [typeLetter, id] = location.hash.slice(1).split(':');
-                if (typeLetter && id) {
-                    const type = TYPES[typeLetter];
-                    if (type) {
-                        let draft = storage.getDraftFromId(id);
-                        if (!draft) {
-                            const item = storage.getItemFromId(id);
-                            if (item) draft = storage.createDraftFromItem(item);
-                            else draft = storage.createDraftFromType(type);
-                        }
+        // this.watchOnceForSave(this.rule);
+        // this.watchOnceForSave(this.module);
 
-                        if (isRule(draft)) this.rule = draft;
-                        else this.module = draft as DraftT<ItemType.Module>;
-                    }
-                }
-
-                location.hash = '';
-                return;
-            },
-            { once: true },
-        );
-
-        this.watchOnceForSave(this.rule);
-        this.watchOnceForSave(this.module);
+        this.goToHashLocation();
 
         return reactive(this) as unknown as State;
     }
@@ -71,16 +53,38 @@ class State {
      *
      * @param draft The draft to watch for changes.
      */
-    private watchOnceForSave(draft: MaybeRef<DraftT>) {
+    private watchOnceForSave(draft: MaybeRef<IDraft>) {
         const noRefDraft = unref(draft);
         watch(
             noRefDraft.item,
             () => {
                 storage.saveDraft(noRefDraft);
-                location.hash = noRefDraft.item.type.at(0) + ':' + noRefDraft.item.id;
+                this.watchForSave(noRefDraft);
             },
             { once: true },
         );
+    }
+
+    /**
+     * Watches the provided draft for changes and saves it to storage when it changes.
+     *
+     * @param draft The draft to watch for changes.
+     * @returns A function that can be called to stop watching the draft.
+     */
+    private watchForSave(draft: MaybeRef<IDraft>) {
+        const noRefDraft = unref(draft);
+        const watchHandler = watch(
+            noRefDraft.item,
+            useThrottleFn(() => storage.saveDraft(noRefDraft), 500),
+        );
+
+        if (isRule(noRefDraft)) {
+            if (this._ruleDraftWatcher) this._ruleDraftWatcher();
+            return (this._ruleDraftWatcher = watchHandler);
+        }
+
+        if (this._moduleDraftWatcher) this._moduleDraftWatcher();
+        return (this._moduleDraftWatcher = watchHandler);
     }
 
     /**
@@ -91,23 +95,29 @@ class State {
      *
      * @param draft The draft to switch to.
      */
-    public switchDraft(draft: DraftT) {
-        let oldDraft: DraftT;
+    public switchDraft(draft: IDraft) {
+        let oldDraft: IDraft;
         if (isRule(draft)) {
             oldDraft = this.rule;
             this.rule = draft;
-            this.watchOnceForSave(this.rule);
-            this.tab = Tab.Rules;
+
+            if (draft.isNew) this.watchOnceForSave(this.rule);
+            else this.watchForSave(this.rule);
+
+            this.switchTab(Tab.Rules);
         } else {
             oldDraft = this.module;
-            this.module = draft as DraftT<ItemType.Module>;
-            this.watchOnceForSave(this.module);
-            this.tab = Tab.Modules;
+            this.module = draft as IDraft<ItemType.Module>;
+
+            if (draft.isNew) this.watchOnceForSave(this.module);
+            else this.watchForSave(this.module);
+
+            this.switchTab(Tab.Modules);
         }
 
-        if (!hasChanged(oldDraft)) storage.removeDraft(oldDraft);
+        if (!isUnsaved(oldDraft)) storage.removeDraft(oldDraft);
 
-        location.hash = draft.item.type.at(0) + ':' + draft.item.id;
+        this.updateHash();
     }
 
     /**
@@ -120,6 +130,78 @@ class State {
         this.tab = tab;
 
         if (tab && tab in TAB_TO_PANEL_MAP) this.panel = TAB_TO_PANEL_MAP[tab]!;
+
+        this.updateHash();
+    }
+
+    /**
+     * Switches the current settings section to the provided section.
+     * If the section is null, it will switch to the default settings section.
+     *
+     * @param section The settings section to switch to.
+     */
+    public switchSettingsSection(section: SettingsSection | null) {
+        this.settingsSection = section;
+        this.switchTab(Tab.Settings);
+    }
+
+    /**
+     * Updates the location hash to reflect the current state of the options page.
+     * The hash format is as follows:
+     * - For rules: #rule:<ruleId>
+     * - For modules: #module:<moduleId>
+     * - For settings: #settings[:<section>]
+     * - For about: #about
+     */
+    private updateHash() {
+        switch (this.tab) {
+            case Tab.Rules:
+                location.hash = 'rule:' + this.rule.item.id;
+                break;
+            case Tab.Modules:
+                location.hash = 'module:' + this.module.item.id;
+                break;
+            case Tab.Settings:
+                location.hash =
+                    'settings' + (this.settingsSection ? ':' + this.settingsSection : '');
+                break;
+            case Tab.About:
+                break;
+            default:
+                location.hash = '';
+        }
+    }
+
+    private goToHashLocation() {
+        const [hash, detail] = location.hash.slice(1).split(':');
+        switch (hash) {
+            case 'rule':
+                const ruleDraft = storage.getDraftFromId(detail);
+                if (ruleDraft && isRule(ruleDraft)) this.switchDraft(ruleDraft);
+                else {
+                    const draft = storage.createDraftFromType(ItemType.Rule);
+                    this.switchDraft(draft);
+                }
+                break;
+            case 'module':
+                const moduleDraft = storage.getDraftFromId(detail);
+                if (moduleDraft && !isRule(moduleDraft)) this.switchDraft(moduleDraft);
+                else {
+                    const draft = storage.createDraftFromType(ItemType.Module);
+                    this.switchDraft(draft);
+                }
+                break;
+            case 'settings':
+                if (detail && has(SettingsSection, detail))
+                    this.switchSettingsSection(detail as SettingsSection);
+                else this.switchTab(Tab.Settings);
+                break;
+            case 'about':
+                this.switchTab(Tab.About);
+                break;
+            default:
+                this.switchTab(Tab.Rules);
+        }
     }
 }
 
