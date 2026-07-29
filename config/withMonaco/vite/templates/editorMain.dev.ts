@@ -11,6 +11,8 @@ export const generateMain = ({
     languagesImports: string[];
     globalAPI: boolean;
 }) => `
+const cached = new Map();
+
 self['MonacoEnvironment'] = {
     globalAPI: ${globalAPI || false},
     getWorker: ((workers) => (_, label) => {
@@ -18,10 +20,16 @@ self['MonacoEnvironment'] = {
             console.warn('[monaco] no worker found for label', label);
             return null;
         }
+
+        if (cached.has(label)) return cached.get(label);
         
         const url = browser.runtime.getURL(workers[label]);
         console.log('[monaco] loading worker', label, url);
-        return new Worker(url, { type: 'module' });
+
+        const worker = new Worker(url, { type: 'module' });
+        cached.set(label, worker);
+
+        return worker;
     })({
         ${workersObject.join(',\n        ')}
     })
