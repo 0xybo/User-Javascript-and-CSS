@@ -139,7 +139,7 @@ async function onPreviewButtonClick() {
             }"
             @click="onBeautifyButtonClick"
         />
-        <template v-if="props.type === FileType.Css">
+        <template v-if="props.type === FileType.Css || props.type === FileType.Scss">
             <ActionButton
                 :icon="TerminalIcon"
                 :tooltip="{
