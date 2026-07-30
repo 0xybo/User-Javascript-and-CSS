@@ -121,6 +121,17 @@ class State {
     }
 
     /**
+     * Switches the current draft to a new draft of the specified type.
+     * It creates a new draft from the specified type and switches to it.
+     *
+     * @param type The type of the new draft to switch to.
+     */
+    public switchToNewDraft(type: ItemType) {
+        const draft = storage.createDraftFromType(type);
+        this.switchDraft(draft);
+    }
+
+    /**
      * Switches the current tab to the provided tab.
      * If the tab has a corresponding panel, it will also switch to that panel.
      *

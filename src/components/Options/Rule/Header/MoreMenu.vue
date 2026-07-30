@@ -9,31 +9,46 @@ import PopoverContent from '@/components/ui/popover/PopoverContent.vue';
 import PopoverTrigger from '@/components/ui/popover/PopoverTrigger.vue';
 import Separator from '@/components/ui/separator/Separator.vue';
 import { useState } from '@/composables/options/useState';
-import { useDraft } from '@/composables/useDraft';
 import { useStorage } from '@/composables/useStorage';
 import { IRule, ItemType } from '@/lib/storage/types';
 import { EllipsisVerticalIcon, Trash2Icon, Undo2Icon } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 const state = useState();
 const storage = useStorage();
+/** Whether the popover is opened */
+const isOpened = ref(false);
 
+/**
+ * Removes the current rule from storage and switches to a new draft
+ */
 function onRemoveButtonClick() {
     storage.removeItem(state.rule.item);
-    state.switchDraft(useDraft(ItemType.Rule));
+    state.switchToNewDraft(ItemType.Rule);
+    isOpened.value = false;
 }
+
+/**
+ * Reverts the current rule to its original state by restoring the script and style content from
+ * the stored files
+ */
 function onRevertButtonClick() {
     const item = state.rule.item as IRule;
     state.rule.files[item.script.id] = item.script.content;
     state.rule.files[item.style.id] = item.style.content;
+    isOpened.value = false;
 }
+
+/**
+ * Updates the enabled state of the current rule based on the checkbox value
+ */
 function onCheckboxUpdated(value: boolean | 'indeterminate') {
-    console.log('Updated', value);
     (state.rule.item as IRule).enabled = value === true;
 }
 </script>
 
 <template>
-    <Popover>
+    <Popover v-model:open="isOpened">
         <PopoverTrigger as-child>
             <Button class="aspect-square h-full">
                 <EllipsisVerticalIcon />
