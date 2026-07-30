@@ -84,7 +84,6 @@ function onCheckboxUpdated(value: boolean | 'indeterminate') {
                 {{ i18n.t('RULES_REVERT') }}
             </Button>
             <Button
-                :disabled="!state.moduleUnsaved"
                 class="group hover:bg-destructive/10 text-destructive flex w-full flex-row items-center justify-start gap-2 rounded-none px-4 py-2 font-normal"
                 @click="onRemoveButtonClick"
             >
