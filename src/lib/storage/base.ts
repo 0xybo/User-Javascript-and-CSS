@@ -1,7 +1,7 @@
 import { browser, computed, nextTick, reactive, ref } from '#imports';
 import { PlainObject } from '@/types/json';
 import { useThrottleFn } from '@vueuse/core';
-import { watch } from 'vue';
+import { watch, type ComputedRef } from 'vue';
 import { Logger } from '../logger';
 import { deepMerge, diff, IS_DEVELOPMENT, printDiff } from '../utils';
 import { IDraft, IInfo, IModule, IRule, ISettings, IStorage, StorageChanges } from './types';
@@ -57,7 +57,7 @@ export class StorageServiceBase {
     /**
      * A computed property that watches the current storage state for changes. This is used for debugging purposes in development mode to log changes to the storage.
      */
-    private computedCurrentToBeWatched;
+    private computedCurrentToBeWatched: ComputedRef<IStorage> | null = null;
 
     /**
      * A reactive object that holds information about the last known state of the remote storage. This is used to determine if the local storage is more recent than the remote storage when syncing.
@@ -69,6 +69,10 @@ export class StorageServiceBase {
     private _saving = true;
 
     constructor() {
+        watch(this.loaded, this._onLoaded.bind(this), { once: true });
+    }
+
+    private _onLoaded() {
         // Watch for changes in the storage and log them if in development mode.
         if (IS_DEVELOPMENT) {
             this.computedCurrentToBeWatched = computed(() =>
@@ -84,6 +88,12 @@ export class StorageServiceBase {
                 { deep: true, flush: 'sync' },
             );
         }
+
+        watch(
+            this.current,
+            useThrottleFn(() => this._saving && this.save(), 500),
+            { deep: true, flush: 'sync' },
+        );
 
         browser.storage.local.onChanged.addListener(
             useThrottleFn(

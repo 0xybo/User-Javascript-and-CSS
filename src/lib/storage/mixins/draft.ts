@@ -48,8 +48,6 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
             const reactiveDraft = reactive(draft);
             this.drafts.push(reactiveDraft);
 
-            this.save(); // Save the storage state after creating a new draft
-
             return reactiveDraft as IDraft<TItem>;
         }
 
@@ -73,8 +71,6 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
             const reactiveDraft = reactive(draft);
             this.drafts.push(reactiveDraft);
 
-            this.save(); // Save the storage state after creating a new draft
-
             return reactiveDraft as IDraft<TType>;
         }
 
@@ -86,8 +82,6 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
         discardDraft(draft: IDraft) {
             const index = this.drafts.findIndex((d) => d.item.id === draft.item.id);
             if (index !== -1) this.drafts.splice(index, 1);
-
-            this.save(); // Save the storage state after discarding a draft
         }
 
         /**
@@ -131,8 +125,6 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
                 module.files.forEach((f) => (f.content = draft.files[f.id]));
             }
             draft.isNew = false;
-
-            await this.save();
         }
 
         /**
@@ -172,8 +164,6 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
          */
         clearDrafts() {
             this.drafts.splice(0);
-
-            this.save(); // Save the storage state after clearing all drafts
         }
 
         /**
@@ -184,8 +174,6 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
         removeDraft(draft: IDraft) {
             const index = this.drafts.findIndex((d) => d.item.id === draft.item.id);
             if (index !== -1) this.drafts.splice(index, 1);
-
-            this.save(); // Save the storage state after removing a draft
         }
     }
 

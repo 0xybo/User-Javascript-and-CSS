@@ -56,11 +56,16 @@ export function StorageServiceSyncMixin(Base: Constructor<StorageServiceBase>) {
         }
 
         /**
-         * Downloads the storage state from the remote storage and merges it into the local storage. This method retrieves the compressed storage data from the remote storage, decompresses it, and updates the local storage accordingly.
+         * Downloads the storage state from the remote storage and merges it into the local
+         * storage. This method retrieves the compressed storage data from the remote storage,
+         * decompresses it, and updates the local storage accordingly.
          *
-         * @param force Whether to force the download even if the local storage is newer than the remote storage (default: false).
-         * @throws StorageLocalMoreRecentError if the local storage is newer than the remote storage and force is false.
-         * @throws StorageInvalidSyncData if the retrieved data from the remote storage is invalid or cannot be parsed.
+         * @param force Whether to force the download even if the local storage is newer than the
+         * remote storage (default: false).
+         * @throws StorageLocalMoreRecentError if the local storage is newer than the remote
+         * storage and force is false.
+         * @throws StorageInvalidSyncData if the retrieved data from the remote storage is invalid
+         * or cannot be parsed.
          */
         async download(force = false) {
             await this._syncInfo();
