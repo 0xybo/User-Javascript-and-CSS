@@ -264,17 +264,19 @@ export async function compress(settings: IStorage): Promise<string[]> {
 }
 
 /**
- * Checks if the given draft has unsaved changes compared to its original item. For rules, it
- * compares the script and style content. For modules, it compares the content of each file in the
- * module.
+ * Checks if the given draft has unsaved changes compared to its original item.
  *
  * @param draft The draft to check for unsaved changes.
  * @returns True if the draft has unsaved changes, false otherwise.
  */
 export function isRuleUnsaved(draft: IDraft<IRule>): boolean {
     return (
-        draft.files[draft.item.script.id] !== draft.item.script.content ||
-        draft.files[draft.item.style.id] !== draft.item.style.content ||
+        (draft.files[draft.item.script.id] &&
+            draft.item.script.content &&
+            draft.files[draft.item.script.id] !== draft.item.script.content) ||
+        (draft.files[draft.item.style.id] &&
+            draft.item.style.content &&
+            draft.files[draft.item.style.id] !== draft.item.style.content) ||
         (draft.isNew && Object.values(draft.files).some((content) => content !== ''))
     );
 }
@@ -288,7 +290,9 @@ export function isRuleUnsaved(draft: IDraft<IRule>): boolean {
  */
 export function isModuleUnsaved(draft: IDraft<IModule>): boolean {
     return (
-        draft.item.files.some((file) => file.content !== draft.files[file.id]) ||
+        draft.item.files.some(
+            (file) => file.content && draft.files[file.id] && file.content !== draft.files[file.id],
+        ) ||
         (draft.isNew && Object.values(draft.files).some((content) => content !== ''))
     );
 }
