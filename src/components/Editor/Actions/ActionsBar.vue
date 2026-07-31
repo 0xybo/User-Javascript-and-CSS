@@ -134,6 +134,7 @@ async function onPreviewButtonClick() {
 
         <ActionButton
             :icon="WandSparklesIcon"
+            :disabled="!content"
             :tooltip="{
                 title: i18n.t('EDITOR_BEAUTIFY'),
             }"

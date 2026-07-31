@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, i18n } from '#imports';
+import { computed, i18n, ref } from '#imports';
 import RuleList from '@/components/RuleList.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
@@ -10,13 +10,24 @@ import { useStorage } from '@/composables/useStorage';
 import { SORT } from '@/lib/options/sortRules';
 import { IRule, ItemType } from '@/lib/storage/types';
 import { BookPlus } from 'lucide-vue-next';
-import SortSelect from './Rules/SortSelect.vue';
+import SortSelect from './SortSelect.vue';
 
 const state = useState();
 const storage = useStorage();
 const dialog = useDialog();
+const searchQuery = ref<string>('');
 const rules = computed(() => {
-    return Array.from(storage.rules).sort(SORT[storage.settings.sortBy].method);
+    return Array.from(storage.rules)
+        .filter((rule) => {
+            if (!searchQuery.value) return true;
+
+            const name = rule.name?.toLowerCase();
+            const patterns = rule.patterns.toLowerCase();
+            const query = searchQuery.value.toLowerCase();
+
+            return (name ? name.includes(query) : true) || patterns.includes(query);
+        })
+        .sort(SORT[storage.settings.sortBy].method);
 });
 
 function onNewRuleButtonClick() {
@@ -61,7 +72,12 @@ function onRuleListOpen(rule: IRule) {
             </Button>
         </div>
         <div class="flex flex-row gap-2 border-b px-4 py-3">
-            <Input type="text" :placeholder="i18n.t('COMMON_FIND')" class="border-secondary" />
+            <Input
+                type="text"
+                :placeholder="i18n.t('COMMON_FIND')"
+                class="border-secondary"
+                v-model="searchQuery"
+            />
             <SortSelect />
         </div>
         <div class="flex flex-1 flex-col">

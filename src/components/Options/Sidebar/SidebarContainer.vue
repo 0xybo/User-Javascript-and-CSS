@@ -18,10 +18,10 @@ import {
     PackagePlusIcon,
 } from 'lucide-vue-next';
 import { ref } from 'vue';
-import About from './Tabs/AboutTab.vue';
-import Modules from './Tabs/ModulesTab.vue';
-import Rules from './Tabs/RulesTab.vue';
-import Settings from './Tabs/SettingsTab.vue';
+import About from './About/AboutTab.vue';
+import Modules from './Modules/ModulesTab.vue';
+import Rules from './Rules/RulesTab.vue';
+import Settings from './Settings/SettingsTab.vue';
 
 /**
  * A mapping of tabs to their corresponding properties, including:
