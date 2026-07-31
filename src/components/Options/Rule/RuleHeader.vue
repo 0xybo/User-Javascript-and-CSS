@@ -17,7 +17,7 @@ const state = useState();
 const storage = useStorage();
 
 function onSaveButtonClick() {
-    storage.saveDraft(state.rule);
+    state.saveRuleDraft();
 }
 </script>
 

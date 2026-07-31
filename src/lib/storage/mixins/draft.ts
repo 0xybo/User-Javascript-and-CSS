@@ -5,7 +5,7 @@ import { compileTS } from '@/lib/compiler/typescript';
 import { Logger } from '../../logger';
 import { clone, type Constructor } from '../../utils';
 import type { StorageServiceBase } from '../base';
-import { IDraft, IItem, IRule, ItemType } from '../types';
+import { IDraft, IItem, IRule, ItemType, type IModule } from '../types';
 import { DEFAULTS, isModule, isRule } from '../utils';
 
 /**
@@ -85,46 +85,69 @@ export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>)
         }
 
         /**
-         * Saves the specified draft, updating the corresponding item in the storage and compiling any necessary files.
+         * Saves the specified draft, updating the corresponding item in the storage and compiling
+         * any necessary files.
+         *
+         * @param draft The draft to save.
+         */
+        async saveRuleDraft(draft: IDraft<IRule>) {
+            if (draft.isNew) this.rules.push(draft.item);
+
+            const rule = draft.item;
+            rule.script.content = draft.files[rule.script.id];
+            rule.style.content = draft.files[rule.style.id];
+
+            if (rule.script.content) {
+                try {
+                    const result = await compileTS(rule.script.content, {});
+                    rule.script.compiled = result.output;
+                } catch (e) {
+                    Logger.error('TS compilation failed:', e);
+                    rule.script.compiled = rule.script.content;
+                }
+            } else rule.script.compiled = '';
+
+            if (rule.style.content) {
+                try {
+                    const result = await compileSCSS(rule.style.content, {
+                        important: rule.style.important,
+                    });
+                    rule.style.compiled = result.output;
+                } catch (e) {
+                    Logger.error('SCSS compilation failed:', e);
+                    rule.style.compiled = rule.style.content;
+                }
+            } else rule.style.compiled = '';
+
+            rule.updated = Date.now();
+
+            draft.isNew = false;
+        }
+
+        /**
+         * Saves the specified draft, updating the corresponding item in the storage and compiling
+         * any necessary files.
+         *
+         * @param draft The draft to save.
+         */
+        async saveModuleDraft(draft: IDraft<IModule>) {
+            if (draft.isNew) this.modules.push(draft.item);
+
+            const module = draft.item;
+            module.files.forEach((f) => (f.content = draft.files[f.id] || ''));
+
+            draft.isNew = false;
+        }
+
+        /**
+         * Saves the specified draft, updating the corresponding item in the storage and compiling
+         * any necessary files.
          *
          * @param draft The draft to save.
          */
         async saveDraft(draft: IDraft) {
-            if (isRule(draft)) {
-                if (draft.isNew) this.rules.push(draft.item as IRule);
-                const rule = draft.item;
-                rule.script.content = draft.files[rule.script.id];
-                rule.style.content = draft.files[rule.style.id];
-
-                if (rule.script.content) {
-                    try {
-                        const result = await compileTS(rule.script.content, {});
-                        rule.script.compiled = result.output;
-                    } catch (e) {
-                        Logger.error('TS compilation failed:', e);
-                        rule.script.compiled = rule.script.content;
-                    }
-                } else rule.script.compiled = '';
-
-                if (rule.style.content) {
-                    try {
-                        const result = await compileSCSS(rule.style.content, {
-                            important: rule.style.important,
-                        });
-                        rule.style.compiled = result.output;
-                    } catch (e) {
-                        Logger.error('SCSS compilation failed:', e);
-                        rule.style.compiled = rule.style.content;
-                    }
-                } else rule.style.compiled = '';
-
-                rule.updated = Date.now();
-            } else if (isModule(draft)) {
-                if (draft.isNew) this.modules.push(draft.item);
-                const module = draft.item;
-                module.files.forEach((f) => (f.content = draft.files[f.id]));
-            }
-            draft.isNew = false;
+            if (isRule(draft)) this.saveRuleDraft(draft);
+            else if (isModule(draft)) this.saveModuleDraft(draft);
         }
 
         /**

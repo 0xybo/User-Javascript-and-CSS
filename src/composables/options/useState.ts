@@ -8,12 +8,6 @@ import { useThrottleFn } from '@vueuse/core';
 import { useDraft } from '../useDraft';
 import { useStorage } from '../useStorage';
 
-/** A mapping of type letters to item types */
-const TYPES: Record<string, ItemType> = {
-    r: ItemType.Rule,
-    m: ItemType.Module,
-};
-
 const storage = useStorage();
 
 /**
@@ -39,8 +33,8 @@ class State {
     private _moduleDraftWatcher: ReturnType<typeof watch> | null = null;
 
     constructor() {
-        // this.watchOnceForSave(this.rule);
-        // this.watchOnceForSave(this.module);
+        this.watchOnceForSave(this.rule);
+        this.watchOnceForSave(this.module);
 
         this.goToHashLocation();
 
@@ -115,9 +109,18 @@ class State {
             this.switchTab(Tab.Modules);
         }
 
-        if (!isUnsaved(oldDraft)) storage.removeDraft(oldDraft);
-
+        this.cleanDrafts();
         this.updateHash();
+    }
+
+    /**
+     * Cleans up the drafts in storage by removing any drafts that have not been saved. It checks
+     * each draft in storage and removes it if it has no unsaved changes.
+     */
+    public cleanDrafts() {
+        storage.drafts.forEach((draft) => {
+            if (!isUnsaved(draft)) storage.removeDraft(draft);
+        });
     }
 
     /**
@@ -129,6 +132,24 @@ class State {
     public switchToNewDraft(type: ItemType) {
         const draft = storage.createDraftFromType(type);
         this.switchDraft(draft);
+    }
+
+    /**
+     * Saves the current rule draft to storage. It uses the storage service to save the rule draft.
+     * If the rule draft is new, it will be added to the storage. If it has been modified, the
+     * changes will be saved to the corresponding rule in storage.
+     */
+    public saveRuleDraft() {
+        storage.saveRuleDraft(this.rule);
+    }
+
+    /**
+     * Saves the current module draft to storage. It uses the storage service to save the module draft.
+     * If the module draft is new, it will be added to the storage. If it has been modified, the
+     * changes will be saved to the corresponding module in storage.
+     */
+    public saveModuleDraft() {
+        storage.saveModuleDraft(this.module);
     }
 
     /**
