@@ -1,4 +1,5 @@
-import { reactive, watch } from '#imports';
+import { onUnmounted, reactive, watch } from '#imports';
+import type { Reactive } from 'vue';
 
 /**
  * A class representing a dialog with a title, message, and actions.
@@ -20,6 +21,49 @@ import { reactive, watch } from '#imports';
  * });
  */
 class Dialog {
+    /**
+     * An array of all instances of the Dialog class.
+     * This allows for tracking and managing multiple dialog instances.
+     */
+    private static instances: Reactive<Map<string, Dialog>> = reactive(new Map());
+
+    /**
+     * Registers an instance of the Dialog class with the specified ID.
+     * This is useful for managing multiple dialog instances and ensuring that each instance can be
+     * uniquely identified.
+     */
+    static registerInstance(id: string, instance: Dialog) {
+        Dialog.instances.set(id, instance);
+    }
+
+    /**
+     * Unregisters the instance of the Dialog class with the specified ID.
+     * This is useful for cleaning up instances when they are no longer needed.
+     *
+     * @param id The ID of the dialog instance to unregister.
+     */
+    static unregisterInstance(id: string) {
+        Dialog.instances.delete(id);
+    }
+
+    /**
+     * Returns the instance of the Dialog class with the specified ID.
+     *
+     * @param id The ID of the dialog instance to retrieve.
+     * @returns The Dialog instance with the specified ID, or undefined if not found.
+     */
+    static getInstance(id: string): Dialog | undefined {
+        return Dialog.instances.get(id);
+    }
+
+    /**
+     * Returns all instances of the Dialog class.
+     * This allows for managing and interacting with all dialog instances in the application.
+     */
+    static getAllInstances(): Map<string, Dialog> {
+        return Dialog.instances;
+    }
+
     /** Whether the dialog is open. */
     public isOpen: boolean = false;
     /** The title of the dialog. */
@@ -30,9 +74,10 @@ class Dialog {
     public actions: { id: string; label: string; callback: () => void; class?: string }[] = [];
     /** The resolver for the dialog's promise. */
     public resolver: (() => void) | null = null;
+    public readonly id: string = crypto.randomUUID();
 
     constructor() {
-        return reactive(this) as unknown as Dialog;
+        return reactive(this) as Dialog;
     }
 
     /**
@@ -67,12 +112,14 @@ class Dialog {
             { once: true },
         );
 
+        console.debug(`Dialog opened with ID: ${this.id}`, this, Dialog);
+
         return new Promise((resolve) => (this.resolver = resolve));
     }
 }
 
 /**
- * Creates and returns a new instance of the {@link Dialog} class.
+ * Returns a new instance of the {@link Dialog} class.
  * @returns A new Dialog instance.
  *
  * @example
@@ -89,5 +136,24 @@ class Dialog {
  * });
  */
 export function useDialog() {
-    return new Dialog();
+    const dialog = new Dialog();
+
+    Dialog.registerInstance(dialog.id, dialog);
+    onUnmounted(() => {
+        Dialog.unregisterInstance(dialog.id);
+    });
+
+    console.debug(`Dialog instance created with ID: ${dialog.id}`, dialog, Dialog);
+
+    return dialog;
+}
+
+/**
+ * Returns all instances of the {@link Dialog} class.
+ *
+ * @internal
+ * @returns A reactive map of all Dialog instances, keyed by their unique IDs.
+ */
+export function useDialogs() {
+    return Dialog.getAllInstances();
 }

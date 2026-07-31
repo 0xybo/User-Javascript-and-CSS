@@ -9,14 +9,18 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-import { useDialog } from '@/composables/options/useDialog';
+import { useDialogs } from '@/composables/options/useDialog';
 import { cn } from '@/lib/tailwind';
 
-const dialog = useDialog();
+const dialogs = useDialogs();
 </script>
 
 <template>
-    <AlertDialog v-model:open="dialog.isOpen">
+    <AlertDialog
+        v-for="[id, dialog] of dialogs"
+        :key="id"
+        v-model:open="dialog.isOpen as unknown as boolean"
+    >
         <AlertDialogContent>
             <AlertDialogHeader>
                 <AlertDialogTitle>{{ dialog.title }}</AlertDialogTitle>
