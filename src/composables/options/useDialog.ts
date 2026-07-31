@@ -112,8 +112,6 @@ class Dialog {
             { once: true },
         );
 
-        console.debug(`Dialog opened with ID: ${this.id}`, this, Dialog);
-
         return new Promise((resolve) => (this.resolver = resolve));
     }
 }
@@ -142,8 +140,6 @@ export function useDialog() {
     onUnmounted(() => {
         Dialog.unregisterInstance(dialog.id);
     });
-
-    console.debug(`Dialog instance created with ID: ${dialog.id}`, dialog, Dialog);
 
     return dialog;
 }
