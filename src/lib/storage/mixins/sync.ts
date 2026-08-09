@@ -74,7 +74,9 @@ export function StorageServiceSyncMixin(Base: Constructor<StorageServiceBase>) {
             }
 
             const chunks = Object.values(
-                await browser.storage.sync.get([...Array(this.remoteInfo.chunkLength).keys()]),
+                await browser.storage.sync.get([
+                    ...Array(this.remoteInfo.chunkLength).keys().map(String),
+                ]),
             );
 
             const decompressed = await _decompress(chunks.join(''));

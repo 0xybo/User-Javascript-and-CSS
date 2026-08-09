@@ -4,12 +4,13 @@ import Button from '@/components/ui/button/Button.vue';
 import Label from '@/components/ui/label/Label.vue';
 import Separator from '@/components/ui/separator/Separator.vue';
 import { useStorage } from '@/composables/useStorage';
+import { clean } from '@/lib/storage/utils';
 import { DownloadIcon, Trash2Icon, UploadIcon } from 'lucide-vue-next';
 
 const storage = useStorage();
 
 function onExportJSON() {
-    const data = JSON.stringify(storage.current, null, 2);
+    const data = JSON.stringify(clean(storage.current), null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -64,12 +65,7 @@ async function onWipeData() {
                     type="file"
                     accept=".json"
                     class="hidden"
-                    @change="
-                        (e) =>
-                            onImportJSON(
-                                (e.target as HTMLInputElement).files?.[0],
-                            )
-                    "
+                    @change="(e) => onImportJSON((e.target as HTMLInputElement).files?.[0])"
                 />
             </Label>
             <Button

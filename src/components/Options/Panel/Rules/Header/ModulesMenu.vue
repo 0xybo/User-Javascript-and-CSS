@@ -32,6 +32,14 @@ function onCheckboxChange(checked: boolean | 'indeterminate', module: IModule) {
             1,
         );
 }
+
+/**
+ * Handles the click event for the "Add Module" button in the modules menu. Switches the current
+ * tab to the Modules tab.
+ */
+function onAddModuleButtonClick() {
+    state.switchTab(Tab.Modules);
+}
 </script>
 
 <template>
@@ -78,7 +86,7 @@ function onCheckboxChange(checked: boolean | 'indeterminate', module: IModule) {
                 {{ i18n.t('RULES_NO_MODULES') }}
                 <PopoverClose as-child>
                     <Button
-                        @click="state.tab = Tab.Modules"
+                        @click="onAddModuleButtonClick"
                         variant="ghost"
                         class="bg-accent text-accent-foreground w-full"
                     >

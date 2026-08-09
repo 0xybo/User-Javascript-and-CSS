@@ -164,9 +164,10 @@ export function clean(settings: IStorage, sync: boolean = false): Record<string,
     if (sync) {
         cleaned.rules = settings.rules.filter((rule: IRule) => rule.sync);
         cleaned.modules = settings.modules.filter((module: IModule) => module.sync);
-        delete cleaned.drafts;
         delete (cleaned.info as Record<string, unknown>).emitter;
     }
+
+    delete cleaned.drafts;
 
     // Extract rule files
     for (const rule of cleaned.rules as IRule[]) {
@@ -191,19 +192,6 @@ export function clean(settings: IStorage, sync: boolean = false): Record<string,
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         module.files.forEach((f) => delete (f as any).content);
-    }
-
-    // Extract draft files
-    if (!sync) {
-        for (const draft of cleaned.drafts as IDraft[]) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const d = draft as any;
-            d.fileIds = extractDraftFiles(cleaned, draft.files);
-            d.itemId = draft.item.id;
-            d.itemType = draft.item.type;
-            delete d.files;
-            delete d.item;
-        }
     }
 
     return cleaned;
