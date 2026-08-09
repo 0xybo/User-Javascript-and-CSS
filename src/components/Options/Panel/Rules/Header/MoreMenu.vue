@@ -10,12 +10,14 @@ import PopoverTrigger from '@/components/ui/popover/PopoverTrigger.vue';
 import Separator from '@/components/ui/separator/Separator.vue';
 import { useState } from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
+import { useToast } from '@/composables/useToast';
 import { IRule, ItemType } from '@/lib/storage/types';
 import { EllipsisVerticalIcon, Trash2Icon, Undo2Icon } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 const state = useState();
 const storage = useStorage();
+const { push } = useToast();
 /** Whether the popover is opened */
 const isOpened = ref(false);
 
@@ -26,6 +28,7 @@ function onRemoveButtonClick() {
     storage.removeItem(state.rule.item);
     state.switchToNewDraft(ItemType.Rule);
     isOpened.value = false;
+    push({ title: i18n.t('TOAST_RULE_REMOVED'), variant: 'info' });
 }
 
 /**
@@ -43,7 +46,12 @@ function onRevertButtonClick() {
  * Updates the enabled state of the current rule based on the checkbox value
  */
 function onCheckboxUpdated(value: boolean | 'indeterminate') {
-    (state.rule.item as IRule).enabled = value === true;
+    if (value === 'indeterminate') return;
+    (state.rule.item as IRule).enabled = value;
+    push({
+        title: i18n.t(value ? 'TOAST_RULE_ENABLED' : 'TOAST_RULE_DISABLED'),
+        variant: 'info',
+    });
 }
 </script>
 

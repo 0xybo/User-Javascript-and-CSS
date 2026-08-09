@@ -7,6 +7,7 @@ import InputGroupInput from '@/components/ui/input-group/InputGroupInput.vue';
 import Label from '@/components/ui/label/Label.vue';
 import { useState } from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
+import { useToast } from '@/composables/useToast';
 import { IRule, ItemType } from '@/lib/storage/types';
 import { cn } from '@/lib/tailwind';
 import { BadgeCheckIcon, SaveIcon } from 'lucide-vue-next';
@@ -15,9 +16,19 @@ import MoreMenu from './Header/MoreMenu.vue';
 
 const state = useState();
 const storage = useStorage();
+const { push } = useToast();
 
+/**
+ * Handles the click event on the save button. Saves the current rule draft and displays a toast
+ * notification indicating whether the rule was created or updated.
+ */
 function onSaveButtonClick() {
+    const wasNew = state.rule.isNew;
     state.saveRuleDraft();
+    push({
+        title: i18n.t(wasNew ? 'TOAST_RULE_CREATED' : 'TOAST_RULE_UPDATED'),
+        variant: 'success',
+    });
 }
 </script>
 

@@ -5,23 +5,29 @@ import Label from '@/components/ui/label/Label.vue';
 import Separator from '@/components/ui/separator/Separator.vue';
 import Switch from '@/components/ui/switch/Switch.vue';
 import { useStorage } from '@/composables/useStorage';
+import { useToast } from '@/composables/useToast';
 import { CloudDownloadIcon, CloudUploadIcon } from 'lucide-vue-next';
 
 const storage = useStorage();
+const { push } = useToast();
 
 async function onUploadSync() {
     try {
         await storage.upload(true);
+        push({ title: i18n.t('TOAST_SYNC_UPLOAD_SUCCESS'), variant: 'success' });
     } catch (e) {
         console.error('Sync upload failed:', e);
+        push({ title: i18n.t('TOAST_SYNC_UPLOAD_ERROR'), variant: 'error' });
     }
 }
 
 async function onDownloadSync() {
     try {
         await storage.download(true);
+        push({ title: i18n.t('TOAST_SYNC_DOWNLOAD_SUCCESS'), variant: 'success' });
     } catch (e) {
         console.error('Sync download failed:', e);
+        push({ title: i18n.t('TOAST_SYNC_DOWNLOAD_ERROR'), variant: 'error' });
     }
 }
 </script>

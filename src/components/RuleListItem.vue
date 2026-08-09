@@ -3,6 +3,7 @@
 import { computed, i18n } from '#imports';
 import { useState } from '@/composables/options/useState.ts';
 import { useStorage } from '@/composables/useStorage';
+import { useToast } from '@/composables/useToast';
 import { getName } from '@/lib/rules';
 import { IRule } from '@/lib/storage/types';
 import { cn } from '@/lib/tailwind';
@@ -18,23 +19,45 @@ const emits = defineEmits<{
 }>();
 const state = useState();
 const storage = useStorage();
+const { push } = useToast();
 
+/** The name of the rule. */
 const name = computed(() => getName(props.rule));
+/** The draft associated with the rule. */
 const draft = computed(() => storage.getDraftFromItem(props.rule));
+/** Whether the current draft is associated with the rule. */
 const isCurrentDraft = computed(() => draft.value?.item.id === state.rule.item.id);
+/** Whether the rule has been changed or is new. */
 const hasChanged = computed(() => draft.value?.changed || draft.value?.isNew);
 
+/**
+ * Opens the rule list item if it is not already opened. Emits an 'open' event to notify the
+ * parent component.
+ */
 function open() {
     if (props.opened) return;
     emits('open');
 }
 
-function onSwitchChange() {
-    emits('change', props.rule.enabled);
-    if (props.rule.enabled) emits('enable');
+/**
+ * Handles the change event when the switch is toggled. Updates the rule's enabled state and emits
+ * corresponding events.
+ *
+ * @param value - The new enabled state of the rule.
+ */
+function onSwitchChange(value: boolean) {
+    props.rule.enabled = value;
+    emits('change', value);
+    if (value) emits('enable');
     else emits('disable');
+    push({ title: i18n.t(value ? 'TOAST_RULE_ENABLED' : 'TOAST_RULE_DISABLED'), variant: 'info' });
 }
 
+/**
+ * Handles the click event on the switch to prevent it from propagating to parent elements.
+ *
+ * @param e - The mouse event triggered by the click.
+ */
 function onSwitchClick(e: MouseEvent) {
     e.stopPropagation();
 }
@@ -74,7 +97,7 @@ function onSwitchClick(e: MouseEvent) {
             </div>
         </div>
         <Switch
-            v-model="props.rule.enabled"
+            :model-value="props.rule.enabled"
             @update:model-value="onSwitchChange"
             @click="onSwitchClick"
             :class="

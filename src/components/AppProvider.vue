@@ -4,6 +4,7 @@ import { watchTheme } from '@/composables/useTheme';
 import { ref } from 'vue';
 import GlobalConfirmDialog from './GlobalConfirmDialog.vue';
 import GlobalDialog from './GlobalDialog.vue';
+import GlobalToast from './GlobalToast.vue';
 import Spinner from './ui/spinner/Spinner.vue';
 import TooltipProvider from './ui/tooltip/TooltipProvider.vue';
 
@@ -28,4 +29,5 @@ setTimeout(() => {
     </TooltipProvider>
     <GlobalConfirmDialog />
     <GlobalDialog />
+    <GlobalToast />
 </template>

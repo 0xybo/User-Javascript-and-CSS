@@ -292,7 +292,7 @@
     - [ ] Firefox: alternative OAuth approach
 - [ ] **Sync trigger UI** — manual sync button, automatic sync option
 - [x] **Per-rule sync checkbox** (only synced rules are uploaded)
-- [ ] **Sync status indicators** (last synced, conflict warning, etc.)
+- [ ] **Sync status indicators** (last synced, conflict warning, free space, etc.)
 
 ---
 
@@ -363,37 +363,37 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
 
 ## 19. Original Extension Features — Verification Checklist
 
-| Feature                                    | Original | New    | Status                   |
-| ------------------------------------------ | -------- | ------ | ------------------------ |
-| Manifest V3                                | ✅       | ✅     | Done                     |
-| Service worker background                  | ✅       | ✅     | Done                     |
-| Content script (document_start)            | ✅       | ✅     | Done                     |
+| Feature                                    | Original | New    | Status                    |
+| ------------------------------------------ | -------- | ------ | ------------------------- |
+| Manifest V3                                | ✅       | ✅     | Done                      |
+| Service worker background                  | ✅       | ✅     | Done                      |
+| Content script (document_start)            | ✅       | ✅     | Done                      |
 | SPA navigation detection (Navigation API)  | ✅       | ✅     | Done (+ history/fallback) |
-| CSS injection via scripting.insertCSS      | ✅       | ✅     | Done                     |
-| JS injection via userScripts API           | ✅       | ✅     | Done (with fallback)     |
-| MAIN/USER_SCRIPT world selection           | ✅       | ✅     | Done                     |
-| URL pattern matching (glob/regex)          | ✅       | ✅     | Done in lib              |
-| Rule CRUD                                  | ✅       | ✅     | Done                     |
-| Rule enable/disable toggle                 | ✅       | ✅     | Done                     |
-| Rule flags (deep, iso, atStart, important) | ✅       | 🔶     | Partially in schema      |
-| Popup: matching rules list                 | ✅       | ✅     | Done                     |
-| Popup: toggle rules                        | ✅       | ✅     | Done                     |
-| Popup: tab reload                          | ✅       | 🔶     | After toggle only        |
-| Options: code editor                       | Ace      | Monaco | Different but functional |
-| Options: 14 themes                         | ✅       | 🔶     | Hardcoded vs-dark        |
-| Options: JS snippets                       | 35+      | ⬜     | Not started              |
-| Options: SCSS/SASS compilation             | ✅       | ⬜     | Not started              |
-| Options: CSS !important toggle             | ✅       | 🔶     | In schema, not wired     |
-| Options: drag-and-drop reorder             | ✅       | ⬜     | Not started              |
-| Options: duplicate rule                    | ✅       | ⬜     | Not started              |
-| Real-time syntax checking                  | ✅       | ✅     | Monaco built-in          |
-| Web worker for editing                     | ✅       | ⬜     | Not started              |
-| i18n (en, ru)                              | ✅       | ✅     | en, fr done              |
-| Cloud sync (browser.storage.sync)          | ⬜       | ✅     | Extends original         |
-| Cloud sync (Google Drive etc.)             | ⬜       | 🔶     | Schema exists            |
-| Modules/libraries tab                      | ⬜       | 🔶     | Stubs exist              |
-| Extended settings                          | ⬜       | ✅     | Editor, theme, ext, sync |
-| jQuery as web accessible resource          | ✅       | ⬜     | Not started              |
+| CSS injection via scripting.insertCSS      | ✅       | ✅     | Done                      |
+| JS injection via userScripts API           | ✅       | ✅     | Done (with fallback)      |
+| MAIN/USER_SCRIPT world selection           | ✅       | ✅     | Done                      |
+| URL pattern matching (glob/regex)          | ✅       | ✅     | Done in lib               |
+| Rule CRUD                                  | ✅       | ✅     | Done                      |
+| Rule enable/disable toggle                 | ✅       | ✅     | Done                      |
+| Rule flags (deep, iso, atStart, important) | ✅       | 🔶     | Partially in schema       |
+| Popup: matching rules list                 | ✅       | ✅     | Done                      |
+| Popup: toggle rules                        | ✅       | ✅     | Done                      |
+| Popup: tab reload                          | ✅       | 🔶     | After toggle only         |
+| Options: code editor                       | Ace      | Monaco | Different but functional  |
+| Options: 14 themes                         | ✅       | 🔶     | Hardcoded vs-dark         |
+| Options: JS snippets                       | 35+      | ⬜     | Not started               |
+| Options: SCSS/SASS compilation             | ✅       | ⬜     | Not started               |
+| Options: CSS !important toggle             | ✅       | 🔶     | In schema, not wired      |
+| Options: drag-and-drop reorder             | ✅       | ⬜     | Not started               |
+| Options: duplicate rule                    | ✅       | ⬜     | Not started               |
+| Real-time syntax checking                  | ✅       | ✅     | Monaco built-in           |
+| Web worker for editing                     | ✅       | ⬜     | Not started               |
+| i18n (en, ru)                              | ✅       | ✅     | en, fr done               |
+| Cloud sync (browser.storage.sync)          | ⬜       | ✅     | Extends original          |
+| Cloud sync (Google Drive etc.)             | ⬜       | 🔶     | Schema exists             |
+| Modules/libraries tab                      | ⬜       | 🔶     | Stubs exist               |
+| Extended settings                          | ⬜       | ✅     | Editor, theme, ext, sync  |
+| jQuery as web accessible resource          | ✅       | ⬜     | Not started               |
 
 ---
 
@@ -437,3 +437,20 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
 - [ ] Clean up empty/stub files (ActionsScript.vue, ActionsStyle.vue)
 - [ ] Remove unused imports
 - [ ] Verify `IS_DEV` environment variable works in build
+
+---
+
+## 23. Toast Notifications
+
+**Status: ✅ Implemented** (see ISSUES.md #2)
+
+- [x] `useToast` composable — global reactive toast store (`push` / `remove`, auto-dismiss)
+- [x] `GlobalToast.vue` — fixed top-right viewport, variants (success / error / info), close button
+- [x] Mounted in `AppProvider.vue` → available in both options and popup
+- [x] Toast on rule **created** / **updated** (Save button, `RuleHeader.vue`)
+- [x] Toast on rule **deleted** (`MoreMenu.vue`)
+- [x] Toast on rule **enabled / disabled** (list toggle `RuleListItem.vue`, MoreMenu checkbox)
+- [x] Toast on settings **exported** / **imported** / **reset** (`StorageSection.vue`)
+- [x] Toast on cloud sync **upload / download** success and failure (`CloudSyncSection.vue`)
+- [x] i18n `TOAST_*` keys in `en` + `fr` (incl. module keys)
+- [ ] Module toasts — blocked until Module CRUD UI is implemented (section 7 stubs)

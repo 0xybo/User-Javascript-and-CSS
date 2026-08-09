@@ -9,7 +9,7 @@ import type { StorageServiceDrafts } from './draft';
  * @param Base - The base class to extend with item-related functionality.
  * @returns A new class that extends the base class with item-related methods.
  */
-export function StorageServiceItemMixin(Base: StorageServiceDrafts) {
+export function StorageServiceItemMixin<T extends StorageServiceDrafts>(Base: T) {
     return class StorageServiceItem extends Base {
         /**
          * Removes the specified item (rule or module) from the storage, along with any associated

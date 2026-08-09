@@ -4,9 +4,9 @@ import { compileSCSS } from '@/lib/compiler/scss';
 import { compileTS } from '@/lib/compiler/typescript';
 import { Logger } from '../../logger';
 import { clone, type Constructor } from '../../utils';
-import type { StorageServiceBase } from '../base';
 import { IDraft, IItem, IRule, ItemType, type IModule } from '../types';
 import { DEFAULTS, isModule, isRule } from '../utils';
+import type { StorageServiceSync } from './sync';
 
 /**
  * Mixin that adds draft-related functionality to the storage service, including methods for
@@ -15,7 +15,7 @@ import { DEFAULTS, isModule, isRule } from '../utils';
  * @param Base - The base class to extend with draft-related functionality.
  * @returns A new class that extends the base class with draft-related methods.
  */
-export function StorageServiceDraftsMixin(Base: Constructor<StorageServiceBase>) {
+export function StorageServiceDraftsMixin<T extends StorageServiceSync>(Base: T) {
     class _StorageServiceDrafts extends Base {
         /**
          * Creates a new draft based on an existing item.

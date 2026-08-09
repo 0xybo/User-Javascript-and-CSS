@@ -18,7 +18,7 @@ import { compress, parse } from '../utils';
  * @param Base - The base class to extend with synchronization functionality.
  * @returns A new class that extends the base class with synchronization methods.
  */
-export function StorageServiceSyncMixin(Base: Constructor<StorageServiceBase>) {
+export function StorageServiceSyncMixin<T extends Constructor<StorageServiceBase>>(Base: T) {
     class _StorageServiceSync extends Base {
         /**
          * Synchronizes the local storage information with the remote storage information. This method retrieves the last updated timestamp from the remote storage and updates the local remoteInfo accordingly.
