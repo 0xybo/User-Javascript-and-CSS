@@ -244,12 +244,20 @@ export function printDiff(diffResult: object | typeof UNCHANGED): any[] {
 
             switch (entry.type) {
                 case ADDED:
-                    lines.push(`+ ${path}: %o`);
-                    substitutions.push(formatValue(entry.value));
+                    lines.push(`%c+%c ${path}: %o`);
+                    substitutions.push(
+                        'color: green; font-weight: bold;',
+                        'color: inherit; font-weight: normal;',
+                        formatValue(entry.value),
+                    );
                     break;
                 case REMOVED:
-                    lines.push(`- ${path}: %o`);
-                    substitutions.push(formatValue(entry.value));
+                    lines.push(`%c-%c ${path}: %o`);
+                    substitutions.push(
+                        'color: red; font-weight: bold;',
+                        'color: inherit; font-weight: normal;',
+                        formatValue(entry.value),
+                    );
                     break;
                 case UPDATED:
                     if (
@@ -260,9 +268,13 @@ export function printDiff(diffResult: object | typeof UNCHANGED): any[] {
                         // nested diff object
                         walk(entry.value, path);
                     } else {
-                        lines.push(`~ ${path}: %o -> %o`);
-                        substitutions.push(formatValue(entry.oldValue));
-                        substitutions.push(formatValue(entry.newValue));
+                        lines.push(`%c~%c ${path}: %o -> %o`);
+                        substitutions.push(
+                            'color: orange; font-weight: bold;',
+                            'color: inherit; font-weight: normal;',
+                            formatValue(entry.oldValue),
+                            formatValue(entry.newValue),
+                        );
                     }
                     break;
             }

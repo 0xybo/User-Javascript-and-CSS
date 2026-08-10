@@ -43,8 +43,8 @@ async function onDownloadSync() {
             <div class="flex items-center justify-between">
                 <Label>{{ t('SETTINGS.SYNC_ENABLED') }}</Label>
                 <Switch
-                    :checked="storage.settings.syncEnabled"
-                    @update:checked="(v: boolean) => (storage.settings.syncEnabled = v)"
+                    :model-value="storage.settings.syncEnabled"
+                    @update:model-value="(v: boolean) => (storage.settings.syncEnabled = v)"
                 />
             </div>
             <div class="flex flex-wrap gap-3">

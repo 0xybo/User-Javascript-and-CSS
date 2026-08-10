@@ -38,8 +38,8 @@ const SORT_OPTIONS = Object.entries(sort).map(([key, val]) => ({
                     </p>
                 </div>
                 <Switch
-                    :checked="storage.settings.badgeCount"
-                    @update:checked="(v: boolean) => (storage.settings.badgeCount = v)"
+                    :model-value="storage.settings.badgeCount"
+                    @update:model-value="(v: boolean) => (storage.settings.badgeCount = v)"
                 />
             </div>
             <div class="flex items-center justify-between">
@@ -82,15 +82,15 @@ const SORT_OPTIONS = Object.entries(sort).map(([key, val]) => ({
                     </SelectContent>
                 </Select>
             </div>
-            <div class="flex items-center justify-between">
+            <!-- <div class="flex items-center justify-between">
                 <div>
                     <Label>{{ t('SETTINGS.DEV_MODE') }}</Label>
                 </div>
                 <Switch
-                    :checked="storage.settings.autoEnableDevMode"
-                    @update:checked="(v: boolean) => (storage.settings.autoEnableDevMode = v)"
+                    :model-value="storage.settings.autoEnableDevMode"
+                    @update:model-value="(v: boolean) => (storage.settings.autoEnableDevMode = v)"
                 />
-            </div>
+            </div> -->
         </div>
     </section>
 </template>

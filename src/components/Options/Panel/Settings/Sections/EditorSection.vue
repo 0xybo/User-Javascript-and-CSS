@@ -93,22 +93,24 @@ const EDITOR_TYPES = [
                 <div class="flex items-center justify-between">
                     <Label>{{ t('SETTINGS.WORD_WRAP') }}</Label>
                     <Switch
-                        :checked="storage.settings.editor.wrap"
-                        @update:checked="(v: boolean) => (storage.settings.editor.wrap = v)"
+                        :model-value="storage.settings.editor.wrap"
+                        @update:model-value="(v: boolean) => (storage.settings.editor.wrap = v)"
                     />
                 </div>
                 <div class="flex items-center justify-between">
                     <Label>{{ t('SETTINGS.LIGATURES') }}</Label>
                     <Switch
-                        :checked="storage.settings.editor.ligatures"
-                        @update:checked="(v: boolean) => (storage.settings.editor.ligatures = v)"
+                        :model-value="storage.settings.editor.ligatures"
+                        @update:model-value="
+                            (v: boolean) => (storage.settings.editor.ligatures = v)
+                        "
                     />
                 </div>
                 <div class="flex items-center justify-between">
                     <Label>{{ t('SETTINGS.INVISIBLE_CHARS') }}</Label>
                     <Switch
-                        :checked="storage.settings.editor.invisibleChars"
-                        @update:checked="
+                        :model-value="storage.settings.editor.invisibleChars"
+                        @update:model-value="
                             (v: boolean) => (storage.settings.editor.invisibleChars = v)
                         "
                     />
@@ -116,8 +118,8 @@ const EDITOR_TYPES = [
                 <div class="flex items-center justify-between">
                     <Label>{{ t('SETTINGS.SOFT_TABS') }}</Label>
                     <Switch
-                        :checked="storage.settings.editor.softTabs"
-                        @update:checked="(v: boolean) => (storage.settings.editor.softTabs = v)"
+                        :model-value="storage.settings.editor.softTabs"
+                        @update:model-value="(v: boolean) => (storage.settings.editor.softTabs = v)"
                     />
                 </div>
                 <div
@@ -126,8 +128,8 @@ const EDITOR_TYPES = [
                 >
                     <Label>{{ t('SETTINGS.MINIMAP') }}</Label>
                     <Switch
-                        :checked="(storage.settings.editor as any).minimap"
-                        @update:checked="
+                        :model-value="(storage.settings.editor as any).minimap"
+                        @update:model-value="
                             (v: boolean) => ((storage.settings.editor as any).minimap = v)
                         "
                     />
