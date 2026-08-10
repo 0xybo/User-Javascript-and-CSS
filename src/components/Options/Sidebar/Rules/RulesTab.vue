@@ -58,29 +58,31 @@ function onRuleListOpen(rule: IRule) {
 
 <template>
     <div class="flex h-full flex-col overflow-y-auto">
-        <div class="flex min-h-8 flex-row justify-between px-4 py-2 text-xs select-none">
-            <div class="flex items-center tracking-widest uppercase">
-                {{ i18n.t('COMMON_RULES') }} ({{ rules.length }})
+        <div>
+            <div class="flex min-h-8 flex-row justify-between px-4 py-2 text-xs select-none">
+                <div class="flex items-center tracking-widest uppercase">
+                    {{ i18n.t('COMMON_RULES') }} ({{ rules.length }})
+                </div>
+                <Button
+                    class="text-foreground flex h-min flex-row gap-1 p-0"
+                    variant="link"
+                    @click="onNewRuleButtonClick"
+                >
+                    <BookPlus :size="16" />
+                    {{ i18n.t('COMMON_NEW_RULES') }}
+                </Button>
             </div>
-            <Button
-                class="text-foreground flex h-min flex-row gap-1 p-0"
-                variant="link"
-                @click="onNewRuleButtonClick"
-            >
-                <BookPlus :size="16" />
-                {{ i18n.t('COMMON_NEW_RULES') }}
-            </Button>
+            <div class="flex flex-row gap-2 border-b px-4 py-3">
+                <Input
+                    type="text"
+                    :placeholder="i18n.t('COMMON_FIND')"
+                    class="border-secondary"
+                    v-model="searchQuery"
+                />
+                <SortSelect />
+            </div>
         </div>
-        <div class="flex flex-row gap-2 border-b px-4 py-3">
-            <Input
-                type="text"
-                :placeholder="i18n.t('COMMON_FIND')"
-                class="border-secondary"
-                v-model="searchQuery"
-            />
-            <SortSelect />
-        </div>
-        <div class="flex flex-1 flex-col">
+        <div class="flex flex-1 flex-col overflow-y-auto">
             <RuleList :rules="rules" @open="onRuleListOpen" :opened-rule-id="state.rule.item.id" />
         </div>
     </div>
