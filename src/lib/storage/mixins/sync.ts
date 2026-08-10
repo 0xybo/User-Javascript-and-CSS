@@ -8,7 +8,7 @@ import {
 } from '../../errors';
 import { deepMerge, type Constructor } from '../../utils';
 import type { StorageServiceBase } from '../base';
-import { RemoteSettings } from '../types';
+import { RemoteSettings, RemoteSettingsInfo } from '../types';
 import { compress, parse } from '../utils';
 
 /**
@@ -33,6 +33,18 @@ export function StorageServiceSyncMixin<T extends Constructor<StorageServiceBase
         }
 
         /**
+         * Fetches the current remote storage information and returns it. The returned information
+         * is also stored on the instance, so subsequent calls on this service reflect the latest
+         * known state of the remote storage.
+         *
+         * @returns The current remote storage information.
+         */
+        async getRemoteInfo(): Promise<RemoteSettingsInfo> {
+            await this._syncInfo();
+            return this.remoteInfo;
+        }
+
+        /**
          * Uploads the current storage state to the remote storage. This method compresses the storage data and saves it to the remote storage, replacing any existing data.
          *
          * @param force Whether to force the upload even if the local storage is older than the remote storage (default: false).
@@ -51,6 +63,7 @@ export function StorageServiceSyncMixin<T extends Constructor<StorageServiceBase
                 info: {
                     chunkLength: chunks.length,
                     updated: Date.now(),
+                    emitter: this.info.emitter,
                 },
             });
         }

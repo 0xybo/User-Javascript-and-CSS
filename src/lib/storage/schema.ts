@@ -9,7 +9,7 @@ import {
     zLightThemePalette,
     zTheme,
 } from './theme';
-import { FileType, ItemType, SortBy } from './types';
+import { FileType, ItemType, SortBy, SyncFrequency, SyncMethod } from './types';
 
 z.config({
     // Disable JIT mode to avoid issues with environments that disallow eval, such as browser
@@ -175,6 +175,10 @@ export const zSettings = z.object({
     language: z.enum(Object.keys(locales) as [string, ...string[]]).default(defaultLocale),
     /** Indicates whether synchronization is enabled for the extension. Defaults to true. */
     syncEnabled: z.boolean().default(true),
+    /** The frequency of the automatic synchronization. Defaults to {@link SyncFrequency.Daily}. */
+    syncFrequency: z.enum(SyncFrequency).default(SyncFrequency.Daily),
+    /** The method of the automatic synchronization. Defaults to {@link SyncMethod.Both}. */
+    syncMethod: z.enum(SyncMethod).default(SyncMethod.Both),
     /** Indicates whether developer mode is enabled for the extension. Defaults to false. */
     autoEnableDevMode: z.boolean().default(false),
 });
@@ -228,6 +232,9 @@ export const zRemoteSettingsInfo = z.object({
     chunkLength: z.number().default(0),
     /** The timestamp of the last update. Defaults to 0. */
     updated: z.number().default(0),
+    /** The emitter identifier of the device that last updated the remote data. Defaults to an
+     * empty string. */
+    emitter: z.string().default(''),
 });
 
 /**

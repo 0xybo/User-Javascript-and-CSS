@@ -30,6 +30,16 @@ export default interface Messages {
             DESCRIPTION: string;
             TITLE: string;
         };
+        SYNC: {
+            DOWNLOAD_MESSAGE: string;
+            DOWNLOAD_TITLE: string;
+            LOCAL_EMITTER: WithPositionalArgs<1>;
+            LOCAL_UPDATED: WithPositionalArgs<1>;
+            REMOTE_EMITTER: WithPositionalArgs<1>;
+            REMOTE_UPDATED: WithPositionalArgs<1>;
+            UPLOAD_MESSAGE: string;
+            UPLOAD_TITLE: string;
+        };
     };
     DRAFT: {
         ALREADY_EXISTS: string;
@@ -128,7 +138,26 @@ export default interface Messages {
         STORAGE: string;
         SYNC_DOWNLOAD: string;
         SYNC_ENABLED: string;
+        SYNC_ENABLED_DESCRIPTION: string;
+        SYNC_FREQUENCY: {
+            DESCRIPTION: string;
+            LABEL: string;
+            OPTIONS: {
+                DAILY: string;
+                HOURLY: string;
+                WEEKLY: string;
+            };
+        };
         SYNC_LAST_SYNCED: string;
+        SYNC_METHOD: {
+            DESCRIPTION: string;
+            LABEL: string;
+            OPTIONS: {
+                BOTH: string;
+                PULL: string;
+                PUSH: string;
+            };
+        };
         SYNC_NEVER: string;
         SYNC_UPLOAD: string;
         TAB_SIZE: string;

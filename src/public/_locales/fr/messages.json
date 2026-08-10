@@ -4,5 +4,14 @@
     },
     "EXTENSION_NAME": {
         "message": "User Javascript and CSS"
+    },
+    "SYNC_NOTIFICATION_BODY_DOWNLOAD": {
+        "message": "Vos paramètres locaux sont plus récents que ceux du cloud. La synchronisation automatique a été ignorée car elle pourrait écraser vos données locales. Ouvrez l'extension pour choisir quoi faire."
+    },
+    "SYNC_NOTIFICATION_BODY_UPLOAD": {
+        "message": "Les paramètres du cloud sont plus récents que les vôtres. La synchronisation automatique a été ignorée car elle pourrait écraser les données du cloud. Ouvrez l'extension pour choisir quoi faire."
+    },
+    "SYNC_NOTIFICATION_TITLE": {
+        "message": "Synchronisation cloud en pause"
     }
 }

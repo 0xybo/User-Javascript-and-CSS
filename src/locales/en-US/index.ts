@@ -33,6 +33,18 @@ export default {
                 'The code shown is the compiled code. It may differ from the code you wrote, but it is the one that will be executed on the page. The code is compiled every time you save the rule.',
             TITLE: 'Preview',
         },
+        SYNC: {
+            DOWNLOAD_MESSAGE:
+                'Are you sure you want to download your settings from the cloud? This action cannot be undone.',
+            DOWNLOAD_TITLE: 'Download settings',
+            LOCAL_EMITTER: 'Local instance: {0}',
+            LOCAL_UPDATED: 'Local last update: {0}',
+            REMOTE_EMITTER: 'Remote instance: {0}',
+            REMOTE_UPDATED: 'Remote last update: {0}',
+            UPLOAD_MESSAGE:
+                'Are you sure you want to upload your settings to the cloud? This action cannot be undone.',
+            UPLOAD_TITLE: 'Upload settings',
+        },
     },
     DRAFT: {
         ALREADY_EXISTS:
@@ -139,7 +151,28 @@ export default {
         STORAGE: 'Storage',
         SYNC_DOWNLOAD: 'Download from cloud',
         SYNC_ENABLED: 'Enable cloud sync',
+        SYNC_ENABLED_DESCRIPTION:
+            'Periodically compare the local settings with the cloud and synchronize them automatically.',
+        SYNC_FREQUENCY: {
+            LABEL: 'Sync frequency',
+            DESCRIPTION: 'How often the extension checks the cloud for updates.',
+            OPTIONS: {
+                HOURLY: 'Every hour',
+                DAILY: 'Every day',
+                WEEKLY: 'Every week',
+            },
+        },
         SYNC_LAST_SYNCED: 'Last synced',
+        SYNC_METHOD: {
+            LABEL: 'Sync method',
+            DESCRIPTION:
+                'Whether the extension pushes local changes, pulls remote changes, or both.',
+            OPTIONS: {
+                BOTH: 'Push and pull',
+                PULL: 'Pull only',
+                PUSH: 'Push only',
+            },
+        },
         SYNC_NEVER: 'Never',
         SYNC_UPLOAD: 'Upload to cloud',
         TAB_SIZE: 'Tab size',

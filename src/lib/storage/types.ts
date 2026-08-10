@@ -39,6 +39,24 @@ export enum FileType {
 }
 
 /**
+ * Enumerates the possible frequencies for automatic cloud synchronization.
+ */
+export enum SyncFrequency {
+    Hourly = 'hourly',
+    Daily = 'daily',
+    Weekly = 'weekly',
+}
+
+/**
+ * Enumerates the possible methods for automatic cloud synchronization.
+ */
+export enum SyncMethod {
+    Push = 'push',
+    Pull = 'pull',
+    Both = 'both',
+}
+
+/**
  * Represents the structure of a file in the storage system, including its name, type, and content.
  */
 export type IFile = z.infer<typeof zFile>;

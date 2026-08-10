@@ -218,6 +218,7 @@
     - [ ] Sync trigger (manual or automatic)
 - [x] **Language selection**: English / French
 - [x] **Sync settings toggle**: enable/disable cloud sync
+- [x] **Auto-sync options**: frequency (hourly/daily/weekly) + method (push/pull/both)
 - [x] **Auto-enable dev mode toggle**: prompt user to enable developer mode
 - [x] **Badge count setting**: show/hide rule count on extension icon
 - [x] **Default sort** for rule list
@@ -290,9 +291,11 @@
     - [ ] Each provider needs OAuth flow
     - [ ] Chrome: `chrome.identity` API
     - [ ] Firefox: alternative OAuth approach
-- [ ] **Sync trigger UI** — manual sync button, automatic sync option
+- [x] **Sync trigger UI** — manual upload/download with confirmation popup (`useDialog`)
+- [x] **Auto-sync** — `browser.alarms` background timer; frequency (hourly/daily/weekly) and method
+    (push/pull/both) settings; safe changes applied automatically, data-loss risk notifies user
 - [x] **Per-rule sync checkbox** (only synced rules are uploaded)
-- [ ] **Sync status indicators** (last synced, conflict warning, free space, etc.)
+- [ ] **Sync status indicators** (conflict warning, free space, etc.) — last synced time displayed
 
 ---
 

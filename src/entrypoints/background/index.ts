@@ -1,5 +1,6 @@
 import { browser, defineBackground } from '#imports';
 import { Injector } from '@/lib/background/injector';
+import { setupSyncScheduler } from '@/lib/background/sync-scheduler';
 import { TabManager } from '@/lib/background/tab-manager';
 import { Logger } from '@/lib/logger';
 import { filterRulesByUrl } from '@/lib/rules';
@@ -15,6 +16,9 @@ export default defineBackground({
         (async () => {
             const tabManager = new TabManager();
             const injector = new Injector();
+
+            // Automatic cloud synchronization (alarm-based)
+            setupSyncScheduler();
 
             // Sync initial injections
             await syncInjections();

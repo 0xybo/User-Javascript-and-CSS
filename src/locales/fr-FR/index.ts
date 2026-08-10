@@ -33,6 +33,18 @@ export default {
                 'Le code affiché est le code compilé. Il peut différer du code que vous avez écrit, mais il est celui qui sera exécuté sur la page. Le code est compilé à chaque fois que vous sauvegardez la règle.',
             TITLE: 'Aperçu',
         },
+        SYNC: {
+            DOWNLOAD_MESSAGE:
+                'Voulez-vous vraiment télécharger vos paramètres depuis le cloud ? Cette action ne peut pas être annulée.',
+            DOWNLOAD_TITLE: 'Télécharger les paramètres',
+            LOCAL_EMITTER: 'Instance locale : {0}',
+            LOCAL_UPDATED: 'Dernière mise à jour locale : {0}',
+            REMOTE_EMITTER: 'Instance distante : {0}',
+            REMOTE_UPDATED: 'Dernière mise à jour distante : {0}',
+            UPLOAD_MESSAGE:
+                'Voulez-vous vraiment envoyer vos paramètres vers le cloud ? Cette action ne peut pas être annulée.',
+            UPLOAD_TITLE: 'Envoyer les paramètres',
+        },
     },
     DRAFT: {
         ALREADY_EXISTS:
@@ -139,7 +151,28 @@ export default {
         STORAGE: 'Stockage',
         SYNC_DOWNLOAD: 'Télécharger du cloud',
         SYNC_ENABLED: 'Activer la synchro cloud',
+        SYNC_ENABLED_DESCRIPTION:
+            'Compare périodiquement les paramètres locaux avec le cloud et les synchronise automatiquement.',
+        SYNC_FREQUENCY: {
+            LABEL: 'Fréquence de synchronisation',
+            DESCRIPTION: "À quelle fréquence l'extension vérifie les mises à jour dans le cloud.",
+            OPTIONS: {
+                HOURLY: 'Chaque heure',
+                DAILY: 'Chaque jour',
+                WEEKLY: 'Chaque semaine',
+            },
+        },
         SYNC_LAST_SYNCED: 'Dernière synchro',
+        SYNC_METHOD: {
+            LABEL: 'Méthode de synchronisation',
+            DESCRIPTION:
+                "L'extension pousse les changements locaux, tire les changements distants, ou les deux.",
+            OPTIONS: {
+                BOTH: 'Pousser et tirer',
+                PULL: 'Tirer uniquement',
+                PUSH: 'Pousser uniquement',
+            },
+        },
         SYNC_NEVER: 'Jamais',
         SYNC_UPLOAD: 'Uploader vers le cloud',
         TAB_SIZE: 'Taille des tabulations',

@@ -4,5 +4,14 @@
     },
     "EXTENSION_NAME": {
         "message": "User Javascript and CSS"
+    },
+    "SYNC_NOTIFICATION_BODY_DOWNLOAD": {
+        "message": "Your local settings are newer than the cloud. Automatic synchronization was skipped because it could overwrite your local data. Open the extension to choose what to do."
+    },
+    "SYNC_NOTIFICATION_BODY_UPLOAD": {
+        "message": "The cloud settings are newer than your local ones. Automatic synchronization was skipped because it could overwrite the cloud data. Open the extension to choose what to do."
+    },
+    "SYNC_NOTIFICATION_TITLE": {
+        "message": "Cloud sync paused"
     }
 }

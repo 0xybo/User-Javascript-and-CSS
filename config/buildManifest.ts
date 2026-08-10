@@ -21,7 +21,14 @@ export function buildManifest({ browser }: ConfigEnv): UserManifest {
     const manifest: MarkAsPresent<UserManifest, 'optional_permissions' | 'permissions'> = {
         optional_host_permissions: ['*://*/*'],
         host_permissions: ['http://*/*', 'https://*/*'],
-        permissions: ['storage', 'tabs', 'unlimitedStorage', 'scripting'],
+        permissions: [
+            'storage',
+            'tabs',
+            'unlimitedStorage',
+            'scripting',
+            'alarms',
+            'notifications',
+        ],
         browser_specific_settings: {
             gecko: {
                 id: '@userjavascriptandcss',
