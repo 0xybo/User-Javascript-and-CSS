@@ -1,9 +1,10 @@
 <script setup lang="ts">
 // import { useDraft } from '@/composables/useDraft';
-import { computed, i18n } from '#imports';
+import { computed } from '#imports';
 import { useState } from '@/composables/options/useState.ts';
 import { useStorage } from '@/composables/useStorage';
 import { useToast } from '@/composables/useToast';
+import useTranslation from '@/composables/useTranslation.ts';
 import { getName } from '@/lib/rules';
 import { IRule } from '@/lib/storage/types';
 import { cn } from '@/lib/tailwind';
@@ -20,6 +21,7 @@ const emits = defineEmits<{
 const state = useState();
 const storage = useStorage();
 const { push } = useToast();
+const t = useTranslation();
 
 /** The name of the rule. */
 const name = computed(() => getName(props.rule));
@@ -50,7 +52,7 @@ function onSwitchChange(value: boolean) {
     emits('change', value);
     if (value) emits('enable');
     else emits('disable');
-    push({ title: i18n.t(value ? 'TOAST_RULE_ENABLED' : 'TOAST_RULE_DISABLED'), variant: 'info' });
+    push({ title: t(value ? 'TOAST.RULE_ENABLED' : 'TOAST.RULE_DISABLED'), variant: 'info' });
 }
 
 /**
@@ -74,7 +76,7 @@ function onSwitchClick(e: MouseEvent) {
         @click="open"
     >
         <div class="flex min-h-8 flex-row items-center justify-center gap-3 overflow-hidden">
-            <TooltipWrapper :content="i18n.t('COMMON_DRAFT')">
+            <TooltipWrapper :content="t('COMMON.DRAFT')">
                 <div v-if="hasChanged" class="bg-accent size-3 shrink-0 rounded-full p-0" />
             </TooltipWrapper>
             <div

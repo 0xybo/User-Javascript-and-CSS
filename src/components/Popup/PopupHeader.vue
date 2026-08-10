@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { i18n } from '#i18n';
 import { browser } from '#imports';
+import useTranslation from '@/composables/useTranslation.ts';
 import { BoltIcon } from 'lucide-vue-next';
 import Button from '../ui/button/Button.vue';
 import Tooltip from '../ui/tooltip/Tooltip.vue';
 import TooltipContent from '../ui/tooltip/TooltipContent.vue';
 import TooltipTrigger from '../ui/tooltip/TooltipTrigger.vue';
 
+const t = useTranslation();
 const manifest = browser.runtime.getManifest();
 
 function openOptions() {
@@ -18,7 +19,7 @@ function openOptions() {
 <template>
     <header class="bg-primary flex flex-row items-center justify-between gap-3 px-4 py-3">
         <div class="flex flex-col">
-            <div>{{ i18n.t('EXTENSION_NAME') }}</div>
+            <div>{{ t('EXTENSION.NAME') }}</div>
             <div class="text-muted">v{{ manifest.version }}</div>
         </div>
         <Tooltip>
@@ -31,7 +32,7 @@ function openOptions() {
                 </Button>
             </TooltipTrigger>
             <TooltipContent class="select-none">
-                <p>{{ i18n.t('COMMON_OPTIONS') }}</p>
+                <p>{{ t('COMMON.OPTIONS') }}</p>
             </TooltipContent>
         </Tooltip>
     </header>

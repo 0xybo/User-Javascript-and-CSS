@@ -1,3 +1,4 @@
+import { defaultLocale, locales } from '@/locales';
 import z from 'zod';
 import { zEditor, zEditorMonaco } from './editor';
 import {
@@ -170,8 +171,8 @@ export const zSettings = z.object({
             /** The default theme palette for the dark theme. */
             [Theme.Dark]: DarkThemePalette.Monokai,
         })),
-    /** The language preference for the extension. Defaults to 'en' (English). */
-    language: z.enum(['en', 'fr']).default('en'),
+    /** The language preference for the extension. Defaults to 'en-US' (English). */
+    language: z.enum(Object.keys(locales) as [string, ...string[]]).default(defaultLocale),
     /** Indicates whether synchronization is enabled for the extension. Defaults to true. */
     syncEnabled: z.boolean().default(true),
     /** Indicates whether developer mode is enabled for the extension. Defaults to false. */

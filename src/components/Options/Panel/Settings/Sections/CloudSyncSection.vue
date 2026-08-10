@@ -1,33 +1,34 @@
 <script setup lang="ts">
-import { i18n } from '#imports';
 import Button from '@/components/ui/button/Button.vue';
 import Label from '@/components/ui/label/Label.vue';
 import Separator from '@/components/ui/separator/Separator.vue';
 import Switch from '@/components/ui/switch/Switch.vue';
 import { useStorage } from '@/composables/useStorage';
 import { useToast } from '@/composables/useToast';
+import useTranslation from '@/composables/useTranslation';
 import { CloudDownloadIcon, CloudUploadIcon } from 'lucide-vue-next';
 
+const t = useTranslation();
 const storage = useStorage();
 const { push } = useToast();
 
 async function onUploadSync() {
     try {
         await storage.upload(true);
-        push({ title: i18n.t('TOAST_SYNC_UPLOAD_SUCCESS'), variant: 'success' });
+        push({ title: t('TOAST.SYNC_UPLOAD_SUCCESS'), variant: 'success' });
     } catch (e) {
         console.error('Sync upload failed:', e);
-        push({ title: i18n.t('TOAST_SYNC_UPLOAD_ERROR'), variant: 'error' });
+        push({ title: t('TOAST.SYNC_UPLOAD_ERROR'), variant: 'error' });
     }
 }
 
 async function onDownloadSync() {
     try {
         await storage.download(true);
-        push({ title: i18n.t('TOAST_SYNC_DOWNLOAD_SUCCESS'), variant: 'success' });
+        push({ title: t('TOAST.SYNC_DOWNLOAD_SUCCESS'), variant: 'success' });
     } catch (e) {
         console.error('Sync download failed:', e);
-        push({ title: i18n.t('TOAST_SYNC_DOWNLOAD_ERROR'), variant: 'error' });
+        push({ title: t('TOAST.SYNC_DOWNLOAD_ERROR'), variant: 'error' });
     }
 }
 </script>
@@ -35,27 +36,25 @@ async function onDownloadSync() {
 <template>
     <section id="settings-cloud-sync" class="space-y-4">
         <h2 class="text-lg font-semibold">
-            {{ i18n.t('SETTINGS_CLOUD_SYNC') }}
+            {{ t('SETTINGS.CLOUD_SYNC') }}
         </h2>
         <Separator />
         <div class="space-y-4">
             <div class="flex items-center justify-between">
-                <Label>{{ i18n.t('SETTINGS_SYNC_ENABLED') }}</Label>
+                <Label>{{ t('SETTINGS.SYNC_ENABLED') }}</Label>
                 <Switch
                     :checked="storage.settings.syncEnabled"
-                    @update:checked="
-                        (v: boolean) => (storage.settings.syncEnabled = v)
-                    "
+                    @update:checked="(v: boolean) => (storage.settings.syncEnabled = v)"
                 />
             </div>
             <div class="flex flex-wrap gap-3">
                 <Button variant="outline" @click="onUploadSync">
                     <CloudUploadIcon class="mr-2 h-4 w-4" />
-                    {{ i18n.t('SETTINGS_SYNC_UPLOAD') }}
+                    {{ t('SETTINGS.SYNC_UPLOAD') }}
                 </Button>
                 <Button variant="outline" @click="onDownloadSync">
                     <CloudDownloadIcon class="mr-2 h-4 w-4" />
-                    {{ i18n.t('SETTINGS_SYNC_DOWNLOAD') }}
+                    {{ t('SETTINGS.SYNC_DOWNLOAD') }}
                 </Button>
             </div>
         </div>

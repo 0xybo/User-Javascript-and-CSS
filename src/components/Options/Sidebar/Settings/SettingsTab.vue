@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { i18n } from '#imports';
 import Button from '@/components/ui/button/Button.vue';
 import { useState } from '@/composables/options/useState';
+import useTranslation from '@/composables/useTranslation';
 import { SettingsSection } from '@/lib/options/settings';
 import { cn } from '@/lib/tailwind';
 import { CloudIcon, DatabaseIcon, PaintbrushIcon, PaletteIcon, PuzzleIcon } from 'lucide-vue-next';
+import { computed } from 'vue';
 
+const t = useTranslation();
 const state = useState();
 
 /**
@@ -23,13 +25,16 @@ interface Section {
 /**
  * A list of sections available in the settings tab, each with an ID, label, and icon.
  */
-const SECTIONS: Section[] = [
-    { id: SettingsSection.Editor, label: i18n.t('SETTINGS_EDITOR'), icon: PaintbrushIcon },
-    { id: SettingsSection.Theme, label: i18n.t('SETTINGS_THEME'), icon: PaletteIcon },
-    { id: SettingsSection.Extension, label: i18n.t('SETTINGS_EXTENSION'), icon: PuzzleIcon },
-    { id: SettingsSection.CloudSync, label: i18n.t('SETTINGS_CLOUD_SYNC'), icon: CloudIcon },
-    { id: SettingsSection.Storage, label: i18n.t('SETTINGS_STORAGE'), icon: DatabaseIcon },
-];
+const sections = computed(
+    () =>
+        [
+            { id: SettingsSection.Editor, label: t('SETTINGS.EDITOR.TITLE'), icon: PaintbrushIcon },
+            { id: SettingsSection.Theme, label: t('SETTINGS.THEME.TITLE'), icon: PaletteIcon },
+            { id: SettingsSection.Extension, label: t('SETTINGS.EXTENSION'), icon: PuzzleIcon },
+            { id: SettingsSection.CloudSync, label: t('SETTINGS.CLOUD_SYNC'), icon: CloudIcon },
+            { id: SettingsSection.Storage, label: t('SETTINGS.STORAGE'), icon: DatabaseIcon },
+        ] as Section[],
+);
 
 /**
  * Handles the click event for a section in the settings tab.
@@ -44,11 +49,11 @@ function onSectionClick(id: SettingsSection) {
 <template>
     <div class="flex flex-col px-2 py-3">
         <div class="mb-2 px-2 text-xs tracking-widest uppercase select-none">
-            {{ i18n.t('COMMON_SETTINGS') }}
+            {{ t('COMMON.SETTINGS') }}
         </div>
         <div class="flex flex-col gap-1">
             <Button
-                v-for="section in SECTIONS"
+                v-for="section in sections"
                 :key="section.id"
                 variant="ghost"
                 :class="

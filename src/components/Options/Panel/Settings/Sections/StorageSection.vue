@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { i18n } from '#imports';
 import Button from '@/components/ui/button/Button.vue';
 import Label from '@/components/ui/label/Label.vue';
 import Separator from '@/components/ui/separator/Separator.vue';
 import { useStorage } from '@/composables/useStorage';
 import { useToast } from '@/composables/useToast';
+import useTranslation from '@/composables/useTranslation';
 import { clean } from '@/lib/storage/utils';
 import { DownloadIcon, Trash2Icon, UploadIcon } from 'lucide-vue-next';
 
+const t = useTranslation();
 const storage = useStorage();
 const { push } = useToast();
 
@@ -24,7 +25,7 @@ function onExportJSON() {
     a.download = `user-js-css-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    push({ title: i18n.t('TOAST_SETTINGS_EXPORTED'), variant: 'success' });
+    push({ title: t('TOAST.SETTINGS_EXPORTED'), variant: 'success' });
 }
 
 /**
@@ -43,10 +44,10 @@ function onImportJSON(file: File | undefined) {
             storage.rules.splice(0, storage.rules.length, ...(data.rules || []));
             storage.modules.splice(0, storage.modules.length, ...(data.modules || []));
             await storage.save();
-            push({ title: i18n.t('TOAST_SETTINGS_IMPORTED'), variant: 'success' });
+            push({ title: t('TOAST.SETTINGS_IMPORTED'), variant: 'success' });
         } catch (err) {
             console.error('Import failed:', err);
-            push({ title: i18n.t('TOAST_SETTINGS_IMPORT_ERROR'), variant: 'error' });
+            push({ title: t('TOAST.SETTINGS_IMPORT_ERROR'), variant: 'error' });
         }
     };
     reader.readAsText(file);
@@ -57,28 +58,28 @@ function onImportJSON(file: File | undefined) {
  * This action resets the storage to its default state and displays a toast notification.
  */
 async function onWipeData() {
-    const confirmed = window.confirm(i18n.t('SETTINGS_WIPE_CONFIRM'));
+    const confirmed = window.confirm(t('SETTINGS.WIPE_CONFIRM'));
     if (!confirmed) return;
     await storage.reset();
-    push({ title: i18n.t('TOAST_SETTINGS_RESET'), variant: 'info' });
+    push({ title: t('TOAST.SETTINGS_RESET'), variant: 'info' });
 }
 </script>
 
 <template>
     <section id="settings-storage" class="space-y-4">
         <h2 class="text-lg font-semibold">
-            {{ i18n.t('SETTINGS_STORAGE') }}
+            {{ t('SETTINGS.STORAGE') }}
         </h2>
         <Separator />
         <div class="flex flex-wrap items-center gap-3">
             <Button variant="outline" @click="onExportJSON">
                 <DownloadIcon class="mr-2 h-4 w-4" />
-                {{ i18n.t('SETTINGS_EXPORT') }}
+                {{ t('SETTINGS.EXPORT') }}
             </Button>
             <Label class="cursor-pointer">
                 <Button variant="outline" as="span">
                     <UploadIcon class="mr-2 h-4 w-4" />
-                    {{ i18n.t('SETTINGS_IMPORT') }}
+                    {{ t('SETTINGS.IMPORT') }}
                 </Button>
                 <input
                     type="file"
@@ -93,7 +94,7 @@ async function onWipeData() {
                 @click="onWipeData"
             >
                 <Trash2Icon class="mr-2 h-4 w-4" />
-                {{ i18n.t('SETTINGS_WIPE_DATA') }}
+                {{ t('SETTINGS.WIPE_DATA') }}
             </Button>
         </div>
     </section>

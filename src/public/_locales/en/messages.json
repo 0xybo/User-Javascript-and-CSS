@@ -1,0 +1,8 @@
+{
+    "EXTENSION_DESCRIPTION": {
+        "message": "Inject custom JavaScript and CSS into web pages."
+    },
+    "EXTENSION_NAME": {
+        "message": "User Javascript and CSS"
+    }
+}

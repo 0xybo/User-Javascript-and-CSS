@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { browser, i18n } from '#imports';
+import { browser } from '#imports';
 import { useCurrentTab, useHasAccess } from '@/composables/popup/useCurrentTab';
 import { useStorage } from '@/composables/useStorage';
+import useTranslation from '@/composables/useTranslation.ts';
 import { ItemType } from '@/lib/storage/types';
 import { BookPlus, TriangleAlert } from 'lucide-vue-next';
 import Button from '../ui/button/Button.vue';
@@ -9,6 +10,7 @@ import Tooltip from '../ui/tooltip/Tooltip.vue';
 import TooltipContent from '../ui/tooltip/TooltipContent.vue';
 import TooltipTrigger from '../ui/tooltip/TooltipTrigger.vue';
 
+const t = useTranslation();
 const storage = useStorage();
 const tab = useCurrentTab();
 const hasAccess = useHasAccess();
@@ -47,7 +49,7 @@ function newRule() {
         <div class="flex items-center justify-center">
             <TriangleAlert class="text-destructive" />
         </div>
-        <div class="text-xs">{{ i18n.t('POPUP_NO_ACCESS') }}</div>
+        <div class="text-xs">{{ t('POPUP.NO_ACCESS') }}</div>
     </div>
     <div v-else-if="tab" class="flex items-center justify-center px-4 py-2">
         <Tooltip>
@@ -59,7 +61,7 @@ function newRule() {
                 >
                     <BookPlus />
                     <span class="overflow-hidden text-nowrap text-ellipsis">
-                        {{ i18n.t('POPUP_NEW', [getHost(tab.url!)]) }}
+                        {{ t('POPUP.NEW', [getHost(tab.url!)]) }}
                     </span>
                 </Button>
             </TooltipTrigger>

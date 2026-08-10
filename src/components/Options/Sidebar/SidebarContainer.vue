@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { Component } from '#imports';
-import { i18n } from '#imports';
 import Button from '@/components/ui/button/Button.vue';
 import Tooltip from '@/components/ui/tooltip/Tooltip.vue';
 import TooltipContent from '@/components/ui/tooltip/TooltipContent.vue';
 import TooltipTrigger from '@/components/ui/tooltip/TooltipTrigger.vue';
 import { useState } from '@/composables/options/useState';
+import useTranslation from '@/composables/useTranslation.ts';
 import { Tab } from '@/lib/options/tab';
 import { cn } from '@/lib/tailwind';
 import { useEventListener } from '@vueuse/core';
@@ -22,6 +22,8 @@ import About from './About/AboutTab.vue';
 import Modules from './Modules/ModulesTab.vue';
 import Rules from './Rules/RulesTab.vue';
 import Settings from './Settings/SettingsTab.vue';
+
+const t = useTranslation();
 
 /**
  * A mapping of tabs to their corresponding properties, including:
@@ -41,22 +43,22 @@ const TABS: {
     [Tab.Rules]: {
         icon: ClipboardListIcon,
         content: Rules,
-        title: i18n.t('COMMON_RULES'),
+        title: t('COMMON.RULES'),
     },
     [Tab.Modules]: {
         icon: PackagePlusIcon,
         content: Modules,
-        title: i18n.t('COMMON_MODULES'),
+        title: t('COMMON.MODULES'),
     },
     [Tab.Settings]: {
         icon: BoltIcon,
         content: Settings,
-        title: i18n.t('COMMON_SETTINGS'),
+        title: t('COMMON.SETTINGS'),
     },
     [Tab.About]: {
         icon: MessageCircleHeartIcon,
         content: About,
-        title: i18n.t('COMMON_ABOUT'),
+        title: t('COMMON.ABOUT'),
         devider: true,
     },
 };

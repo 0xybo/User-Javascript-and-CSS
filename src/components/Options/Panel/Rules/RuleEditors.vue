@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { computed, i18n, ref } from '#imports';
+import { computed, ref } from '#imports';
 import CodeEditor from '@/components/Editor/CodeEditor.vue';
 import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import ResizableHandle from '@/components/ui/resizable/ResizableHandle.vue';
 import { useState } from '@/composables/options/useState';
+import useTranslation from '@/composables/useTranslation';
 import { FileType } from '@/lib/storage/types';
 
+const t = useTranslation();
 const state = useState();
 const scriptContent = computed({
     get: () => state.rule.files[state.rule.item.script.id],
@@ -29,7 +31,7 @@ function onResizableHandleDragging(isDragging: boolean) {
                 :language="FileType.Typescript"
                 v-model="scriptContent"
                 :resizing="resizing"
-                :placeholder="i18n.t('RULES_PLACEHOLDER_SCRIPT')"
+                :placeholder="t('RULES.PLACEHOLDER_SCRIPT')"
             />
         </ResizablePanel>
         <ResizableHandle
@@ -41,7 +43,7 @@ function onResizableHandleDragging(isDragging: boolean) {
                 :language="FileType.Scss"
                 v-model="styleContent"
                 :resizing="resizing"
-                :placeholder="i18n.t('RULES_PLACEHOLDER_STYLE')"
+                :placeholder="t('RULES.PLACEHOLDER_STYLE')"
             />
         </ResizablePanel>
     </ResizablePanelGroup>

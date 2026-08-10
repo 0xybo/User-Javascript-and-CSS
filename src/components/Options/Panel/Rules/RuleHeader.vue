@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { i18n } from '#imports';
 import Button from '@/components/ui/button/Button.vue';
 import InputGroup from '@/components/ui/input-group/InputGroup.vue';
 import InputGroupAddon from '@/components/ui/input-group/InputGroupAddon.vue';
@@ -8,12 +7,14 @@ import Label from '@/components/ui/label/Label.vue';
 import { useState } from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
 import { useToast } from '@/composables/useToast';
+import useTranslation from '@/composables/useTranslation.ts';
 import { IRule, ItemType } from '@/lib/storage/types';
 import { cn } from '@/lib/tailwind';
 import { BadgeCheckIcon, SaveIcon } from 'lucide-vue-next';
 import ModulesMenu from './Header/ModulesMenu.vue';
 import MoreMenu from './Header/MoreMenu.vue';
 
+const t = useTranslation();
 const state = useState();
 const storage = useStorage();
 const { push } = useToast();
@@ -26,7 +27,7 @@ function onSaveButtonClick() {
     const wasNew = state.rule.isNew;
     state.saveRuleDraft();
     push({
-        title: i18n.t(wasNew ? 'TOAST_RULE_CREATED' : 'TOAST_RULE_UPDATED'),
+        title: t(wasNew ? 'TOAST.RULE_CREATED' : 'TOAST.RULE_UPDATED'),
         variant: 'success',
     });
 }
@@ -37,11 +38,11 @@ function onSaveButtonClick() {
         <InputGroup class="border-primary h-min flex-1">
             <InputGroupAddon class="absolute top-0 pt-1! pb-0 pl-2">
                 <Label class="text-muted p-0 text-xs">
-                    {{ i18n.t('EDITOR_RULE_NAME') }}
+                    {{ t('EDITOR.RULE_NAME') }}
                 </Label>
             </InputGroupAddon>
             <InputGroupInput
-                :placeholder="i18n.t('EDITOR_RULE_NAME_EXAMPLE')"
+                :placeholder="t('EDITOR.RULE_NAME_EXAMPLE')"
                 class="h-11 pt-6 pb-2!"
                 v-model="state.rule.item.name"
             />
@@ -56,11 +57,11 @@ function onSaveButtonClick() {
             <div class="relative w-full">
                 <InputGroupAddon class="absolute top-0 left-0 pt-1! pb-0">
                     <Label class="text-muted p-0 text-xs">
-                        {{ i18n.t('EDITOR_URL_PATTERN') }}
+                        {{ t('EDITOR.URL_PATTERN') }}
                     </Label>
                 </InputGroupAddon>
                 <InputGroupInput
-                    :placeholder="i18n.t('EDITOR_URL_PATTERN_EXAMPLE')"
+                    :placeholder="t('EDITOR.URL_PATTERN_EXAMPLE')"
                     class="h-11 pt-6 pb-2! pl-3!"
                     v-model="(state.rule.item as IRule).patterns"
                 />
@@ -78,7 +79,7 @@ function onSaveButtonClick() {
             "
         >
             <SaveIcon class="size-5" />
-            {{ i18n.t('COMMON_SAVE') }}
+            {{ t('COMMON.SAVE') }}
         </Button>
         <MoreMenu />
     </div>

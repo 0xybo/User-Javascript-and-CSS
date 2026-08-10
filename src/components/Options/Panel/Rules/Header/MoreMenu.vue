@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { i18n } from '#imports';
 import TooltipWrapper from '@/components/TooltipWrapper.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
@@ -11,10 +10,12 @@ import Separator from '@/components/ui/separator/Separator.vue';
 import { useState } from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
 import { useToast } from '@/composables/useToast';
+import useTranslation from '@/composables/useTranslation';
 import { IRule, ItemType } from '@/lib/storage/types';
 import { EllipsisVerticalIcon, Trash2Icon, Undo2Icon } from 'lucide-vue-next';
 import { ref } from 'vue';
 
+const t = useTranslation();
 const state = useState();
 const storage = useStorage();
 const { push } = useToast();
@@ -28,7 +29,7 @@ function onRemoveButtonClick() {
     storage.removeItem(state.rule.item);
     state.switchToNewDraft(ItemType.Rule);
     isOpened.value = false;
-    push({ title: i18n.t('TOAST_RULE_REMOVED'), variant: 'info' });
+    push({ title: t('TOAST.RULE_REMOVED'), variant: 'info' });
 }
 
 /**
@@ -49,7 +50,7 @@ function onCheckboxUpdated(value: boolean | 'indeterminate') {
     if (value === 'indeterminate') return;
     (state.rule.item as IRule).enabled = value;
     push({
-        title: i18n.t(value ? 'TOAST_RULE_ENABLED' : 'TOAST_RULE_DISABLED'),
+        title: t(value ? 'TOAST.RULE_ENABLED' : 'TOAST.RULE_DISABLED'),
         variant: 'info',
     });
 }
@@ -76,11 +77,11 @@ function onCheckboxUpdated(value: boolean | 'indeterminate') {
                     class="border-accent group-hover: data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground size-5 border-2"
                 />
                 <div class="w-full">
-                    {{ i18n.t('RULES_ENABLED') }}
+                    {{ t('RULES.ENABLED') }}
                 </div>
             </Label>
             <TooltipWrapper
-                :content="i18n.t('RULES_SYNC_DESCRIPTION')"
+                :content="t('RULES.SYNC_DESCRIPTION')"
                 side="left"
                 class="max-w-60 text-sm"
             >
@@ -93,7 +94,7 @@ function onCheckboxUpdated(value: boolean | 'indeterminate') {
                     />
 
                     <div class="w-full">
-                        {{ i18n.t('RULES_SYNC') }}
+                        {{ t('RULES.SYNC') }}
                     </div>
                 </Label>
             </TooltipWrapper>
@@ -104,14 +105,14 @@ function onCheckboxUpdated(value: boolean | 'indeterminate') {
                 @click="onRevertButtonClick"
             >
                 <Undo2Icon class="size-5" />
-                {{ i18n.t('RULES_REVERT') }}
+                {{ t('RULES.REVERT') }}
             </Button>
             <Button
                 class="group hover:bg-destructive/10 text-destructive flex w-full flex-row items-center justify-start gap-2 rounded-none px-4 py-2 font-normal"
                 @click="onRemoveButtonClick"
             >
                 <Trash2Icon class="size-5" />
-                {{ i18n.t('RULES_REMOVE_ONE') }}
+                {{ t('RULES.REMOVE_ONE') }}
             </Button>
         </PopoverContent>
     </Popover>

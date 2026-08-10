@@ -8,7 +8,7 @@ import { withSass } from './config/withSass';
 // See https://wxt.dev/api/config.html
 export default (() => {
     let config = defineConfig({
-        modules: ['@wxt-dev/module-vue', '@wxt-dev/i18n/module'],
+        modules: ['@wxt-dev/module-vue'],
         webExt: {
             disabled: true,
         },

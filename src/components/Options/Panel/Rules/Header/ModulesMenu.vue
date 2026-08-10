@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { i18n } from '#imports';
 import Badge from '@/components/ui/badge/Badge.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
@@ -9,12 +8,14 @@ import PopoverContent from '@/components/ui/popover/PopoverContent.vue';
 import PopoverTrigger from '@/components/ui/popover/PopoverTrigger.vue';
 import { useState } from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
+import useTranslation from '@/composables/useTranslation';
 import { Tab } from '@/lib/options/tab';
 import { IModule, IRule } from '@/lib/storage/types';
 import { cn } from '@/lib/tailwind';
 import { EllipsisVerticalIcon } from 'lucide-vue-next';
 import { PopoverClose } from 'reka-ui';
 
+const t = useTranslation();
 const state = useState();
 const storage = useStorage();
 
@@ -57,7 +58,7 @@ function onAddModuleButtonClick() {
                 >
                     {{ (state.rule.item as IRule).modules.length }}
                 </Badge>
-                {{ i18n.t('COMMON_MODULES') }}
+                {{ t('COMMON.MODULES') }}
                 <EllipsisVerticalIcon />
             </Button>
         </PopoverTrigger>
@@ -83,14 +84,14 @@ function onAddModuleButtonClick() {
                 </Label>
             </template>
             <div v-else class="flex flex-col gap-4 px-4 py-2 text-base">
-                {{ i18n.t('RULES_NO_MODULES') }}
+                {{ t('RULES.NO_MODULES') }}
                 <PopoverClose as-child>
                     <Button
                         @click="onAddModuleButtonClick"
                         variant="ghost"
                         class="bg-accent text-accent-foreground w-full"
                     >
-                        {{ i18n.t('RULES_ADD_MODULE') }}
+                        {{ t('RULES.ADD_MODULE') }}
                     </Button>
                 </PopoverClose>
             </div>

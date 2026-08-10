@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, i18n, reactive } from '#imports';
+import { computed, reactive } from '#imports';
 import PreviewDialog from '@/components/Dialog/PreviewDialog.vue';
 import TooltipWrapper from '@/components/TooltipWrapper.vue';
 import { useDialog } from '@/composables/options/useDialog.ts';
 import { useState } from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
+import useTranslation from '@/composables/useTranslation.ts';
 import { compileSCSS } from '@/lib/compiler/scss';
 import { compileTS } from '@/lib/compiler/typescript';
 import { FileType } from '@/lib/storage/types';
@@ -23,6 +24,7 @@ import typecriptPlugin from 'prettier/plugins/typescript';
 import prettier from 'prettier/standalone';
 import ActionButton from './ActionButton.vue';
 
+const t = useTranslation();
 const state = useState();
 const storage = useStorage();
 const props = defineProps<{
@@ -43,10 +45,10 @@ const content = computed(() => {
             return '';
     }
 });
-const title = computed(() => i18n.t(`COMMON_${type.value}`));
+const title = computed(() => t(`COMMON.${type.value}`));
 const tooltip = computed(() => ({
-    title: i18n.t(`EDITOR_ACTION_PANEL_${type.value}_TITLE`),
-    description: i18n.t(`EDITOR_ACTION_PANEL_${type.value}_DESCRIPTION`),
+    title: t(`EDITOR.ACTION_PANEL.${type.value}.TITLE`),
+    description: t(`EDITOR.ACTION_PANEL.${type.value}.DESCRIPTION`),
 }));
 
 const preview = reactive({
@@ -101,11 +103,8 @@ async function onPreviewButtonClick() {
         preview.opened = false;
         const dialog = useDialog();
         await dialog.open({
-            // title: i18n.t('EDITOR_PREVIEW_ERROR_TITLE'),
-            // message: i18n.t('EDITOR_PREVIEW_ERROR_DESCRIPTION'),
-            // TODO remove the following line when the translation is added
-            title: 'Error',
-            message: 'An error occurred while generating the preview.',
+            title: t('EDITOR.PREVIEW_ERROR.TITLE'),
+            message: t('EDITOR.PREVIEW_ERROR.DESCRIPTION'),
         });
     }
 }
@@ -136,7 +135,7 @@ async function onPreviewButtonClick() {
             :icon="WandSparklesIcon"
             :disabled="!content"
             :tooltip="{
-                title: i18n.t('EDITOR_BEAUTIFY'),
+                title: t('EDITOR.BEAUTIFY'),
             }"
             @click="onBeautifyButtonClick"
         />
@@ -144,8 +143,8 @@ async function onPreviewButtonClick() {
             <ActionButton
                 :icon="TerminalIcon"
                 :tooltip="{
-                    title: i18n.t('EDITOR_STYLE_INJECTED_TITLE'),
-                    description: i18n.t('EDITOR_STYLE_INJECTED_DESCRIPTION'),
+                    title: t('EDITOR.STYLE_INJECTED.TITLE'),
+                    description: t('EDITOR.STYLE_INJECTED.DESCRIPTION'),
                 }"
                 :bubble="true"
                 v-model:active="state.rule.item.style.injected"
@@ -153,8 +152,8 @@ async function onPreviewButtonClick() {
             <ActionButton
                 :icon="FileExclamationPointIcon"
                 :tooltip="{
-                    title: i18n.t('EDITOR_STYLE_IMPORTANT_TITLE'),
-                    description: i18n.t('EDITOR_STYLE_IMPORTANT_DESCRIPTION'),
+                    title: t('EDITOR.STYLE_IMPORTANT.TITLE'),
+                    description: t('EDITOR.STYLE_IMPORTANT.DESCRIPTION'),
                 }"
                 :bubble="true"
                 v-model:active="state.rule.item.style.important"
@@ -164,8 +163,8 @@ async function onPreviewButtonClick() {
             <ActionButton
                 :icon="BoxIcon"
                 :tooltip="{
-                    title: i18n.t('EDITOR_SCRIPT_ISOLATED_TITLE'),
-                    description: i18n.t('EDITOR_SCRIPT_ISOLATED_DESCRIPTION'),
+                    title: t('EDITOR.SCRIPT_ISOLATED.TITLE'),
+                    description: t('EDITOR.SCRIPT_ISOLATED.DESCRIPTION'),
                 }"
                 :bubble="true"
                 v-model:active="state.rule.item.script.isolated"
@@ -173,8 +172,8 @@ async function onPreviewButtonClick() {
             <ActionButton
                 :icon="LayersIcon"
                 :tooltip="{
-                    title: i18n.t('EDITOR_SCRIPT_RECURSIVE_TITLE'),
-                    description: i18n.t('EDITOR_SCRIPT_RECURSIVE_DESCRIPTION'),
+                    title: t('EDITOR.SCRIPT_RECURSIVE.TITLE'),
+                    description: t('EDITOR.SCRIPT_RECURSIVE.DESCRIPTION'),
                 }"
                 :bubble="true"
                 v-model:active="state.rule.item.script.recursive"
@@ -182,8 +181,8 @@ async function onPreviewButtonClick() {
             <ActionButton
                 :icon="FlameIcon"
                 :tooltip="{
-                    title: i18n.t('EDITOR_SCRIPT_AT_START_TITLE'),
-                    description: i18n.t('EDITOR_SCRIPT_AT_START_DESCRIPTION'),
+                    title: t('EDITOR.SCRIPT_AT_START.TITLE'),
+                    description: t('EDITOR.SCRIPT_AT_START.DESCRIPTION'),
                 }"
                 :bubble="true"
                 v-model:active="state.rule.item.script.atStart"
@@ -192,7 +191,7 @@ async function onPreviewButtonClick() {
         <ActionButton
             :icon="EyeIcon"
             :tooltip="{
-                title: i18n.t('EDITOR_PREVIEW'),
+                title: t('EDITOR.PREVIEW'),
             }"
             @click="onPreviewButtonClick"
             :disabled="!content"

@@ -25,6 +25,7 @@
         "tailwind-merge": "^3.6.0",
         "tailwindcss-animate": "^1.0.7",
         "vue": "^3.5.39",
+        "vue-i18n": "^11.4.8",
         "zod": "^4.4.3"
     },
     "devDependencies": {
@@ -33,7 +34,6 @@
         "@eslint/js": "^9.39.4",
         "@tailwindcss/vite": "^4.3.2",
         "@types/fs-extra": "^11.0.4",
-        "@wxt-dev/i18n": "^0.2.5",
         "@wxt-dev/module-vue": "^1.0.3",
         "eslint": "^9.39.4",
         "eslint-plugin-vue": "^10.9.2",

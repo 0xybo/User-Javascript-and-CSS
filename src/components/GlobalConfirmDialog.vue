@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { i18n } from '#imports';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -12,7 +11,9 @@ import {
 } from '@/components/ui/alert-dialog';
 
 import { useConfirm } from '@/composables/options/useConfirm';
+import useTranslation from '@/composables/useTranslation';
 
+const t = useTranslation();
 const confirm = useConfirm();
 </script>
 
@@ -20,7 +21,7 @@ const confirm = useConfirm();
     <AlertDialog v-model:open="confirm.isOpen">
         <AlertDialogContent>
             <AlertDialogHeader>
-                <AlertDialogTitle>{{ i18n.t('DIALOG_CONFIRM_TITLE') }}</AlertDialogTitle>
+                <AlertDialogTitle>{{ t('DIALOG.CONFIRM.TITLE') }}</AlertDialogTitle>
                 <AlertDialogDescription class="text-primary-foreground">
                     {{ confirm.message }}
                 </AlertDialogDescription>
@@ -30,10 +31,10 @@ const confirm = useConfirm();
                 <AlertDialogCancel
                     class="hover:bg-destructive border-none"
                     @click="confirm.cancel()"
-                    >{{ i18n.t('DIALOG_CONFIRM_CANCEL') }}</AlertDialogCancel
+                    >{{ t('DIALOG.CONFIRM.CANCEL') }}</AlertDialogCancel
                 >
                 <AlertDialogAction @click="confirm.confirm()">{{
-                    i18n.t('DIALOG_CONFIRM_CONFIRM')
+                    t('DIALOG.CONFIRM.CONFIRM')
                 }}</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>

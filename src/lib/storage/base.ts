@@ -69,7 +69,12 @@ export class StorageServiceBase {
     private _saving = true;
 
     constructor() {
-        watch(this.loaded, this._onLoaded.bind(this), { once: true });
+        this.onLoaded(this._onLoaded.bind(this));
+    }
+
+    public onLoaded(callback: () => void) {
+        if (this.loaded.value) callback();
+        else watch(this.loaded, (loaded) => loaded && callback(), { once: true });
     }
 
     private _onLoaded() {

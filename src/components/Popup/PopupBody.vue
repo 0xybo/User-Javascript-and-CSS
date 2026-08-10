@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { browser, computed, i18n, ref } from '#imports';
+import { browser, computed, ref } from '#imports';
 import { useCurrentTab } from '@/composables/popup/useCurrentTab';
 import { useStorage } from '@/composables/useStorage';
+import useTranslation from '@/composables/useTranslation.ts';
 import { filterRulesByUrl } from '@/lib/rules';
 import { IRule } from '@/lib/storage/types';
 import { RefreshCcwIcon } from 'lucide-vue-next';
 import RuleList from '../RuleList.vue';
 import Button from '../ui/button/Button.vue';
 
+const t = useTranslation();
 const storage = useStorage();
 const tab = useCurrentTab();
 const rules = computed(() =>
@@ -42,20 +44,20 @@ function onRuleListOpen(rule: IRule) {
         @open="onRuleListOpen"
     />
     <div v-else class="text-muted min-h-15 px-4 py-5 text-sm">
-        {{ i18n.t('POPUP_NO_RULES') }}
+        {{ t('POPUP.NO_RULES') }}
     </div>
     <div v-if="hasChanged" class="flex flex-row items-center gap-3 bg-blue-500/10 px-4 py-2">
         <RefreshCcwIcon class="size-7" :stroke-width="1.5" />
         <div class="inline w-full pr-4">
-            {{ i18n.t('POPUP_REFRESH_NEEDED_PREFIX') }}
+            {{ t('POPUP.REFRESH_NEEDED.PREFIX') }}
             <Button
                 variant="link"
                 @click="reloadTab"
                 class="text-foreground h-auto p-0 pb-2 font-normal underline"
             >
-                {{ i18n.t('POPUP_REFRESH_NEEDED_LINK') }}
+                {{ t('POPUP.REFRESH_NEEDED.LINK') }}
             </Button>
-            {{ i18n.t('POPUP_REFRESH_NEEDED_SUFFIX') }}
+            {{ t('POPUP.REFRESH_NEEDED.SUFFIX') }}
         </div>
     </div>
 </template>
