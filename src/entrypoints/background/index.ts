@@ -1,5 +1,10 @@
 import { browser, defineBackground } from '#imports';
-import { applyBadgeColor, setupBadge, updateActiveTabBadge, updateBadgeForTab } from '@/lib/background/badge';
+import {
+    applyBadgeColor,
+    setupBadge,
+    updateActiveTabBadge,
+    updateBadgeForTab,
+} from '@/lib/background/badge';
 import { Injector } from '@/lib/background/injector';
 import { setupSyncScheduler } from '@/lib/background/sync-scheduler';
 import { TabManager } from '@/lib/background/tab-manager';
@@ -18,14 +23,16 @@ export default defineBackground({
             const tabManager = new TabManager();
             const injector = new Injector();
 
-            // Automatic cloud synchronization (alarm-based)
-            setupSyncScheduler();
+            storage.onLoaded(async () => {
+                // Automatic cloud synchronization (alarm-based)
+                setupSyncScheduler();
 
-            // Badge on the extension icon (number of matching rules)
-            await setupBadge();
+                // Badge on the extension icon (number of matching rules)
+                await setupBadge();
 
-            // Sync initial injections
-            await syncInjections();
+                // Sync initial injections
+                await syncInjections();
+            });
 
             // Register userScripts for all rules
             for (const rule of storage.rules) {
