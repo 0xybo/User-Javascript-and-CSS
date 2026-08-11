@@ -37,8 +37,11 @@ const DARK_PALETTES = Object.values(DarkThemePalette).map((v) => ({
         </h2>
         <Separator />
         <div class="grid grid-cols-3 gap-4">
-            <div class="space-y-2">
+            <div class="space-y-1">
                 <Label>{{ t('SETTINGS.THEME.MODE') }}</Label>
+                <p class="text-muted-foreground text-xs">
+                    {{ t('SETTINGS.THEME.MODE_DESCRIPTION') }}
+                </p>
                 <Select
                     :model-value="storage.settings.theme"
                     @update:model-value="(v: unknown) => (storage.settings.theme = v as Theme)"
@@ -57,8 +60,11 @@ const DARK_PALETTES = Object.values(DarkThemePalette).map((v) => ({
                     </SelectContent>
                 </Select>
             </div>
-            <div class="space-y-2">
+            <div class="space-y-1">
                 <Label>{{ t('SETTINGS.THEME.LIGHT_PALETTE') }}</Label>
+                <p class="text-muted-foreground text-xs">
+                    {{ t('SETTINGS.THEME.LIGHT_PALETTE_DESCRIPTION') }}
+                </p>
                 <Select
                     :model-value="storage.settings.themePalette.light"
                     @update:model-value="
@@ -80,8 +86,11 @@ const DARK_PALETTES = Object.values(DarkThemePalette).map((v) => ({
                     </SelectContent>
                 </Select>
             </div>
-            <div class="space-y-2">
+            <div class="space-y-1">
                 <Label>{{ t('SETTINGS.THEME.DARK_PALETTE') }}</Label>
+                <p class="text-muted-foreground text-xs">
+                    {{ t('SETTINGS.THEME.DARK_PALETTE_DESCRIPTION') }}
+                </p>
                 <Select
                     :model-value="storage.settings.themePalette.dark"
                     @update:model-value="

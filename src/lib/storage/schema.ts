@@ -9,7 +9,7 @@ import {
     zLightThemePalette,
     zTheme,
 } from './theme';
-import { FileType, ItemType, SortBy, SyncFrequency, SyncMethod } from './types';
+import { FileType, ItemType, SortBy, SyncFrequency, SyncMethod, BadgeColorMode } from './types';
 
 z.config({
     // Disable JIT mode to avoid issues with environments that disallow eval, such as browser
@@ -135,6 +135,9 @@ export const zInfo = z.object({
     created: z.number().default(() => Date.now()),
     /** The timestamp when the info object was last updated. Defaults to the current timestamp. */
     updated: z.number().default(() => Date.now()),
+    /** The resolved theme (light or dark) of the extension. Defaults to {@link Theme.Dark}.
+     * Updated by the options/popup pages, which can resolve the system color scheme. */
+    theme: z.enum([Theme.Light, Theme.Dark]).default(Theme.Dark),
 });
 
 /**
@@ -149,6 +152,11 @@ export const zSettings = z.object({
     sortBy: z.enum(SortBy).default(SortBy.NameDescending),
     /** Indicates whether the badge count is enabled. Defaults to true. */
     badgeCount: z.boolean().default(true),
+    /** The source of the badge color of the extension icon. Defaults to
+     * {@link BadgeColorMode.Theme}. */
+    badgeColorMode: z.enum(BadgeColorMode).default(BadgeColorMode.Theme),
+    /** The custom badge color of the extension icon. Defaults to '#e11d48'. */
+    badgeColor: z.string().default('#e11d48'),
     /** The editor configuration for the extension. Defaults to a default editor object
      * {@link zEditorMonaco}. */
     editor: zEditor.default(() => zEditorMonaco.parse({})),

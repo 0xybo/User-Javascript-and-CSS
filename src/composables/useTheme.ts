@@ -1,4 +1,5 @@
 import { computed, Ref, watchEffect } from '#imports';
+import { storage } from '@/lib/storage';
 import { Theme, ThemePalette as ThemePaletteT } from '@/lib/storage/theme';
 import { usePreferredColorScheme } from '@vueuse/core';
 import { useSettings } from './useStorage';
@@ -19,6 +20,9 @@ export function watchTheme() {
 
     watchEffect(() => {
         document.documentElement.dataset.theme = theme.value;
+        // Persist the resolved theme so the background service worker (which has no access to
+        // `matchMedia`) can use it for the badge color.
+        storage.info.theme = theme.value;
     });
 }
 

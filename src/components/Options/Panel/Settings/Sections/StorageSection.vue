@@ -72,30 +72,53 @@ async function onWipeData() {
         </h2>
         <Separator />
         <div class="flex flex-wrap items-center gap-3">
-            <Button variant="outline" @click="onExportJSON">
-                <DownloadIcon class="mr-2 h-4 w-4" />
-                {{ t('SETTINGS.EXPORT') }}
-            </Button>
-            <Label class="cursor-pointer">
-                <Button variant="outline" as="span">
-                    <UploadIcon class="mr-2 h-4 w-4" />
-                    {{ t('SETTINGS.IMPORT') }}
+            <div class="flex flex-col gap-1">
+                <Button variant="outline" @click="onExportJSON">
+                    <DownloadIcon class="mr-2 h-4 w-4" />
+                    {{ t('SETTINGS.EXPORT') }}
                 </Button>
-                <input
-                    type="file"
-                    accept=".json"
-                    class="hidden"
-                    @change="(e) => onImportJSON((e.target as HTMLInputElement).files?.[0])"
-                />
-            </Label>
-            <Button
-                variant="outline"
-                class="hover:bg-destructive hover:text-destructive-foreground border-destructive text-destructive"
-                @click="onWipeData"
-            >
-                <Trash2Icon class="mr-2 h-4 w-4" />
-                {{ t('SETTINGS.WIPE_DATA') }}
-            </Button>
+                <!-- <p class="text-muted-foreground text-xs">
+                    {{ t('SETTINGS.EXPORT_DESCRIPTION') }}
+                </p> -->
+            </div>
+            <div class="flex flex-col gap-1">
+                <Label class="cursor-pointer">
+                    <Button variant="outline" as="span">
+                        <UploadIcon class="mr-2 h-4 w-4" />
+                        {{ t('SETTINGS.IMPORT') }}
+                    </Button>
+                    <input
+                        type="file"
+                        accept=".json"
+                        class="hidden"
+                        @change="(e) => onImportJSON((e.target as HTMLInputElement).files?.[0])"
+                    />
+                </Label>
+                <!-- <p class="text-muted-foreground text-xs">
+                    {{ t('SETTINGS.IMPORT_DESCRIPTION') }}
+                </p> -->
+            </div>
+            <div class="flex flex-col gap-1">
+                <Button
+                    variant="outline"
+                    class="hover:bg-destructive hover:text-destructive-foreground border-destructive text-destructive"
+                    @click="onWipeData"
+                >
+                    <Trash2Icon class="mr-2 h-4 w-4" />
+                    {{ t('SETTINGS.WIPE_DATA') }}
+                </Button>
+                <!-- <p class="text-muted-foreground text-xs">
+                    {{ t('SETTINGS.WIPE_DATA_DESCRIPTION') }}
+                </p> -->
+            </div>
         </div>
+
+        <p class="text-muted-foreground text-xs">
+            <ul class="list-disc pl-5">
+                <li>{{ t('SETTINGS.EXPORT') }}: {{ t('SETTINGS.EXPORT_DESCRIPTION') }}</li>
+                <li>{{ t('SETTINGS.IMPORT') }}: {{ t('SETTINGS.IMPORT_DESCRIPTION') }}</li>
+                <li>{{ t('SETTINGS.WIPE_DATA') }}: {{ t('SETTINGS.WIPE_DATA_DESCRIPTION') }}</li>
+            </ul>
+        </p>
     </section>
 </template>

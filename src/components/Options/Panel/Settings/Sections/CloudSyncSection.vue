@@ -233,15 +233,32 @@ onMounted(refreshRemote);
             </div>
 
             <div class="flex flex-wrap gap-3">
-                <Button variant="outline" @click="onUploadSync">
-                    <CloudUploadIcon class="mr-2 h-4 w-4" />
-                    {{ t('SETTINGS.SYNC_UPLOAD') }}
-                </Button>
-                <Button variant="outline" @click="onDownloadSync">
-                    <CloudDownloadIcon class="mr-2 h-4 w-4" />
-                    {{ t('SETTINGS.SYNC_DOWNLOAD') }}
-                </Button>
+                <div class="flex flex-col gap-1">
+                    <Button variant="outline" @click="onUploadSync">
+                        <CloudUploadIcon class="mr-2 h-4 w-4" />
+                        {{ t('SETTINGS.SYNC_UPLOAD') }}
+                    </Button>
+                    <!-- <p class="text-muted-foreground text-xs">
+                        {{ t('SETTINGS.SYNC_UPLOAD_DESCRIPTION') }}
+                    </p> -->
+                </div>
+                <div class="flex flex-col gap-1">
+                    <Button variant="outline" @click="onDownloadSync">
+                        <CloudDownloadIcon class="mr-2 h-4 w-4" />
+                        {{ t('SETTINGS.SYNC_DOWNLOAD') }}
+                    </Button>
+                    <!-- <p class="text-muted-foreground text-xs">
+                        {{ t('SETTINGS.SYNC_DOWNLOAD_DESCRIPTION') }}
+                    </p> -->
+                </div>
             </div>
+
+            <p class="text-muted-foreground text-xs">
+                <ul class="list-disc pl-5">
+                    <li>{{ t('SETTINGS.SYNC_UPLOAD') }}: {{ t('SETTINGS.SYNC_UPLOAD_DESCRIPTION') }}</li>
+                    <li>{{ t('SETTINGS.SYNC_DOWNLOAD') }}: {{ t('SETTINGS.SYNC_DOWNLOAD_DESCRIPTION') }}</li>
+                </ul>
+            </p>
         </div>
     </section>
 </template>

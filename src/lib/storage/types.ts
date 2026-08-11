@@ -57,6 +57,16 @@ export enum SyncMethod {
 }
 
 /**
+ * Enumerates the possible sources for the badge color of the extension icon.
+ */
+export enum BadgeColorMode {
+    /** The badge color follows the current extension theme. */
+    Theme = 'theme',
+    /** The badge color is a manually chosen color. */
+    Custom = 'custom',
+}
+
+/**
  * Represents the structure of a file in the storage system, including its name, type, and content.
  */
 export type IFile = z.infer<typeof zFile>;

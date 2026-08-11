@@ -1,4 +1,5 @@
 import { browser, defineBackground } from '#imports';
+import { applyBadgeColor, setupBadge, updateActiveTabBadge, updateBadgeForTab } from '@/lib/background/badge';
 import { Injector } from '@/lib/background/injector';
 import { setupSyncScheduler } from '@/lib/background/sync-scheduler';
 import { TabManager } from '@/lib/background/tab-manager';
@@ -19,6 +20,9 @@ export default defineBackground({
 
             // Automatic cloud synchronization (alarm-based)
             setupSyncScheduler();
+
+            // Badge on the extension icon (number of matching rules)
+            await setupBadge();
 
             // Sync initial injections
             await syncInjections();
@@ -59,6 +63,10 @@ export default defineBackground({
                                 }
                             }
                         }
+
+                        // Rules or badge setting may have changed
+                        await applyBadgeColor();
+                        await updateActiveTabBadge();
                     },
                     500,
                     true,
@@ -81,11 +89,19 @@ export default defineBackground({
                         await injector.injectFallback(tabId, rule);
                     }
                 }
+
+                await updateBadgeForTab(tabId, tab.url);
             });
 
             // Tab closed → clean up injections
             browser.tabs.onRemoved.addListener(async (tabId) => {
                 await tabManager.removeAllForTab(tabId);
+            });
+
+            // Tab focused → update the badge for the new active tab
+            browser.tabs.onActivated.addListener(async ({ tabId }) => {
+                const tab = await browser.tabs.get(tabId);
+                await updateBadgeForTab(tabId, tab.url);
             });
 
             // Messages from content script → re-inject for SPA navigation
@@ -109,6 +125,8 @@ export default defineBackground({
                         await injector.injectFallback(tabId, rule);
                     }
                 }
+
+                await updateBadgeForTab(tabId, url);
             });
 
             async function syncInjections() {

@@ -71,3 +71,22 @@ export const zDarkThemePalette = z.enum(DarkThemePalette).default(DarkThemePalet
 export const zThemePalette = z
     .union([zLightThemePalette, zDarkThemePalette])
     .default(DarkThemePalette.Monokai);
+
+/**
+ * A color for the extension icon badge for each theme palette, so that the badge can follow the
+ * current extension theme when {@link BadgeColorMode.Theme} is selected.
+ */
+export const ThemeBadgeColors: Record<ThemePalette, string> = {
+    [LightThemePalette.Chrome]: '#e11d48',
+    [LightThemePalette.Dawn]: '#d0604f',
+    [LightThemePalette.Tomorrow]: '#e15b55',
+    [LightThemePalette.XCode]: '#4285f4',
+    [LightThemePalette.CloudEditor]: '#1a73e8',
+    [DarkThemePalette.Dracula]: '#bd93f9',
+    [DarkThemePalette.Monokai]: '#ff6188',
+    [DarkThemePalette.OneDark]: '#61afef',
+    [DarkThemePalette.SolarizedDark]: '#2aa198',
+    [DarkThemePalette.TomorrowNight]: '#cc6666',
+    [DarkThemePalette.Twilight]: '#c8834a',
+    [DarkThemePalette.CloudEditorDark]: '#5f7ddb',
+};

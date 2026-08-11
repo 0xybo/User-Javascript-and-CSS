@@ -77,6 +77,11 @@
     - [x] Inject with `origin: "USER"` for proper cascade
     - [x] Track which CSS is injected per tab (TabManager pattern)
     - [x] Remove/replace CSS when rules change
+- [x] **Badge on the extension icon** — count of enabled rules matching the active tab URL
+    (`src/lib/background/badge.ts`), honoring the `badgeCount` setting
+- [x] **Badge color setting** — follow the current extension theme (per-palette color) or a custom
+    color (`badgeColorMode` / `badgeColor`), with the resolved light/dark theme persisted in
+    `info.theme` by the options/popup pages so the service worker can apply it
 - [x] **Fallback JS injection via `scripting.executeScript`**
     - [x] Use `world: "MAIN"` when `userScripts` API unavailable
     - [x] Handle all frames (`jsDeep` / recursive flag)
@@ -221,6 +226,9 @@
 - [x] **Auto-sync options**: frequency (hourly/daily/weekly) + method (push/pull/both)
 - [x] **Auto-enable dev mode toggle**: prompt user to enable developer mode
 - [x] **Badge count setting**: show/hide rule count on extension icon
+- [x] **Badge color setting**: follow the theme or custom color
+- [x] **Descriptions for all settings**: every setting in the settings panel has a short
+    description (en + fr)
 - [x] **Default sort** for rule list
 - [ ] **Custom theme colors** (background, text, accent)
 

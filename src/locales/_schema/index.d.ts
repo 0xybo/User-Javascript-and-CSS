@@ -115,8 +115,13 @@ export default interface Messages {
     SETTINGS: {
         BADGE_COUNT: string;
         BADGE_COUNT_DESCRIPTION: string;
+        BADGE_COLOR: string;
+        BADGE_COLOR_CUSTOM: string;
+        BADGE_COLOR_DESCRIPTION: string;
+        BADGE_COLOR_THEME: string;
         CLOUD_SYNC: string;
         DEFAULT_SORT: string;
+        DEFAULT_SORT_DESCRIPTION: string;
         DEV_MODE: string;
         EDITOR: {
             ACE: string;
@@ -124,19 +129,30 @@ export default interface Messages {
             MONACO: string;
             TITLE: string;
             SELECT: string;
+            SELECT_DESCRIPTION: string;
         };
         EXPORT: string;
+        EXPORT_DESCRIPTION: string;
         EXTENSION: string;
         FONT_FAMILY: string;
+        FONT_FAMILY_DESCRIPTION: string;
         FONT_SIZE: string;
+        FONT_SIZE_DESCRIPTION: string;
         IMPORT: string;
+        IMPORT_DESCRIPTION: string;
         INVISIBLE_CHARS: string;
+        INVISIBLE_CHARS_DESCRIPTION: string;
         LANGUAGE: string;
+        LANGUAGE_DESCRIPTION: string;
         LIGATURES: string;
+        LIGATURES_DESCRIPTION: string;
         MINIMAP: string;
+        MINIMAP_DESCRIPTION: string;
         SOFT_TABS: string;
+        SOFT_TABS_DESCRIPTION: string;
         STORAGE: string;
         SYNC_DOWNLOAD: string;
+        SYNC_DOWNLOAD_DESCRIPTION: string;
         SYNC_ENABLED: string;
         SYNC_ENABLED_DESCRIPTION: string;
         SYNC_FREQUENCY: {
@@ -160,19 +176,26 @@ export default interface Messages {
         };
         SYNC_NEVER: string;
         SYNC_UPLOAD: string;
+        SYNC_UPLOAD_DESCRIPTION: string;
         TAB_SIZE: string;
+        TAB_SIZE_DESCRIPTION: string;
         THEME: {
             AUTO: string;
             DARK: string;
             DARK_PALETTE: string;
+            DARK_PALETTE_DESCRIPTION: string;
             LIGHT: string;
             LIGHT_PALETTE: string;
+            LIGHT_PALETTE_DESCRIPTION: string;
             MODE: string;
+            MODE_DESCRIPTION: string;
             TITLE: string;
         };
         WIPE_CONFIRM: string;
         WIPE_DATA: string;
+        WIPE_DATA_DESCRIPTION: string;
         WORD_WRAP: string;
+        WORD_WRAP_DESCRIPTION: string;
     };
     TOAST: {
         MODULE_CREATED: string;

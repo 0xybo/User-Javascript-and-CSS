@@ -30,7 +30,12 @@ const EDITOR_TYPES = [
         <Separator />
         <div class="space-y-4">
             <div class="space-y-2">
-                <Label>{{ t('SETTINGS.EDITOR.SELECT') }}</Label>
+                <div class="space-y-1">
+                    <Label>{{ t('SETTINGS.EDITOR.SELECT') }}</Label>
+                    <p class="text-muted-foreground text-xs">
+                        {{ t('SETTINGS.EDITOR.SELECT_DESCRIPTION') }}
+                    </p>
+                </div>
                 <div class="flex flex-wrap gap-2">
                     <Button
                         v-for="ed in EDITOR_TYPES"
@@ -50,8 +55,11 @@ const EDITOR_TYPES = [
                 </div>
             </div>
             <div class="grid grid-cols-3 gap-4">
-                <div class="space-y-2">
+                <div class="space-y-1">
                     <Label>{{ t('SETTINGS.FONT_SIZE') }}</Label>
+                    <p class="text-muted-foreground text-xs">
+                        {{ t('SETTINGS.FONT_SIZE_DESCRIPTION') }}
+                    </p>
                     <Input
                         type="number"
                         min="8"
@@ -64,8 +72,11 @@ const EDITOR_TYPES = [
                         "
                     />
                 </div>
-                <div class="space-y-2">
+                <div class="space-y-1">
                     <Label>{{ t('SETTINGS.FONT_FAMILY') }}</Label>
+                    <p class="text-muted-foreground text-xs">
+                        {{ t('SETTINGS.FONT_FAMILY_DESCRIPTION') }}
+                    </p>
                     <Input
                         :model-value="storage.settings.editor.fontFamily"
                         placeholder="JetBrains Mono"
@@ -74,8 +85,11 @@ const EDITOR_TYPES = [
                         "
                     />
                 </div>
-                <div class="space-y-2">
+                <div class="space-y-1">
                     <Label>{{ t('SETTINGS.TAB_SIZE') }}</Label>
+                    <p class="text-muted-foreground text-xs">
+                        {{ t('SETTINGS.TAB_SIZE_DESCRIPTION') }}
+                    </p>
                     <Input
                         type="number"
                         min="1"
@@ -91,14 +105,24 @@ const EDITOR_TYPES = [
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div class="flex items-center justify-between">
-                    <Label>{{ t('SETTINGS.WORD_WRAP') }}</Label>
+                    <div class="space-y-1">
+                        <Label>{{ t('SETTINGS.WORD_WRAP') }}</Label>
+                        <p class="text-muted-foreground text-xs">
+                            {{ t('SETTINGS.WORD_WRAP_DESCRIPTION') }}
+                        </p>
+                    </div>
                     <Switch
                         :model-value="storage.settings.editor.wrap"
                         @update:model-value="(v: boolean) => (storage.settings.editor.wrap = v)"
                     />
                 </div>
                 <div class="flex items-center justify-between">
-                    <Label>{{ t('SETTINGS.LIGATURES') }}</Label>
+                    <div class="space-y-1">
+                        <Label>{{ t('SETTINGS.LIGATURES') }}</Label>
+                        <p class="text-muted-foreground text-xs">
+                            {{ t('SETTINGS.LIGATURES_DESCRIPTION') }}
+                        </p>
+                    </div>
                     <Switch
                         :model-value="storage.settings.editor.ligatures"
                         @update:model-value="
@@ -107,7 +131,12 @@ const EDITOR_TYPES = [
                     />
                 </div>
                 <div class="flex items-center justify-between">
-                    <Label>{{ t('SETTINGS.INVISIBLE_CHARS') }}</Label>
+                    <div class="space-y-1">
+                        <Label>{{ t('SETTINGS.INVISIBLE_CHARS') }}</Label>
+                        <p class="text-muted-foreground text-xs">
+                            {{ t('SETTINGS.INVISIBLE_CHARS_DESCRIPTION') }}
+                        </p>
+                    </div>
                     <Switch
                         :model-value="storage.settings.editor.invisibleChars"
                         @update:model-value="
@@ -116,7 +145,12 @@ const EDITOR_TYPES = [
                     />
                 </div>
                 <div class="flex items-center justify-between">
-                    <Label>{{ t('SETTINGS.SOFT_TABS') }}</Label>
+                    <div class="space-y-1">
+                        <Label>{{ t('SETTINGS.SOFT_TABS') }}</Label>
+                        <p class="text-muted-foreground text-xs">
+                            {{ t('SETTINGS.SOFT_TABS_DESCRIPTION') }}
+                        </p>
+                    </div>
                     <Switch
                         :model-value="storage.settings.editor.softTabs"
                         @update:model-value="(v: boolean) => (storage.settings.editor.softTabs = v)"
@@ -126,7 +160,12 @@ const EDITOR_TYPES = [
                     v-if="storage.settings.editor.name === 'monaco'"
                     class="flex items-center justify-between"
                 >
-                    <Label>{{ t('SETTINGS.MINIMAP') }}</Label>
+                    <div class="space-y-1">
+                        <Label>{{ t('SETTINGS.MINIMAP') }}</Label>
+                        <p class="text-muted-foreground text-xs">
+                            {{ t('SETTINGS.MINIMAP_DESCRIPTION') }}
+                        </p>
+                    </div>
                     <Switch
                         :model-value="(storage.settings.editor as any).minimap"
                         @update:model-value="

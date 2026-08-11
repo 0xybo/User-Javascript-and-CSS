@@ -165,6 +165,7 @@ export function clean(settings: IStorage, sync: boolean = false): Record<string,
         cleaned.rules = settings.rules.filter((rule: IRule) => rule.sync);
         cleaned.modules = settings.modules.filter((module: IModule) => module.sync);
         delete (cleaned.info as Record<string, unknown>).emitter;
+        delete (cleaned.info as Record<string, unknown>).theme;
     }
 
     delete cleaned.drafts;
