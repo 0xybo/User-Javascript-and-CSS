@@ -7,7 +7,7 @@ import { BadgeColorMode, IRule } from '../storage/types';
 /**
  * The background color of the badge shown on the extension icon.
  */
-export const BADGE_COLOR = '#e11d48';
+export const BADGE_COLOR = '#1d96e2';
 
 /**
  * Resolves the badge background color from the current settings. When {@link BadgeColorMode.Theme}
