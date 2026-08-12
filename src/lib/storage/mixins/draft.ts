@@ -94,12 +94,15 @@ export function StorageServiceDraftsMixin<T extends StorageServiceSync>(Base: T)
             if (draft.isNew) this.rules.push(draft.item);
 
             const rule = draft.item;
-            rule.script.content = draft.files[rule.script.id];
-            rule.style.content = draft.files[rule.style.id];
+            const scriptContent = draft.files[rule.script.id];
+            const styleContent = draft.files[rule.style.id];
 
-            if (rule.script.content) {
+            rule.script.content = scriptContent;
+            rule.style.content = styleContent;
+
+            if (scriptContent) {
                 try {
-                    const result = await compileTS(rule.script.content, {});
+                    const result = await compileTS(scriptContent, {});
                     rule.script.compiled = result.output;
                 } catch (e) {
                     Logger.error('TS compilation failed:', e);
@@ -107,9 +110,9 @@ export function StorageServiceDraftsMixin<T extends StorageServiceSync>(Base: T)
                 }
             } else rule.script.compiled = '';
 
-            if (rule.style.content) {
+            if (styleContent) {
                 try {
-                    const result = await compileSCSS(rule.style.content, {
+                    const result = await compileSCSS(styleContent, {
                         important: rule.style.important,
                     });
                     rule.style.compiled = result.output;

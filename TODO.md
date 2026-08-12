@@ -410,6 +410,14 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
 
 ## 20. Bugs & Known Issues
 
+- [x] **ISSUES #7/#8** — no changes detected when editing a rule (fixed: removed falsy-content guards in
+    `isRuleUnsaved`/`isModuleUnsaved`, and `ruleUnsaved`/`moduleUnsaved` are now getters instead of
+    computed refs so they recompute when the active draft is switched)
+- [x] **Stale compiled code persisted** — `useThrottleFn(fn, 500)` (default `trailing=false, leading=true`)
+    only saved the first mutation in each 500ms window, so the compiled output update (which happens after
+    the async compile) was dropped and the leading save even deleted the old `f:<id>:c` key. Fixed in
+    `src/lib/storage/base.ts`: the save watcher now uses `useDebounceFn(fn, 500)` so the final
+    content + compiled state is persisted together.
 - [ ] **MonacoEditor.vue:37** — theme hardcoded to `'vs-dark'` (`TODO à changer`)
 - [x] **compiler/typescript.ts** — `format()` bug fixed (now correctly called with `output`)
 - [ ] **compiler/scss.ts** — syntax errors (wrong import, wrong return type)

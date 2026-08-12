@@ -1,6 +1,6 @@
 import { browser, computed, nextTick, reactive, ref } from '#imports';
 import { PlainObject } from '@/types/json';
-import { useThrottleFn } from '@vueuse/core';
+import { useDebounceFn, useThrottleFn } from '@vueuse/core';
 import { watch, type ComputedRef } from 'vue';
 import { Logger } from '../logger';
 import { deepMerge, diff, IS_DEVELOPMENT, printDiff } from '../utils';
@@ -8,11 +8,13 @@ import { IDraft, IInfo, IModule, IRule, ISettings, IStorage, StorageChanges } fr
 import { clean, DEFAULTS, EMITTER, parse } from './utils';
 
 /**
- * A service class that manages the storage of rules, modules, drafts, and settings. It provides methods to load, save, reset, and synchronize data with remote storage.
+ * A service class that manages the storage of rules, modules, drafts, and settings. It provides
+ * methods to load, save, reset, and synchronize data with remote storage.
  */
 export class StorageServiceBase {
     /**
-     * Information about the storage, including metadata such as the last updated timestamp and the emitter ID.
+     * Information about the storage, including metadata such as the last updated timestamp and the
+     * emitter ID.
      */
     info = reactive(DEFAULTS.INFO()) as IInfo;
     /**
@@ -37,9 +39,11 @@ export class StorageServiceBase {
     loaded = ref(false);
 
     /**
-     * A private reactive object that holds the current state of the storage. This is used internally to track changes and provide a computed property for the current storage state.
+     * A computed property that returns the current storage state. This is a reactive object
+     * that reflects the current state of the storage, including info, settings, rules, modules,
+     * and drafts.
      */
-    private _current: IStorage = reactive({
+    current: IStorage = reactive({
         info: this.info,
         settings: this.settings,
         rules: this.rules,
@@ -48,35 +52,64 @@ export class StorageServiceBase {
     });
 
     /**
-     * A computed property that returns the current storage state. This is a reactive object that reflects the current state of the storage, including info, settings, rules, modules, and drafts.
-     */
-    get current() {
-        return this._current;
-    }
-
-    /**
-     * A computed property that watches the current storage state for changes. This is used for debugging purposes in development mode to log changes to the storage.
+     * A computed property that watches the current storage state for changes. This is used for
+     * debugging purposes in development mode to log changes to the storage.
      */
     private computedCurrentToBeWatched: ComputedRef<IStorage> | null = null;
 
     /**
-     * A reactive object that holds information about the last known state of the remote storage. This is used to determine if the local storage is more recent than the remote storage when syncing.
+     * A reactive object that holds information about the last known state of the remote storage.
+     * This is used to determine if the local storage is more recent than the remote storage when syncing.
      */
     protected remoteInfo = reactive(DEFAULTS.REMOTE_INFO());
+
     /**
-     * A flag indicating whether the storage is currently being saved. This is used to prevent recursive saves when changes are detected in the storage.
+     * A flag indicating whether the storage is currently being updated. This is used to prevent concurrent
+     * updates and ensure that the storage is saved in a consistent state.
      */
-    private _saving = true;
+    private updating: Promise<void> | null = null;
+
+    /**
+     * Starts the updating process by creating a new promise that resolves when the update is
+     * complete. This is used to prevent concurrent updates and ensure that the storage is saved
+     * in a consistent state.
+     *
+     * @returns A function that can be called to end the updating process and resolve the promise.
+     */
+    private startUpdating(): () => void {
+        const { promise, resolve } = Promise.withResolvers<void>();
+        this.updating = promise;
+
+        return () =>
+            nextTick(() => {
+                resolve();
+                this.updating = null;
+            });
+    }
 
     constructor() {
         this.onLoaded(this._onLoaded.bind(this));
     }
 
+    /**
+     * Registers a callback function to be called when the storage has finished loading. If the
+     * storage is already loaded, the callback is called immediately. Otherwise, it is called
+     * once the storage has finished loading.
+     *
+     * @param callback The callback function to be called when the storage is loaded.
+     */
     public onLoaded(callback: () => void) {
         if (this.loaded.value) callback();
         else watch(this.loaded, (loaded) => loaded && callback(), { once: true });
     }
 
+    /**
+     * Internal method that is called when the storage has finished loading. It sets up watchers
+     * to monitor changes in the storage and log them if in development mode. It also sets up a
+     * debounced save function to save the storage state when changes are detected.
+     * Additionally, it listens for changes in the browser's local storage and merges them into
+     * the current storage state if they are from a different emitter.
+     */
     private _onLoaded() {
         // Watch for changes in the storage and log them if in development mode.
         if (IS_DEVELOPMENT) {
@@ -90,15 +123,12 @@ export class StorageServiceBase {
                     const [message, ...substitutions] = printDiff(diff(oldValue, newValue));
                     Logger.debug('Storage changed:\n' + message, ...substitutions);
                 },
-                { deep: true, flush: 'sync' },
+                { deep: true },
             );
         }
 
-        watch(
-            this.current,
-            useThrottleFn(() => this._saving && this.save(), 500),
-            { deep: true, flush: 'sync' },
-        );
+        const debouncedSave = useDebounceFn(() => this.save(), 200, { maxWait: 1000 });
+        watch(this.current, () => this.updating || debouncedSave(), { deep: true });
 
         browser.storage.local.onChanged.addListener(
             useThrottleFn(
@@ -106,9 +136,13 @@ export class StorageServiceBase {
                     if ((changes.info?.newValue?.emitter || this.info.emitter) === EMITTER) return;
                     try {
                         const newValue = await browser.storage.local.get();
-                        this._saving = false;
-                        this._mergeIn(newValue);
-                        nextTick(() => (this._saving = true));
+
+                        const endUpdating = this.startUpdating();
+
+                        this.mergeIn(newValue);
+                        Logger.debug('Storage updated from remote changes.');
+
+                        endUpdating();
                     } catch (e) {
                         Logger.error('Failed to parse storage change:', e);
                     }
@@ -120,11 +154,12 @@ export class StorageServiceBase {
     }
 
     /**
-     * Merges the given raw plain object into the current storage state. This method is used internally to update the storage state when changes are detected in the local storage.
+     * Merges the given raw plain object into the current storage state. This method is used
+     * internally to update the storage state when changes are detected in the local storage.
      *
      * @param raw The raw plain object representing the new storage state.
      */
-    private _mergeIn(raw: PlainObject) {
+    private mergeIn(raw: PlainObject) {
         const parsed = parse(raw);
         Object.assign(this.info, parsed.info);
         Object.assign(this.settings, parsed.settings);
@@ -135,11 +170,12 @@ export class StorageServiceBase {
     }
 
     /**
-     * Loads the storage state from the local storage. If the local storage is empty, it initializes the storage with default values and saves it.
+     * Loads the storage state from the local storage. If the local storage is empty, it
+     * initializes the storage with default values and saves it.
      */
     async load() {
         const saved = parse((await browser.storage.local.get()) as unknown as PlainObject);
-        this._mergeIn(saved);
+        this.mergeIn(saved);
 
         if (!(await browser.storage.local.getBytesInUse())) await this.save();
 
@@ -147,10 +183,14 @@ export class StorageServiceBase {
     }
 
     /**
-     * Saves the current storage state to the local storage. This method is throttled to prevent excessive writes to the local storage.
+     * Saves the current storage state to the local storage. This method is throttled to prevent
+     * excessive writes to the local storage.
      */
     async save() {
-        if (!this._saving) return;
+        if (this.updating) await this.updating;
+
+        const endUpdating = this.startUpdating();
+
         this.info.updated = Date.now();
         this.info.emitter = EMITTER;
 
@@ -161,6 +201,8 @@ export class StorageServiceBase {
         await browser.storage.local.remove(keys.filter((k) => !(k in cleaned)));
 
         Logger.debug('Settings saved.');
+
+        endUpdating();
     }
 
     /**

@@ -260,12 +260,8 @@ export async function compress(settings: IStorage): Promise<string[]> {
  */
 export function isRuleUnsaved(draft: IDraft<IRule>): boolean {
     return (
-        (draft.files[draft.item.script.id] &&
-            draft.item.script.content &&
-            draft.files[draft.item.script.id] !== draft.item.script.content) ||
-        (draft.files[draft.item.style.id] &&
-            draft.item.style.content &&
-            draft.files[draft.item.style.id] !== draft.item.style.content) ||
+        (draft.files[draft.item.script.id] ?? '') !== (draft.item.script.content ?? '') ||
+        (draft.files[draft.item.style.id] ?? '') !== (draft.item.style.content ?? '') ||
         (draft.isNew && Object.values(draft.files).some((content) => content !== ''))
     );
 }
@@ -280,7 +276,7 @@ export function isRuleUnsaved(draft: IDraft<IRule>): boolean {
 export function isModuleUnsaved(draft: IDraft<IModule>): boolean {
     return (
         draft.item.files.some(
-            (file) => file.content && draft.files[file.id] && file.content !== draft.files[file.id],
+            (file) => (file.content ?? '') !== (draft.files[file.id] ?? ''),
         ) ||
         (draft.isNew && Object.values(draft.files).some((content) => content !== ''))
     );

@@ -1,4 +1,4 @@
-import { computed, MaybeRef, reactive, unref, watch } from '#imports';
+import { MaybeRef, reactive, unref, watch } from '#imports';
 import { SettingsSection } from '@/lib/options/settings';
 import { Panel, Tab, TAB_TO_PANEL_MAP } from '@/lib/options/tab';
 import { IDraft, ItemType } from '@/lib/storage/types';
@@ -24,10 +24,16 @@ class State {
     public module: IDraft<ItemType.Module> = useDraft(ItemType.Module);
     /** The current settings section */
     public settingsSection: SettingsSection | null = null;
-    /** Computed property that indicates whether the current rule draft has changed */
-    public ruleUnsaved = computed(() => isRuleUnsaved(this.rule));
-    /** Computed property that indicates whether the current module draft has changed */
-    public moduleUnsaved = computed(() => isModuleUnsaved(this.module));
+    /** Getter that indicates whether the current rule draft has changed. Evaluated against the
+     * reactive proxy, so it recomputes whenever the current draft is switched. */
+    public get ruleUnsaved(): boolean {
+        return isRuleUnsaved(this.rule);
+    }
+    /** Getter that indicates whether the current module draft has changed. Evaluated against the
+     * reactive proxy, so it recomputes whenever the current draft is switched. */
+    public get moduleUnsaved(): boolean {
+        return isModuleUnsaved(this.module);
+    }
 
     private _ruleDraftWatcher: ReturnType<typeof watch> | null = null;
     private _moduleDraftWatcher: ReturnType<typeof watch> | null = null;
