@@ -140,6 +140,9 @@ export default interface Messages {
         FONT_SIZE_DESCRIPTION: string;
         IMPORT: string;
         IMPORT_DESCRIPTION: string;
+        IMPORT_LEGACY: string;
+        IMPORT_LEGACY_CONFIRM: string;
+        IMPORT_LEGACY_DESCRIPTION: string;
         INVISIBLE_CHARS: string;
         INVISIBLE_CHARS_DESCRIPTION: string;
         LANGUAGE: string;
@@ -211,6 +214,9 @@ export default interface Messages {
         SETTINGS_EXPORTED: string;
         SETTINGS_IMPORT_ERROR: string;
         SETTINGS_IMPORTED: string;
+        SETTINGS_LEGACY_IMPORTED: string;
+        SETTINGS_LEGACY_IMPORT_ERROR: string;
+        SETTINGS_LEGACY_NOT_FOUND: string;
         SETTINGS_RESET: string;
         SYNC_DOWNLOAD_ERROR: string;
         SYNC_DOWNLOAD_SUCCESS: string;

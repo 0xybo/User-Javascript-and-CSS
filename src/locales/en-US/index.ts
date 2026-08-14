@@ -153,6 +153,11 @@ export default {
         FONT_SIZE_DESCRIPTION: 'Text size in the code editor, in pixels',
         IMPORT: 'Import from JSON',
         IMPORT_DESCRIPTION: 'Restore rules, modules and settings from a JSON backup file',
+        IMPORT_LEGACY: 'Import from old extension',
+        IMPORT_LEGACY_CONFIRM:
+            'Import the data stored by the old extension? This will replace all current rules, modules and settings.',
+        IMPORT_LEGACY_DESCRIPTION:
+            'Import the rules, modules and settings stored by the previous extension version',
         INVISIBLE_CHARS: 'Invisible characters',
         INVISIBLE_CHARS_DESCRIPTION: 'Show spaces, tabs and line endings in the editor',
         LANGUAGE: 'Language',
@@ -227,6 +232,9 @@ export default {
         SETTINGS_EXPORTED: 'Settings exported',
         SETTINGS_IMPORT_ERROR: 'Import failed: the selected file is not a valid backup',
         SETTINGS_IMPORTED: 'Settings imported',
+        SETTINGS_LEGACY_IMPORTED: 'Old extension data imported',
+        SETTINGS_LEGACY_IMPORT_ERROR: 'Failed to import data from the old extension',
+        SETTINGS_LEGACY_NOT_FOUND: 'No data found from the old extension',
         SETTINGS_RESET: 'All data has been reset to defaults',
         SYNC_DOWNLOAD_ERROR: 'Failed to download settings from the cloud',
         SYNC_DOWNLOAD_SUCCESS: 'Settings downloaded from the cloud',

@@ -418,6 +418,9 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
     the async compile) was dropped and the leading save even deleted the old `f:<id>:c` key. Fixed in
     `src/lib/storage/base.ts`: the save watcher now uses `useDebounceFn(fn, 500)` so the final
     content + compiled state is persisted together.
+- [x] **ISSUES #10** — import from the old v3.1.2 extension. `UJC_RESTORE_ORIGINAL_KEY=1` build option
+    restores the original extension ID (see `config/buildManifest.ts`); the Settings → Storage screen has
+    an "Import from old extension" button backed by `src/lib/storage/migrate.ts`.
 - [ ] **MonacoEditor.vue:37** — theme hardcoded to `'vs-dark'` (`TODO à changer`)
 - [x] **compiler/typescript.ts** — `format()` bug fixed (now correctly called with `output`)
 - [ ] **compiler/scss.ts** — syntax errors (wrong import, wrong return type)

@@ -155,6 +155,11 @@ export default {
         IMPORT: 'Importer depuis JSON',
         IMPORT_DESCRIPTION:
             'Restaure les règles, modules et paramètres depuis un fichier de sauvegarde JSON',
+        IMPORT_LEGACY: 'Importer depuis l’ancienne extension',
+        IMPORT_LEGACY_CONFIRM:
+            'Importer les données stockées par l’ancienne extension ? Cette action remplacera toutes les règles, modules et paramètres actuels.',
+        IMPORT_LEGACY_DESCRIPTION:
+            'Importe les règles, modules et paramètres stockés par la version précédente de l’extension',
         INVISIBLE_CHARS: 'Caractères invisibles',
         INVISIBLE_CHARS_DESCRIPTION: 'Affiche les espaces, tabulations et fins de ligne dans l’éditeur',
         LANGUAGE: 'Langue',
@@ -233,6 +238,9 @@ export default {
         SETTINGS_IMPORT_ERROR:
             "Import échoué : le fichier sélectionné n'est pas une sauvegarde valide",
         SETTINGS_IMPORTED: 'Paramètres importés',
+        SETTINGS_LEGACY_IMPORTED: "Données de l'ancienne extension importées",
+        SETTINGS_LEGACY_IMPORT_ERROR: "Échec de l'import des données de l'ancienne extension",
+        SETTINGS_LEGACY_NOT_FOUND: "Aucune donnée trouvée depuis l'ancienne extension",
         SETTINGS_RESET: 'Toutes les données ont été réinitialisées',
         SYNC_DOWNLOAD_ERROR: 'Échec du téléchargement des paramètres depuis le cloud',
         SYNC_DOWNLOAD_SUCCESS: 'Paramètres téléchargés depuis le cloud',

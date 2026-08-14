@@ -212,4 +212,23 @@ export class StorageServiceBase {
         deepMerge(this.current, DEFAULTS.STORAGE());
         await this.save();
     }
+    /**
+     * Replaces the whole storage state with the given one and saves it. Used for importing from
+     * other sources (e.g. the legacy v3.1.2 extension data). The previous rules, modules and
+     * drafts are discarded.
+     *
+     * @param data The complete storage state to import.
+     */
+    async importData(data: IStorage) {
+        const endUpdating = this.startUpdating();
+
+        Object.assign(this.info, data.info);
+        Object.assign(this.settings, data.settings);
+        this.rules.splice(0, this.rules.length, ...data.rules);
+        this.modules.splice(0, this.modules.length, ...data.modules);
+        this.drafts.splice(0, this.drafts.length, ...data.drafts);
+
+        endUpdating();
+        await this.save();
+    }
 }

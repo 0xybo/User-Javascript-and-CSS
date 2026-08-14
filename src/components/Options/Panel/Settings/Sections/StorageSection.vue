@@ -5,8 +5,9 @@ import Separator from '@/components/ui/separator/Separator.vue';
 import { useStorage } from '@/composables/useStorage';
 import { useToast } from '@/composables/useToast';
 import useTranslation from '@/composables/useTranslation';
-import { clean } from '@/lib/storage/utils';
-import { DownloadIcon, Trash2Icon, UploadIcon } from 'lucide-vue-next';
+import { detectLegacyStorage, migrateLegacyStorage } from '@/lib/storage/migrate';
+import { browser } from '#imports';
+import { DownloadIcon, HistoryIcon, Trash2Icon, UploadIcon } from 'lucide-vue-next';
 
 const t = useTranslation();
 const storage = useStorage();
@@ -17,8 +18,7 @@ const { push } = useToast();
  * The exported file is named with the current date in ISO format.
  */
 function onExportJSON() {
-    const data = JSON.stringify(clean(storage.current), null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
+    const blob = new Blob([storage.getRaw()], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -51,6 +51,28 @@ function onImportJSON(file: File | undefined) {
         }
     };
     reader.readAsText(file);
+}
+
+/**
+ * Imports the data that the original v3.1.2 extension left in `browser.storage.local`. Only
+ * works when the current extension shares the old extension id (build with
+ * `UJC_RESTORE_ORIGINAL_KEY=1`). Replaces all current data after confirmation.
+ */
+async function onImportLegacy() {
+    try {
+        const raw = (await browser.storage.local.get()) as Record<string, unknown>;
+        if (!detectLegacyStorage(raw)) {
+            push({ title: t('TOAST.SETTINGS_LEGACY_NOT_FOUND'), variant: 'info' });
+            return;
+        }
+        const confirmed = window.confirm(t('SETTINGS.IMPORT_LEGACY_CONFIRM'));
+        if (!confirmed) return;
+        await storage.importData(migrateLegacyStorage(raw));
+        push({ title: t('TOAST.SETTINGS_LEGACY_IMPORTED'), variant: 'success' });
+    } catch (err) {
+        console.error('Legacy import failed:', err);
+        push({ title: t('TOAST.SETTINGS_LEGACY_IMPORT_ERROR'), variant: 'error' });
+    }
 }
 
 /**
@@ -99,6 +121,15 @@ async function onWipeData() {
                 </p> -->
             </div>
             <div class="flex flex-col gap-1">
+                <Button variant="outline" @click="onImportLegacy">
+                    <HistoryIcon class="mr-2 h-4 w-4" />
+                    {{ t('SETTINGS.IMPORT_LEGACY') }}
+                </Button>
+                <!-- <p class="text-muted-foreground text-xs">
+                    {{ t('SETTINGS.IMPORT_LEGACY_DESCRIPTION') }}
+                </p> -->
+            </div>
+            <div class="flex flex-col gap-1">
                 <Button
                     variant="outline"
                     class="hover:bg-destructive hover:text-destructive-foreground border-destructive text-destructive"
@@ -118,6 +149,7 @@ async function onWipeData() {
                 <li>{{ t('SETTINGS.EXPORT') }}: {{ t('SETTINGS.EXPORT_DESCRIPTION') }}</li>
                 <li>{{ t('SETTINGS.IMPORT') }}: {{ t('SETTINGS.IMPORT_DESCRIPTION') }}</li>
                 <li>{{ t('SETTINGS.WIPE_DATA') }}: {{ t('SETTINGS.WIPE_DATA_DESCRIPTION') }}</li>
+                <li>{{ t('SETTINGS.IMPORT_LEGACY') }}: {{ t('SETTINGS.IMPORT_LEGACY_DESCRIPTION') }}</li>
             </ul>
         </p>
     </section>
