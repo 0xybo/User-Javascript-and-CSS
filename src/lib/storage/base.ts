@@ -88,7 +88,7 @@ export class StorageServiceBase {
     }
 
     constructor() {
-        this.onLoaded(this._onLoaded.bind(this));
+        this.onLoaded(this.initializeStorageWatchers.bind(this));
     }
 
     /**
@@ -110,7 +110,7 @@ export class StorageServiceBase {
      * Additionally, it listens for changes in the browser's local storage and merges them into
      * the current storage state if they are from a different emitter.
      */
-    private _onLoaded() {
+    private initializeStorageWatchers() {
         // Watch for changes in the storage and log them if in development mode.
         if (IS_DEVELOPMENT) {
             this.computedCurrentToBeWatched = computed(() =>
@@ -128,7 +128,11 @@ export class StorageServiceBase {
         }
 
         const debouncedSave = useDebounceFn(() => this.save(), 200, { maxWait: 1000 });
-        watch(this.current, () => this.updating || debouncedSave(), { deep: true });
+        watch(
+            [this.drafts, this.rules, this.modules, this.settings],
+            () => this.updating || debouncedSave(),
+            { deep: true },
+        );
 
         browser.storage.local.onChanged.addListener(
             useThrottleFn(
@@ -139,7 +143,7 @@ export class StorageServiceBase {
 
                         const endUpdating = this.startUpdating();
 
-                        this.mergeIn(newValue);
+                        this.mergeIn(newValue, false);
                         Logger.debug('Storage updated from remote changes.');
 
                         endUpdating();
@@ -157,11 +161,19 @@ export class StorageServiceBase {
      * Merges the given raw plain object into the current storage state. This method is used
      * internally to update the storage state when changes are detected in the local storage.
      *
+     * When merging changes received from other contexts (mergeInfo === false), only the resolved
+     * theme is taken over from the `info` object. The `emitter`, `created` and `updated`
+     * timestamps are kept local on purpose: otherwise a context that just received a remote update
+     * would see its own `emitter` change and trigger a save-back, causing an endless write loop
+     * between contexts (each save stamps its own random emitter).
+     *
      * @param raw The raw plain object representing the new storage state.
+     * @param mergeInfo Whether to fully merge the `info` metadata (default: true).
      */
-    private mergeIn(raw: PlainObject) {
+    private mergeIn(raw: PlainObject, mergeInfo: boolean = true) {
         const parsed = parse(raw);
-        Object.assign(this.info, parsed.info);
+        if (mergeInfo) Object.assign(this.info, parsed.info);
+        else this.info.theme = parsed.info.theme;
         Object.assign(this.settings, parsed.settings);
         this.rules.splice(0, this.rules.length, ...parsed.rules);
         this.modules.splice(0, this.modules.length, ...parsed.modules);
@@ -174,7 +186,7 @@ export class StorageServiceBase {
      * initializes the storage with default values and saves it.
      */
     async load() {
-        const saved = parse((await browser.storage.local.get()) as unknown as PlainObject);
+        const saved = (await browser.storage.local.get()) as unknown as PlainObject;
         this.mergeIn(saved);
 
         if (!(await browser.storage.local.getBytesInUse())) await this.save();
@@ -212,6 +224,7 @@ export class StorageServiceBase {
         deepMerge(this.current, DEFAULTS.STORAGE());
         await this.save();
     }
+
     /**
      * Replaces the whole storage state with the given one and saves it. Used for importing from
      * other sources (e.g. the legacy v3.1.2 extension data). The previous rules, modules and
@@ -230,5 +243,15 @@ export class StorageServiceBase {
 
         endUpdating();
         await this.save();
+    }
+
+    /**
+     * Returns a JSON string representation of the current storage state, excluding any f: and d:
+     * prefixed keys. This is useful for debugging and exporting the storage state.
+     *
+     * @returns A JSON string representation of the current storage state.
+     */
+    getRaw() {
+        return JSON.stringify(clean(this.current), null, 2);
     }
 }

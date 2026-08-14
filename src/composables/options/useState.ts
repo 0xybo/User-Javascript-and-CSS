@@ -96,21 +96,24 @@ class State {
      * @param draft The draft to switch to.
      */
     public switchDraft(draft: IDraft) {
-        let oldDraft: IDraft;
         if (isRule(draft)) {
-            oldDraft = this.rule;
+            const isSameDraft = draft.item.id === this.rule.item.id;
             this.rule = draft;
 
-            if (draft.isNew) this.watchOnceForSave(this.rule);
-            else this.watchForSave(this.rule);
+            if (!isSameDraft) {
+                if (draft.isNew) this.watchOnceForSave(this.rule);
+                else this.watchForSave(this.rule);
+            }
 
             this.switchTab(Tab.Rules);
         } else {
-            oldDraft = this.module;
+            const isSameDraft = draft.item.id === this.module.item.id;
             this.module = draft as IDraft<ItemType.Module>;
 
-            if (draft.isNew) this.watchOnceForSave(this.module);
-            else this.watchForSave(this.module);
+            if (!isSameDraft) {
+                if (draft.isNew) this.watchOnceForSave(this.module);
+                else this.watchForSave(this.module);
+            }
 
             this.switchTab(Tab.Modules);
         }

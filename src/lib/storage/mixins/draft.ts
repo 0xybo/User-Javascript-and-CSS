@@ -91,7 +91,10 @@ export function StorageServiceDraftsMixin<T extends StorageServiceSync>(Base: T)
          * @param draft The draft to save.
          */
         async saveRuleDraft(draft: IDraft<IRule>) {
-            if (draft.isNew) this.rules.push(draft.item);
+            if (draft.isNew) {
+                if (!this.rules.some((r) => r.id === draft.item.id)) this.rules.push(draft.item);
+                draft.isNew = false;
+            }
 
             const rule = draft.item;
             const scriptContent = draft.files[rule.script.id];
@@ -123,8 +126,6 @@ export function StorageServiceDraftsMixin<T extends StorageServiceSync>(Base: T)
             } else rule.style.compiled = '';
 
             rule.updated = Date.now();
-
-            draft.isNew = false;
         }
 
         /**
@@ -134,12 +135,13 @@ export function StorageServiceDraftsMixin<T extends StorageServiceSync>(Base: T)
          * @param draft The draft to save.
          */
         async saveModuleDraft(draft: IDraft<IModule>) {
-            if (draft.isNew) this.modules.push(draft.item);
+            if (draft.isNew) {
+                if (!this.modules.some((m) => m.id === draft.item.id)) this.modules.push(draft.item);
+                draft.isNew = false;
+            }
 
             const module = draft.item;
             module.files.forEach((f) => (f.content = draft.files[f.id] || ''));
-
-            draft.isNew = false;
         }
 
         /**

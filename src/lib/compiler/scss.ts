@@ -87,7 +87,7 @@ export async function compileSCSS(
 
         let output = (result as SassCompileSuccess).text;
 
-        if (options.important) output = output.replace(/(?<!!important\s*);/gm, '!important;');
+        if (options.important) output = output.replace(/(?<!!important\s*);/gm, ' !important;');
 
         return { output, errors: [] };
     } catch (err: any) {

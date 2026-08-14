@@ -418,6 +418,16 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
     the async compile) was dropped and the leading save even deleted the old `f:<id>:c` key. Fixed in
     `src/lib/storage/base.ts`: the save watcher now uses `useDebounceFn(fn, 500)` so the final
     content + compiled state is persisted together.
+- [x] **ISSUES #15** — duplicate rule on save without name. `saveRuleDraft`/`saveModuleDraft` now flip
+    `isNew` synchronously (before the async compile) and guard the `push`; `State.switchDraft` no longer
+    re-arms the once-watcher when switching to the already-active draft.
+- [x] **ISSUES #16** — all scripts re-registered on every save. Cross-context storage merges keep local
+    `info.emitter/created/updated` (only `info.theme` merges), and the background re-registration is now
+    differential (fingerprint-based) and gated on the `rules` key changing; unchanged CSS is not
+    re-injected.
+- [x] **Draft round-trip** — `clean()` now writes `itemId`/`itemType` (and removes the inline `item`) so
+    `parse()` can re-link drafts after a reload or cross-context merge; `parse()` falls back to the
+    embedded item for data written by older builds.
 - [x] **ISSUES #10** — import from the old v3.1.2 extension. `UJC_RESTORE_ORIGINAL_KEY=1` build option
     restores the original extension ID (see `config/buildManifest.ts`); the Settings → Storage screen has
     an "Import from old extension" button backed by `src/lib/storage/migrate.ts`.

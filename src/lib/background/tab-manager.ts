@@ -15,6 +15,8 @@ export class TabManager {
 
         const tabMap = this.tabInjections.get(tabId) || new Map();
         const existing = tabMap.get(rule.id);
+        if (existing?.code === rule.style.compiled) return;
+
         if (existing) {
             try {
                 await browser.scripting.removeCSS({
@@ -71,6 +73,22 @@ export class TabManager {
 
         for (const [ruleId] of tabMap) {
             await this.removeCSS(tabId, ruleId);
+        }
+    }
+
+    /**
+     * Removes the injected CSS of every rule in the given tab that is not part of the provided set
+     * of keep rule ids. Used to drop styles of rules that no longer match (or were disabled).
+     *
+     * @param tabId The identifier of the tab to prune.
+     * @param keepRuleIds The set of rule ids whose CSS must be kept.
+     */
+    async pruneForTab(tabId: number, keepRuleIds: Set<string>) {
+        const tabMap = this.tabInjections.get(tabId);
+        if (!tabMap) return;
+
+        for (const [ruleId] of tabMap) {
+            if (!keepRuleIds.has(ruleId)) await this.removeCSS(tabId, ruleId);
         }
     }
 

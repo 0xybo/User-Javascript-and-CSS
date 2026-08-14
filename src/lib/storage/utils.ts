@@ -5,12 +5,14 @@ import { zDraft, zInfo, zModule, zRemoteSettingsInfo, zRule, zSettings, zStorage
 import { IDraft, IItem, IModule, IRule, IStorage, ItemType } from './types';
 
 /**
- * A unique identifier for the current instance of the storage service. This is used to identify changes made by this instance when listening for changes in the browser's local storage.
+ * A unique identifier for the current instance of the storage service. This is used to identify
+ * changes made by this instance when listening for changes in the browser's local storage.
  */
 export const EMITTER = crypto.randomUUID();
 
 /**
- * Default values for various storage-related entities. Each property is a function that returns a default instance of the corresponding type.
+ * Default values for various storage-related entities. Each property is a function that returns a
+ * default instance of the corresponding type.
  */
 export const DEFAULTS = {
     RULES: () => [] as IRule[],
@@ -127,6 +129,10 @@ function resolveFile<T extends { id: string }>(
 
 /**
  * Resolves compiled content from a storage key (f:<id>:c).
+ *
+ * @param source The source object containing storage keys.
+ * @param file The file object to resolve compiled content for.
+ * @returns The file object with the resolved compiled content.
  */
 function resolveCompiled<T extends { id: string }>(
     source: Record<string, unknown>,
@@ -137,6 +143,11 @@ function resolveCompiled<T extends { id: string }>(
 
 /**
  * Removes all f: and d: prefixed keys from the object and returns them separately.
+ *
+ * Warning: This function mutates the input object by deleting the extracted keys.
+ *
+ * @param settings The object from which to extract storage keys.
+ * @returns An object containing the extracted storage keys and their values.
  */
 function extractStorageKeys(settings: Record<string, unknown>): Record<string, string> {
     const files: Record<string, string> = {};
@@ -150,9 +161,11 @@ function extractStorageKeys(settings: Record<string, unknown>): Record<string, s
 }
 
 /**
- * Cleans the given storage settings by removing unnecessary properties and preparing it for saving or syncing.
+ * Cleans the given storage settings by removing unnecessary properties and preparing it for
+ * saving or syncing.
  *
- * This function is needed because extension and local storage APIs have limitations on the size of data that can be stored, and we want to avoid storing unnecessary data.
+ * This function is needed because extension and local storage APIs have limitations on the size
+ * of data that can be stored, and we want to avoid storing unnecessary data.
  *
  * @param settings The storage settings to clean.
  * @param sync Whether to prepare the settings for syncing (default: false).
@@ -166,9 +179,19 @@ export function clean(settings: IStorage, sync: boolean = false): Record<string,
         cleaned.modules = settings.modules.filter((module: IModule) => module.sync);
         delete (cleaned.info as Record<string, unknown>).emitter;
         delete (cleaned.info as Record<string, unknown>).theme;
+        delete cleaned.drafts;
+    } else {
+        // Extract draft files into storage keys (d:<id>) and store the item reference and files as
+        // metadata so drafts survive a round-trip through storage (issue: draft metadata blanked on
+        // reload because `itemId` was never written)
+        for (const draft of cleaned.drafts as IDraft[]) {
+            (draft as Record<string, unknown>).fileIds = extractDraftFiles(cleaned, draft.files);
+            (draft as Record<string, unknown>).itemId = draft.item.id;
+            (draft as Record<string, unknown>).itemType = draft.item.type;
+            delete (draft as Record<string, unknown>).files;
+            delete (draft as Record<string, unknown>).item;
+        }
     }
-
-    delete cleaned.drafts;
 
     // Extract rule files
     for (const rule of cleaned.rules as IRule[]) {
@@ -199,7 +222,8 @@ export function clean(settings: IStorage, sync: boolean = false): Record<string,
 }
 
 /**
- * Parses the given plain object into a structured StorageT object, restoring file contents and draft items.
+ * Parses the given plain object into a structured StorageT object, restoring file contents and
+ * draft items.
  *
  * @param settings The plain object representing storage settings.
  * @returns The parsed StorageT object.
@@ -222,9 +246,14 @@ export function parse(settings: PlainObject): IStorage {
     for (const draft of (settings.drafts || []) as IDraft[]) {
         const fileIds = (draft as Record<string, unknown>).fileIds as string[] | undefined;
         draft.files = Object.fromEntries((fileIds || []).map((id) => [id, files[`d:${id}`] || '']));
-        draft.item = [...(settings.rules as IRule[]), ...(settings.modules as IModule[])].find(
-            (item) => item.id === (draft as Record<string, unknown>).itemId,
-        )!;
+        const itemId = (draft as Record<string, unknown>).itemId as string | undefined;
+        const itemType = (draft as Record<string, unknown>).itemType as ItemType | undefined;
+        const found = [...(settings.rules as IRule[]), ...(settings.modules as IModule[])].find(
+            (item) => item.id === itemId,
+        );
+        if (found) draft.item = found;
+        else if (itemType === ItemType.Rule) draft.item = zRule.parse({});
+        else if (itemType === ItemType.Module) draft.item = zModule.parse({});
         delete (draft as Record<string, unknown>).fileIds;
         delete (draft as Record<string, unknown>).itemId;
         delete (draft as Record<string, unknown>).itemType;
@@ -234,9 +263,11 @@ export function parse(settings: PlainObject): IStorage {
 }
 
 /**
- * Compresses the given storage settings into an array of string chunks, each with a maximum size of 4096 characters.
+ * Compresses the given storage settings into an array of string chunks, each with a maximum size
+ * of 4096 characters.
  *
- * This function is useful for preparing storage settings for syncing or saving, especially when dealing with size limitations in storage APIs.
+ * This function is useful for preparing storage settings for syncing or saving, especially when
+ * dealing with size limitations in storage APIs.
  *
  * @param settings The storage settings to compress.
  * @returns A promise that resolves to an array of compressed string chunks.
@@ -275,9 +306,7 @@ export function isRuleUnsaved(draft: IDraft<IRule>): boolean {
  */
 export function isModuleUnsaved(draft: IDraft<IModule>): boolean {
     return (
-        draft.item.files.some(
-            (file) => (file.content ?? '') !== (draft.files[file.id] ?? ''),
-        ) ||
+        draft.item.files.some((file) => (file.content ?? '') !== (draft.files[file.id] ?? '')) ||
         (draft.isNew && Object.values(draft.files).some((content) => content !== ''))
     );
 }
