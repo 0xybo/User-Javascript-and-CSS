@@ -17,5 +17,5 @@
         "lib": "@/lib",
         "composables": "@/composables"
     },
-    "registries": {}
+    "pointer": true
 }

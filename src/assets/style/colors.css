@@ -16,6 +16,8 @@
     --success-foreground: oklch(0.205 0 0);
     --destructive: #f87171;
     --destructive-foreground: oklch(0.205 0 0);
+    --warning: #facc15;
+    --warning-foreground: oklch(0.205 0 0);
     --border: var(--secondary);
     --input: oklch(0.922 0 0);
     --ring: oklch(0.708 0 0);
