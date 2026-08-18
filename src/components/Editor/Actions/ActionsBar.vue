@@ -3,7 +3,7 @@ import { computed, reactive } from '#imports';
 import PreviewDialog from '@/components/Dialog/PreviewDialog.vue';
 import TooltipWrapper from '@/components/TooltipWrapper.vue';
 import { useDialog } from '@/composables/options/useDialog.ts';
-import { useState } from '@/composables/options/useState';
+import useState from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
 import useTranslation from '@/composables/useTranslation.ts';
 import { compileSCSS } from '@/lib/compiler/scss';

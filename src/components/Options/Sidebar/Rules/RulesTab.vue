@@ -4,7 +4,7 @@ import RuleList from '@/components/RuleList.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import { useDialog } from '@/composables/options/useDialog';
-import { useState } from '@/composables/options/useState';
+import useState from '@/composables/options/useState';
 import { useDraft } from '@/composables/useDraft';
 import { useStorage } from '@/composables/useStorage';
 import useTranslation from '@/composables/useTranslation.ts';

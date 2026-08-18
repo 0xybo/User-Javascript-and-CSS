@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
-import { useState } from '@/composables/options/useState';
+import useState from '@/composables/options/useState';
 import useTranslation from '@/composables/useTranslation';
 import { SettingsSection } from '@/lib/options/settings';
 import { cn } from '@/lib/tailwind';

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onMounted, watch } from '#imports';
-import { useState } from '@/composables/options/useState';
+import useState from '@/composables/options/useState';
 import { SettingsSection } from '@/lib/options/settings.js';
 import { useTemplateRef, type Component } from 'vue';
 import CloudSyncSection from './Sections/CloudSyncSection.vue';

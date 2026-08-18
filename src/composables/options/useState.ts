@@ -253,6 +253,6 @@ const state = new State();
  *
  * @returns The current state of the options page.
  */
-export function useState() {
+export default function useState() {
     return state;
 }

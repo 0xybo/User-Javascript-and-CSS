@@ -6,7 +6,7 @@ import Label from '@/components/ui/label/Label.vue';
 import Popover from '@/components/ui/popover/Popover.vue';
 import PopoverContent from '@/components/ui/popover/PopoverContent.vue';
 import PopoverTrigger from '@/components/ui/popover/PopoverTrigger.vue';
-import { useState } from '@/composables/options/useState';
+import useState from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
 import useTranslation from '@/composables/useTranslation';
 import { Tab } from '@/lib/options/tab';

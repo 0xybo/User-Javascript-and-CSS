@@ -3,7 +3,7 @@ import { computed, ref } from '#imports';
 import CodeEditor from '@/components/Editor/CodeEditor.vue';
 import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import ResizableHandle from '@/components/ui/resizable/ResizableHandle.vue';
-import { useState } from '@/composables/options/useState';
+import useState from '@/composables/options/useState';
 import useTranslation from '@/composables/useTranslation';
 import { FileType } from '@/lib/storage/types';
 

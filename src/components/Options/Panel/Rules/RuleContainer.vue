@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useState } from '@/composables/options/useState';
+import useState from '@/composables/options/useState';
 import { useMagicKeys } from '@/composables/useMagicKeys';
 import { useStorage } from '@/composables/useStorage';
 import { whenever } from '@vueuse/core';

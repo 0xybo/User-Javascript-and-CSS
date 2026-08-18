@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // import { useDraft } from '@/composables/useDraft';
 import { computed } from '#imports';
-import { useState } from '@/composables/options/useState.ts';
+import useState from '@/composables/options/useState.ts';
 import { useStorage } from '@/composables/useStorage';
 import { useToast } from '@/composables/useToast';
 import useTranslation from '@/composables/useTranslation.ts';

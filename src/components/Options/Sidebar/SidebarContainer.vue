@@ -4,7 +4,7 @@ import Button from '@/components/ui/button/Button.vue';
 import Tooltip from '@/components/ui/tooltip/Tooltip.vue';
 import TooltipContent from '@/components/ui/tooltip/TooltipContent.vue';
 import TooltipTrigger from '@/components/ui/tooltip/TooltipTrigger.vue';
-import { useState } from '@/composables/options/useState';
+import useState from '@/composables/options/useState';
 import useTranslation from '@/composables/useTranslation.ts';
 import { Tab } from '@/lib/options/tab';
 import { cn } from '@/lib/tailwind';

@@ -4,7 +4,7 @@ import Module from '@/components/Options/Panel/Modules/ModuleContainer.vue';
 import Rule from '@/components/Options/Panel/Rules/RuleContainer.vue';
 import Settings from '@/components/Options/Panel/Settings/SettingsContainer.vue';
 import Sidebar from '@/components/Options/Sidebar/SidebarContainer.vue';
-import { useState } from '@/composables/options/useState';
+import useState from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
 import { watchThemePalette } from '@/composables/useTheme';
 import { Panel } from '@/lib/options/tab';

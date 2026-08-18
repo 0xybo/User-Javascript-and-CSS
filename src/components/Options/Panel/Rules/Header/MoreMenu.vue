@@ -7,7 +7,7 @@ import Popover from '@/components/ui/popover/Popover.vue';
 import PopoverContent from '@/components/ui/popover/PopoverContent.vue';
 import PopoverTrigger from '@/components/ui/popover/PopoverTrigger.vue';
 import Separator from '@/components/ui/separator/Separator.vue';
-import { useState } from '@/composables/options/useState';
+import useState from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
 import { useToast } from '@/composables/useToast';
 import useTranslation from '@/composables/useTranslation';
