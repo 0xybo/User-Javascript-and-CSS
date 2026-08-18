@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { browser } from '#imports';
+import { browser, onMounted, ref, watch } from '#imports';
+import { useDebounceFn } from '@vueuse/core';
 import Button from '@/components/ui/button/Button.vue';
 import Label from '@/components/ui/label/Label.vue';
 import Separator from '@/components/ui/separator/Separator.vue';
@@ -8,10 +9,34 @@ import { useToast } from '@/composables/useToast';
 import useTranslation from '@/composables/useTranslation';
 import { detectLegacyStorage, migrateLegacyStorage } from '@/lib/storage/migrate';
 import { DownloadIcon, HistoryIcon, Trash2Icon, UploadIcon } from 'lucide-vue-next';
+import SpaceUsageBar from './SpaceUsageBar.vue';
 
 const t = useTranslation();
 const storage = useStorage();
 const { push } = useToast();
+
+/** Maximum number of bytes available in the `storage.local` area. */
+const LOCAL_QUOTA = browser.storage.local.QUOTA_BYTES ?? 10 * 1024 * 1024;
+
+/** Number of bytes currently used in the local storage area. */
+const usedBytes = ref(0);
+
+/**
+ * Reads the current local storage usage and updates the space usage bar.
+ */
+async function refreshUsage() {
+    usedBytes.value = await storage.getLocalBytesInUse();
+}
+
+/**
+ * Recomputes the local storage usage after the data changes, so the space usage bar stays up to
+ * date while editing.
+ */
+const refreshUsageDebounced = useDebounceFn(refreshUsage, 1000);
+
+watch([() => storage.rules, () => storage.modules], refreshUsageDebounced, { deep: true });
+
+onMounted(refreshUsage);
 
 /**
  * Exports the current storage settings, rules, and modules as a JSON file for download.
@@ -45,6 +70,7 @@ function onImportJSON(file: File | undefined) {
             storage.modules.splice(0, storage.modules.length, ...(data.modules || []));
             await storage.save();
             push({ title: t('TOAST.SETTINGS_IMPORTED'), variant: 'success' });
+            await refreshUsage();
         } catch (err) {
             console.error('Import failed:', err);
             push({ title: t('TOAST.SETTINGS_IMPORT_ERROR'), variant: 'error' });
@@ -69,6 +95,7 @@ async function onImportLegacy() {
         if (!confirmed) return;
         await storage.importData(migrateLegacyStorage(raw));
         push({ title: t('TOAST.SETTINGS_LEGACY_IMPORTED'), variant: 'success' });
+        await refreshUsage();
     } catch (err) {
         console.error('Legacy import failed:', err);
         push({ title: t('TOAST.SETTINGS_LEGACY_IMPORT_ERROR'), variant: 'error' });
@@ -84,6 +111,7 @@ async function onWipeData() {
     if (!confirmed) return;
     await storage.reset();
     push({ title: t('TOAST.SETTINGS_RESET'), variant: 'info' });
+    await refreshUsage();
 }
 </script>
 
@@ -143,6 +171,12 @@ async function onWipeData() {
                 </p> -->
             </div>
         </div>
+
+        <SpaceUsageBar
+            :used="usedBytes"
+            :quota="LOCAL_QUOTA"
+            :title="t('SETTINGS.STORAGE_USED')"
+        />
 
         <div class="text-muted-foreground text-xs">
             <ul class="list-disc pl-5">

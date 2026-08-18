@@ -246,6 +246,16 @@ export class StorageServiceBase {
     }
 
     /**
+     * Returns the total number of bytes currently used in the local storage area. The value is
+     * measured as the JSON stringification of every value plus every key length.
+     *
+     * @returns The amount of space (in bytes) used by the local storage.
+     */
+    async getLocalBytesInUse(): Promise<number> {
+        return browser.storage.local.getBytesInUse();
+    }
+
+    /**
      * Returns a JSON string representation of the current storage state, excluding any f: and d:
      * prefixed keys. This is useful for debugging and exporting the storage state.
      *

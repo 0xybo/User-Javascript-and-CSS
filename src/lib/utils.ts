@@ -318,3 +318,18 @@ export function isEmptyCompiledScript(script: string): boolean {
     const trimmed = script.trim();
     return !trimmed || trimmed == `"use strict";`;
 }
+
+/**
+ * Formats a byte count into a human-readable string using binary units (B, KB, MB, GB).
+ *
+ * @param bytes The number of bytes to format.
+ * @param decimals The number of decimals to keep for units above bytes (default: 1).
+ * @returns The formatted size, e.g. "512 B", "12.3 KB" or "1.5 MB".
+ */
+export function formatBytes(bytes: number, decimals: number = 1): string {
+    if (!bytes || bytes <= 0) return '0 B';
+    const units = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+    const value = bytes / 1024 ** i;
+    return `${value.toFixed(i === 0 ? 0 : decimals)} ${units[i]}`;
+}

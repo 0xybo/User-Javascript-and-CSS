@@ -45,6 +45,18 @@ export function StorageServiceSyncMixin<T extends Constructor<StorageServiceBase
         }
 
         /**
+         * Computes the approximate number of bytes that uploading the current (synced) data would
+         * consume in the `storage.sync` area. This is derived from the length of the compressed
+         * Base64 chunks: each 4 characters encode 3 bytes.
+         *
+         * @returns The estimated size in bytes of the compressed sync payload.
+         */
+        async getZipSize(): Promise<number> {
+            const chunks = await compress(this.current);
+            return Math.ceil((chunks.join('').length * 3) / 4);
+        }
+
+        /**
          * Uploads the current storage state to the remote storage. This method compresses the storage data and saves it to the remote storage, replacing any existing data.
          *
          * @param force Whether to force the upload even if the local storage is older than the remote storage (default: false).

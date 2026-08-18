@@ -176,6 +176,8 @@ export default {
         SOFT_TABS_DESCRIPTION:
             'Utilise des espaces au lieu de tabulations quand vous appuyez sur Tab',
         STORAGE: 'Stockage',
+        STORAGE_FREE: '{0} libres',
+        STORAGE_USED: 'Stockage local utilisé',
         SYNC_DOWNLOAD: 'Télécharger du cloud',
         SYNC_DOWNLOAD_DESCRIPTION: 'Remplace les paramètres locaux par ceux stockés dans le cloud',
         SYNC_ENABLED: 'Activer la synchro cloud',
@@ -202,6 +204,10 @@ export default {
             },
         },
         SYNC_NEVER: 'Jamais',
+        SYNC_STORAGE_LIMIT_REACHED:
+            'Limite de stockage cloud atteinte. Désactivez la synchronisation des règles inutilisées ou utilisez une sauvegarde JSON.',
+        SYNC_STORAGE_USED: 'Taille estimée de la synchro',
+        SYNC_STORAGE_WARNING: 'Vous approchez de la limite de stockage cloud.',
         SYNC_UPLOAD: 'Uploader vers le cloud',
         SYNC_UPLOAD_DESCRIPTION: 'Remplace les paramètres du cloud par ceux de la machine',
         TAB_SIZE: 'Taille des tabulations',

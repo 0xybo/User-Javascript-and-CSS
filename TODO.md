@@ -56,7 +56,8 @@
 
 - [ ] Test that `upload()`/`download()` actually work end-to-end
 - [ ] Add retry logic for storage quota exceeded errors
-- [ ] Handle `browser.storage.local.getBytesInUse` for cross-browser compat
+- [x] Handle `browser.storage.local.getBytesInUse` for cross-browser compat (uses
+      `@wxt-dev/browser` typing; fallback quota constants in the UI sections)
 
 ---
 
@@ -303,7 +304,8 @@
 - [x] **Auto-sync** — `browser.alarms` background timer; frequency (hourly/daily/weekly) and method
       (push/pull/both) settings; safe changes applied automatically, data-loss risk notifies user
 - [x] **Per-rule sync checkbox** (only synced rules are uploaded)
-- [ ] **Sync status indicators** (conflict warning, free space, etc.) — last synced time displayed
+- [x] **Sync status indicators** (conflict warning, free space, etc.) — last synced time displayed,
+      free-space progress bar in the Cloud Sync section (see ISSUES.md #17)
 
 ---
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from '#imports';
+import { browser, computed, onMounted, ref, watch } from '#imports';
+import { useDebounceFn } from '@vueuse/core';
 import Button from '@/components/ui/button/Button.vue';
 import Label from '@/components/ui/label/Label.vue';
 import Select from '@/components/ui/select/Select.vue';
@@ -14,7 +15,9 @@ import { useStorage } from '@/composables/useStorage';
 import { useToast } from '@/composables/useToast';
 import useTranslation from '@/composables/useTranslation';
 import { RemoteSettingsInfo, SyncFrequency, SyncMethod } from '@/lib/storage/types';
+import { formatBytes } from '@/lib/utils';
 import { CloudDownloadIcon, CloudUploadIcon } from 'lucide-vue-next';
+import SpaceUsageBar from './SpaceUsageBar.vue';
 
 const t = useTranslation();
 const storage = useStorage();
@@ -23,6 +26,15 @@ const dialog = useDialog();
 
 const NO_EMITTER = '—';
 const remoteInfo = ref<RemoteSettingsInfo | null>(null);
+
+/** Maximum number of bytes available in the `storage.sync` area. */
+const SYNC_QUOTA = browser.storage.sync.QUOTA_BYTES ?? 102400;
+
+/** Estimated size (in bytes) of the compressed sync payload. */
+const zipSize = ref(0);
+
+const syncLimitReached = computed(() => zipSize.value >= SYNC_QUOTA);
+const syncNearLimit = computed(() => !syncLimitReached.value && zipSize.value >= SYNC_QUOTA * 0.9);
 
 const FREQUENCY_OPTIONS = [
     { value: SyncFrequency.Hourly, label: t('SETTINGS.SYNC_FREQUENCY.OPTIONS.HOURLY') },
@@ -55,10 +67,24 @@ function formatDateTime(timestamp: number): string {
 async function refreshRemote() {
     if (storage.settings.syncEnabled) {
         remoteInfo.value = await storage.getRemoteInfo();
+        zipSize.value = await storage.getZipSize();
     } else {
         remoteInfo.value = null;
+        zipSize.value = 0;
     }
 }
+
+/**
+ * Recomputes the estimated sync size after the local rules or modules change, so the space usage
+ * bar stays up to date while editing.
+ */
+const refreshZipSize = useDebounceFn(async () => {
+    if (storage.settings.syncEnabled) {
+        zipSize.value = await storage.getZipSize();
+    }
+}, 1000);
+
+watch([() => storage.rules, () => storage.modules], refreshZipSize, { deep: true });
 
 /**
  * The date of the last successful synchronization with the cloud, if any.
@@ -225,6 +251,22 @@ onMounted(refreshRemote);
                         </SelectContent>
                     </Select>
                 </div>
+
+                <SpaceUsageBar
+                    :used="zipSize"
+                    :quota="SYNC_QUOTA"
+                    :title="t('SETTINGS.SYNC_STORAGE_USED')"
+                >
+                    <p
+                        v-if="syncLimitReached"
+                        class="text-destructive text-xs"
+                    >
+                        {{ t('SETTINGS.SYNC_STORAGE_LIMIT_REACHED') }}
+                    </p>
+                    <p v-else-if="syncNearLimit" class="text-warning text-xs">
+                        {{ t('SETTINGS.SYNC_STORAGE_WARNING') }}
+                    </p>
+                </SpaceUsageBar>
             </div>
 
             <div class="flex items-center justify-between">
@@ -234,7 +276,7 @@ onMounted(refreshRemote);
 
             <div class="flex flex-wrap gap-3">
                 <div class="flex flex-col gap-1">
-                    <Button variant="outline" @click="onUploadSync">
+                    <Button variant="outline" :disabled="syncLimitReached" @click="onUploadSync">
                         <CloudUploadIcon class="mr-2 h-4 w-4" />
                         {{ t('SETTINGS.SYNC_UPLOAD') }}
                     </Button>

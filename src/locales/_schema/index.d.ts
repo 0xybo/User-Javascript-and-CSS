@@ -156,6 +156,8 @@ export default interface Messages {
         SOFT_TABS: string;
         SOFT_TABS_DESCRIPTION: string;
         STORAGE: string;
+        STORAGE_FREE: WithPositionalArgs<1>;
+        STORAGE_USED: string;
         SYNC_DOWNLOAD: string;
         SYNC_DOWNLOAD_DESCRIPTION: string;
         SYNC_ENABLED: string;
@@ -180,6 +182,9 @@ export default interface Messages {
             };
         };
         SYNC_NEVER: string;
+        SYNC_STORAGE_LIMIT_REACHED: string;
+        SYNC_STORAGE_USED: string;
+        SYNC_STORAGE_WARNING: string;
         SYNC_UPLOAD: string;
         SYNC_UPLOAD_DESCRIPTION: string;
         TAB_SIZE: string;
