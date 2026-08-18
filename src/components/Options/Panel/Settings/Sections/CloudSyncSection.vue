@@ -253,12 +253,17 @@ onMounted(refreshRemote);
                 </div>
             </div>
 
-            <p class="text-muted-foreground text-xs">
+            <div class="text-muted-foreground text-xs">
                 <ul class="list-disc pl-5">
-                    <li>{{ t('SETTINGS.SYNC_UPLOAD') }}: {{ t('SETTINGS.SYNC_UPLOAD_DESCRIPTION') }}</li>
-                    <li>{{ t('SETTINGS.SYNC_DOWNLOAD') }}: {{ t('SETTINGS.SYNC_DOWNLOAD_DESCRIPTION') }}</li>
+                    <li>
+                        {{ t('SETTINGS.SYNC_UPLOAD') }}: {{ t('SETTINGS.SYNC_UPLOAD_DESCRIPTION') }}
+                    </li>
+                    <li>
+                        {{ t('SETTINGS.SYNC_DOWNLOAD') }}:
+                        {{ t('SETTINGS.SYNC_DOWNLOAD_DESCRIPTION') }}
+                    </li>
                 </ul>
-            </p>
+            </div>
         </div>
     </section>
 </template>

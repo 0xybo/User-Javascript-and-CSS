@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { browser } from '#imports';
 import Button from '@/components/ui/button/Button.vue';
 import Label from '@/components/ui/label/Label.vue';
 import Separator from '@/components/ui/separator/Separator.vue';
@@ -6,7 +7,6 @@ import { useStorage } from '@/composables/useStorage';
 import { useToast } from '@/composables/useToast';
 import useTranslation from '@/composables/useTranslation';
 import { detectLegacyStorage, migrateLegacyStorage } from '@/lib/storage/migrate';
-import { browser } from '#imports';
 import { DownloadIcon, HistoryIcon, Trash2Icon, UploadIcon } from 'lucide-vue-next';
 
 const t = useTranslation();
@@ -144,13 +144,15 @@ async function onWipeData() {
             </div>
         </div>
 
-        <p class="text-muted-foreground text-xs">
+        <div class="text-muted-foreground text-xs">
             <ul class="list-disc pl-5">
                 <li>{{ t('SETTINGS.EXPORT') }}: {{ t('SETTINGS.EXPORT_DESCRIPTION') }}</li>
                 <li>{{ t('SETTINGS.IMPORT') }}: {{ t('SETTINGS.IMPORT_DESCRIPTION') }}</li>
                 <li>{{ t('SETTINGS.WIPE_DATA') }}: {{ t('SETTINGS.WIPE_DATA_DESCRIPTION') }}</li>
-                <li>{{ t('SETTINGS.IMPORT_LEGACY') }}: {{ t('SETTINGS.IMPORT_LEGACY_DESCRIPTION') }}</li>
+                <li>
+                    {{ t('SETTINGS.IMPORT_LEGACY') }}: {{ t('SETTINGS.IMPORT_LEGACY_DESCRIPTION') }}
+                </li>
             </ul>
-        </p>
+        </div>
     </section>
 </template>
