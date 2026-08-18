@@ -9,7 +9,7 @@ import {
     zLightThemePalette,
     zTheme,
 } from './theme';
-import { FileType, ItemType, SortBy, SyncFrequency, SyncMethod, BadgeColorMode } from './types';
+import { BadgeColorMode, FileType, ItemType, SortBy, SyncFrequency, SyncMethod } from './types';
 
 z.config({
     // Disable JIT mode to avoid issues with environments that disallow eval, such as browser
@@ -121,6 +121,8 @@ export const zRule = zItem.extend({
     script: zScript.default(() => zScript.parse({})),
     /** Indicates whether the rule is enabled. Defaults to true. */
     enabled: z.boolean().default(true),
+    /** Indicates whether the rule should automatically fix patterns. Defaults to true. */
+    autoFixPatterns: z.boolean().default(true),
 });
 
 /**

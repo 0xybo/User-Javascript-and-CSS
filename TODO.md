@@ -78,10 +78,10 @@
     - [x] Track which CSS is injected per tab (TabManager pattern)
     - [x] Remove/replace CSS when rules change
 - [x] **Badge on the extension icon** — count of enabled rules matching the active tab URL
-    (`src/lib/background/badge.ts`), honoring the `badgeCount` setting
+      (`src/lib/background/badge.ts`), honoring the `badgeCount` setting
 - [x] **Badge color setting** — follow the current extension theme (per-palette color) or a custom
-    color (`badgeColorMode` / `badgeColor`), with the resolved light/dark theme persisted in
-    `info.theme` by the options/popup pages so the service worker can apply it
+      color (`badgeColorMode` / `badgeColor`), with the resolved light/dark theme persisted in
+      `info.theme` by the options/popup pages so the service worker can apply it
 - [x] **Fallback JS injection via `scripting.executeScript`**
     - [x] Use `world: "MAIN"` when `userScripts` API unavailable
     - [x] Handle all frames (`jsDeep` / recursive flag)
@@ -228,7 +228,7 @@
 - [x] **Badge count setting**: show/hide rule count on extension icon
 - [x] **Badge color setting**: follow the theme or custom color
 - [x] **Descriptions for all settings**: every setting in the settings panel has a short
-    description (en + fr)
+      description (en + fr)
 - [x] **Default sort** for rule list
 - [ ] **Custom theme colors** (background, text, accent)
 
@@ -301,7 +301,7 @@
     - [ ] Firefox: alternative OAuth approach
 - [x] **Sync trigger UI** — manual upload/download with confirmation popup (`useDialog`)
 - [x] **Auto-sync** — `browser.alarms` background timer; frequency (hourly/daily/weekly) and method
-    (push/pull/both) settings; safe changes applied automatically, data-loss risk notifies user
+      (push/pull/both) settings; safe changes applied automatically, data-loss risk notifies user
 - [x] **Per-rule sync checkbox** (only synced rules are uploaded)
 - [ ] **Sync status indicators** (conflict warning, free space, etc.) — last synced time displayed
 
@@ -351,7 +351,8 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
 
 ## 17. Libraries & Utilities
 
-- [x] `rules.ts` — URL pattern matching (glob → regex, include/exclude)
+- [x] `rules.ts` — URL pattern matching (glob → regex, include/exclude) + popup utilities
+      (`splitPatterns`, `fixPattern`, `getPatternError`, `buildPatternFromOptions`, `parseUrlForOptions`)
 - [x] `utils.ts` — deep merge, clone, diff, pick, omit
 - [x] `logger.ts` — styled console logger with levels
 - [x] `errors.ts` — custom error classes for storage operations
@@ -411,26 +412,31 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
 ## 20. Bugs & Known Issues
 
 - [x] **ISSUES #7/#8** — no changes detected when editing a rule (fixed: removed falsy-content guards in
-    `isRuleUnsaved`/`isModuleUnsaved`, and `ruleUnsaved`/`moduleUnsaved` are now getters instead of
-    computed refs so they recompute when the active draft is switched)
+      `isRuleUnsaved`/`isModuleUnsaved`, and `ruleUnsaved`/`moduleUnsaved` are now getters instead of
+      computed refs so they recompute when the active draft is switched)
 - [x] **Stale compiled code persisted** — `useThrottleFn(fn, 500)` (default `trailing=false, leading=true`)
-    only saved the first mutation in each 500ms window, so the compiled output update (which happens after
-    the async compile) was dropped and the leading save even deleted the old `f:<id>:c` key. Fixed in
-    `src/lib/storage/base.ts`: the save watcher now uses `useDebounceFn(fn, 500)` so the final
-    content + compiled state is persisted together.
+      only saved the first mutation in each 500ms window, so the compiled output update (which happens after
+      the async compile) was dropped and the leading save even deleted the old `f:<id>:c` key. Fixed in
+      `src/lib/storage/base.ts`: the save watcher now uses `useDebounceFn(fn, 500)` so the final
+      content + compiled state is persisted together.
 - [x] **ISSUES #15** — duplicate rule on save without name. `saveRuleDraft`/`saveModuleDraft` now flip
-    `isNew` synchronously (before the async compile) and guard the `push`; `State.switchDraft` no longer
-    re-arms the once-watcher when switching to the already-active draft.
+      `isNew` synchronously (before the async compile) and guard the `push`; `State.switchDraft` no longer
+      re-arms the once-watcher when switching to the already-active draft.
 - [x] **ISSUES #16** — all scripts re-registered on every save. Cross-context storage merges keep local
-    `info.emitter/created/updated` (only `info.theme` merges), and the background re-registration is now
-    differential (fingerprint-based) and gated on the `rules` key changing; unchanged CSS is not
-    re-injected.
+      `info.emitter/created/updated` (only `info.theme` merges), and the background re-registration is now
+      differential (fingerprint-based) and gated on the `rules` key changing; unchanged CSS is not
+      re-injected.
 - [x] **Draft round-trip** — `clean()` now writes `itemId`/`itemType` (and removes the inline `item`) so
-    `parse()` can re-link drafts after a reload or cross-context merge; `parse()` falls back to the
-    embedded item for data written by older builds.
+      `parse()` can re-link drafts after a reload or cross-context merge; `parse()` falls back to the
+      embedded item for data written by older builds.
 - [x] **ISSUES #10** — import from the old v3.1.2 extension. `UJC_RESTORE_ORIGINAL_KEY=1` build option
-    restores the original extension ID (see `config/buildManifest.ts`); the Settings → Storage screen has
-    an "Import from old extension" button backed by `src/lib/storage/migrate.ts`.
+      restores the original extension ID (see `config/buildManifest.ts`); the Settings → Storage screen has
+      an "Import from old extension" button backed by `src/lib/storage/migrate.ts`.
+- [x] **ISSUES #9** — URL match popup. `UrlMatchPopup.vue` (Header folder) opens on hover/click of the
+      pattern group in `RuleHeader.vue` (reka-ui `Popover` + `PopoverAnchor`, settle delay for hover
+      transitions). Simple/Advanced tabs build the pattern; shared list shows positive matches and negative
+      exclusions with validity icons/tooltips, regex preview and remove. Writes back to the rule `patterns`
+      string.
 - [ ] **MonacoEditor.vue:37** — theme hardcoded to `'vs-dark'` (`TODO à changer`)
 - [x] **compiler/typescript.ts** — `format()` bug fixed (now correctly called with `output`)
 - [ ] **compiler/scss.ts** — syntax errors (wrong import, wrong return type)
@@ -463,8 +469,7 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
 
 ## 22. Polish & DX
 
-- [ ] `package.json` name/description from "wxt-vue-starter" to "user-javascript-and-css"
-- [ ] Add `.env` for API keys (cloud sync OAuth)
+- [x] `package.json` name/description from "wxt-vue-starter" to "user-javascript-and-css"
 - [ ] Document build/release process in README
 - [ ] Clean up empty/stub files (ActionsScript.vue, ActionsStyle.vue)
 - [ ] Remove unused imports

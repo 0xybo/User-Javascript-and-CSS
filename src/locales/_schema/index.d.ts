@@ -19,6 +19,7 @@ export default interface Messages {
         };
         STYLE: string;
         FIND: string;
+        REMOVE: string;
     };
     DIALOG: {
         CONFIRM: {
@@ -86,6 +87,7 @@ export default interface Messages {
         };
         URL_PATTERN: string;
         URL_PATTERN_EXAMPLE: string;
+        URL_PATTERN_TOOLTIP: string;
     };
     EXTENSION: {
         DESCRIPTION: string;
@@ -222,5 +224,71 @@ export default interface Messages {
         SYNC_DOWNLOAD_SUCCESS: string;
         SYNC_UPLOAD_ERROR: string;
         SYNC_UPLOAD_SUCCESS: string;
+    };
+    URL_MATCH: {
+        TITLE: string;
+        TAB_SIMPLE: string;
+        TAB_ADVANCED: string;
+        SIMPLE: {
+            URL: string;
+            URL_PLACEHOLDER: string;
+            URL_HINT: string;
+            SCHEME: string;
+            SCHEME_HTTPS: string;
+            SCHEME_HTTP: string;
+            SCHEME_ALL: string;
+            SCHEME_UNRECOGNIZED: string;
+            DOMAIN: string;
+            DOMAIN_PLACEHOLDER: string;
+            DOMAIN_WILDCARD: string;
+            MATCH_ALL: string;
+            SUBDOMAINS: string;
+            STARTS_WITH: string;
+            EXCLUDE: string;
+            ADD: string;
+            PATH_WILDCARD: string;
+            PATH_PLACEHOLDER: string;
+        };
+        ADVANCED: {
+            PATTERN: string;
+            PATTERN_PLACEHOLDER: string;
+            RULES_TITLE: string;
+            RULE_SCHEME: string;
+            RULE_DOMAIN: string;
+            RULE_DELIMITER: string;
+            OK_TITLE: string;
+            OK_EXAMPLE_1: string;
+            OK_EXAMPLE_2: string;
+            OK_EXAMPLE_3: string;
+            BAD_TITLE: string;
+            BAD_EXAMPLE_1: string;
+            BAD_EXAMPLE_2: string;
+            BAD_EXAMPLE_3: string;
+            AUTO_FIX: string;
+            AUTO_FIX_DESC: string;
+            AUTO_FIX_RESULT: string;
+            ADD: string;
+        };
+        LIST: {
+            TITLE: string;
+            MATCHES: string;
+            EXCLUSIONS: string;
+            NONE: string;
+            VALID: string;
+            INVALID: string;
+            REMOVE: string;
+            CONVERTED: string;
+        };
+        ERRORS: {
+            EMPTY: string;
+            NO_SCHEME: string;
+            INVALID_SCHEME: string;
+            NO_PATH: string;
+            MASKED_DOMAIN: string;
+            INVALID_HOST: string;
+        };
+        WARNING: {
+            STRICT_MATCH: string;
+        };
     };
 }

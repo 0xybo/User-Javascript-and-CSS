@@ -4,19 +4,17 @@ import InputGroup from '@/components/ui/input-group/InputGroup.vue';
 import InputGroupAddon from '@/components/ui/input-group/InputGroupAddon.vue';
 import InputGroupInput from '@/components/ui/input-group/InputGroupInput.vue';
 import Label from '@/components/ui/label/Label.vue';
-import { useStorage } from '@/composables/useStorage';
 import useState from '@/composables/options/useState';
 import { useToast } from '@/composables/useToast';
 import useTranslation from '@/composables/useTranslation.ts';
-import { IRule, ItemType } from '@/lib/storage/types';
 import { cn } from '@/lib/tailwind';
-import { BadgeCheckIcon, SaveIcon } from 'lucide-vue-next';
+import { SaveIcon } from 'lucide-vue-next';
 import ModulesMenu from './Header/ModulesMenu.vue';
 import MoreMenu from './Header/MoreMenu.vue';
+import UrlMatchContainer from './Header/UrlMatchContainer.vue';
 
 const t = useTranslation();
 const state = useState();
-const storage = useStorage();
 const { push } = useToast();
 
 /**
@@ -47,26 +45,7 @@ function onSaveButtonClick() {
                 v-model="state.rule.item.name"
             />
         </InputGroup>
-        <InputGroup
-            class="border-primary h-min flex-2"
-            v-if="state.rule.item.type === ItemType.Rule"
-        >
-            <InputGroupAddon>
-                <BadgeCheckIcon :size="24" class="text-success/75 size-6" :stroke-width="1.5" />
-            </InputGroupAddon>
-            <div class="relative w-full">
-                <InputGroupAddon class="absolute top-0 left-0 pt-1! pb-0">
-                    <Label class="text-muted p-0 text-xs">
-                        {{ t('EDITOR.URL_PATTERN') }}
-                    </Label>
-                </InputGroupAddon>
-                <InputGroupInput
-                    :placeholder="t('EDITOR.URL_PATTERN_EXAMPLE')"
-                    class="h-11 pt-6 pb-2! pl-3!"
-                    v-model="(state.rule.item as IRule).patterns"
-                />
-            </div>
-        </InputGroup>
+        <UrlMatchContainer />
         <ModulesMenu />
         <Button
             @click="onSaveButtonClick"

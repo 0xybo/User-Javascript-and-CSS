@@ -21,6 +21,7 @@ export default {
         },
         STYLE: 'SCSS ou CSS',
         FIND: 'Rechercher',
+        REMOVE: 'Supprimer',
     },
     DIALOG: {
         CONFIRM: {
@@ -98,6 +99,8 @@ export default {
         },
         URL_PATTERN: "Modèle de l'URL",
         URL_PATTERN_EXAMPLE: 'https://site.com/*, !https://site.com/excluded/*',
+        URL_PATTERN_TOOLTIP:
+            "Le modèle d'URL est utilisé pour déterminer sur quelles pages la règle s'applique. Il peut s'agir d'une URL simple, d'un domaine ou d'un modèle plus complexe. Utilisez * comme caractère générique pour un nombre quelconque de caractères. En cliquant sur ce bouton, vous pouvez accéder à un éditeur de modèle d'URL guidé ou des conseils.",
     },
     EXTENSION: {
         DESCRIPTION: 'Injecte du JavaScript et du CSS personnalisés dans les pages web.',
@@ -142,7 +145,7 @@ export default {
             MONACO: 'Monaco',
             TITLE: 'Éditeur',
             SELECT: "Type d'éditeur",
-            SELECT_DESCRIPTION: "Éditeur de code utilisé pour les règles et les modules",
+            SELECT_DESCRIPTION: 'Éditeur de code utilisé pour les règles et les modules',
         },
         EXPORT: 'Exporter en JSON',
         EXPORT_DESCRIPTION:
@@ -161,20 +164,20 @@ export default {
         IMPORT_LEGACY_DESCRIPTION:
             'Importe les règles, modules et paramètres stockés par la version précédente de l’extension',
         INVISIBLE_CHARS: 'Caractères invisibles',
-        INVISIBLE_CHARS_DESCRIPTION: 'Affiche les espaces, tabulations et fins de ligne dans l’éditeur',
+        INVISIBLE_CHARS_DESCRIPTION:
+            'Affiche les espaces, tabulations et fins de ligne dans l’éditeur',
         LANGUAGE: 'Langue',
         LANGUAGE_DESCRIPTION: "Langue utilisée pour l'interface de l'extension",
         LIGATURES: 'Activer les ligatures',
         LIGATURES_DESCRIPTION: 'Active les ligatures de police dans l’éditeur de code',
         MINIMAP: 'Afficher la minimap',
-        MINIMAP_DESCRIPTION:
-            'Affiche un aperçu miniature du code sur le côté de l’éditeur',
+        MINIMAP_DESCRIPTION: 'Affiche un aperçu miniature du code sur le côté de l’éditeur',
         SOFT_TABS: 'Tabulations souples',
-        SOFT_TABS_DESCRIPTION: 'Utilise des espaces au lieu de tabulations quand vous appuyez sur Tab',
+        SOFT_TABS_DESCRIPTION:
+            'Utilise des espaces au lieu de tabulations quand vous appuyez sur Tab',
         STORAGE: 'Stockage',
         SYNC_DOWNLOAD: 'Télécharger du cloud',
-        SYNC_DOWNLOAD_DESCRIPTION:
-            'Remplace les paramètres locaux par ceux stockés dans le cloud',
+        SYNC_DOWNLOAD_DESCRIPTION: 'Remplace les paramètres locaux par ceux stockés dans le cloud',
         SYNC_ENABLED: 'Activer la synchro cloud',
         SYNC_ENABLED_DESCRIPTION:
             'Compare périodiquement les paramètres locaux avec le cloud et les synchronise automatiquement.',
@@ -207,13 +210,14 @@ export default {
             AUTO: 'Auto',
             DARK: 'Sombre',
             DARK_PALETTE: 'Palette sombre',
-            DARK_PALETTE_DESCRIPTION: 'Palette de couleurs utilisée quand le thème sombre est actif',
+            DARK_PALETTE_DESCRIPTION:
+                'Palette de couleurs utilisée quand le thème sombre est actif',
             LIGHT: 'Clair',
             LIGHT_PALETTE: 'Palette claire',
-            LIGHT_PALETTE_DESCRIPTION: 'Palette de couleurs utilisée quand le thème clair est actif',
+            LIGHT_PALETTE_DESCRIPTION:
+                'Palette de couleurs utilisée quand le thème clair est actif',
             MODE: 'Mode du thème',
-            MODE_DESCRIPTION:
-                'Bascule entre l’apparence claire et sombre, ou suit le système',
+            MODE_DESCRIPTION: 'Bascule entre l’apparence claire et sombre, ou suit le système',
             TITLE: 'Thème',
         },
         WIPE_CONFIRM:
@@ -246,5 +250,73 @@ export default {
         SYNC_DOWNLOAD_SUCCESS: 'Paramètres téléchargés depuis le cloud',
         SYNC_UPLOAD_ERROR: "Échec de l'envoi des paramètres vers le cloud",
         SYNC_UPLOAD_SUCCESS: 'Paramètres envoyés vers le cloud',
+    },
+    URL_MATCH: {
+        TITLE: "Correspondance d'URL",
+        TAB_SIMPLE: 'Simple',
+        TAB_ADVANCED: 'Avancé',
+        SIMPLE: {
+            URL: 'URL',
+            URL_PLACEHOLDER: 'https://example.com/page',
+            URL_HINT: 'Collez une URL pour pré-remplir les champs ci-dessous.',
+            SCHEME: 'Méthode',
+            SCHEME_HTTPS: 'HTTPS',
+            SCHEME_HTTP: 'HTTP',
+            SCHEME_ALL: 'Toutes',
+            SCHEME_UNRECOGNIZED: 'Non reconnue',
+            DOMAIN: 'Domaine',
+            DOMAIN_PLACEHOLDER: 'example.com ou *',
+            DOMAIN_WILDCARD: 'Tous les domaines avec *',
+            MATCH_ALL: 'Correspond à toutes les URLs',
+            SUBDOMAINS: 'Inclure tous les sous-domaines',
+            STARTS_WITH: 'Commence par (masque de fin)',
+            EXCLUDE: 'Exclure ce modèle',
+            ADD: 'Ajouter',
+            PATH_WILDCARD: 'Correspond à tous les chemins avec * (ex. https://example.com/*)',
+            PATH_PLACEHOLDER: 'ex. /page ou /api/*',
+        },
+        ADVANCED: {
+            PATTERN: 'Modèle',
+            PATTERN_PLACEHOLDER: 'https://example.com/* ou google.com',
+            RULES_TITLE: "Depuis la version 3.0, les exigences sur l'URL ont augmenté :",
+            RULE_SCHEME: 'Doit commencer strictement par http, https ou *',
+            RULE_DOMAIN: 'Domaine et zone sans masque, ou seulement masqué (one.com, *.one.com, *)',
+            RULE_DELIMITER: "L'hôte doit se terminer par un délimiteur « / »",
+            OK_TITLE: 'Ces modèles fonctionnent :',
+            OK_EXAMPLE_1: 'https://one.com/*',
+            OK_EXAMPLE_2: '*://*.one.com/*',
+            OK_EXAMPLE_3: 'https://*.one.com/',
+            BAD_TITLE: 'Ces modèles ne fonctionneront pas :',
+            BAD_EXAMPLE_1: 'https://one.com',
+            BAD_EXAMPLE_2: '*.*',
+            BAD_EXAMPLE_3: 'http*://one.com/',
+            AUTO_FIX: 'Corriger automatiquement les modèles',
+            AUTO_FIX_DESC:
+                'Les modèles seront automatiquement corrigés pour répondre aux exigences. Le résultat sera affiché ci-dessous.',
+            AUTO_FIX_RESULT: 'Résultat de la correction automatique :',
+            ADD: 'Ajouter',
+        },
+        LIST: {
+            TITLE: 'Modèles',
+            MATCHES: 'Correspondances',
+            EXCLUSIONS: 'Exclusions',
+            NONE: 'Aucun modèle pour le moment',
+            VALID: 'Modèle valide',
+            INVALID: 'Modèle invalide',
+            REMOVE: 'Retirer',
+            CONVERTED: 'Converti :',
+        },
+        ERRORS: {
+            EMPTY: 'Le modèle est vide.',
+            NO_SCHEME: 'Schéma manquant, utilisez http://, https:// ou *:// (corrigible).',
+            INVALID_SCHEME: 'Schéma invalide. Seuls http, https, file, ftp ou * sont autorisés.',
+            NO_PATH: 'Chemin manquant : l\u2019hôte doit se terminer par un délimiteur « / ».',
+            MASKED_DOMAIN: 'Le domaine et la zone ne doivent pas être masqués (ex. *.com).',
+            INVALID_HOST: 'Hôte invalide, ex. one.com, *.one.com, * ou une adresse IP.',
+        },
+        WARNING: {
+            STRICT_MATCH:
+                "Attention, le modèle se termine sans « * », ainsi l'URL doit correspondre strictement pour que l'injection soit effectuée.",
+        },
     },
 } as const satisfies Messages;
