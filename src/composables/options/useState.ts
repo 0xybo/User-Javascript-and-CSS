@@ -39,12 +39,16 @@ class State {
     private _moduleDraftWatcher: ReturnType<typeof watch> | null = null;
 
     constructor() {
-        this.watchOnceForSave(this.rule);
-        this.watchOnceForSave(this.module);
-
-        this.goToHashLocation();
+        storage.onLoaded(() => this.initialize());
 
         return reactive(this) as unknown as State;
+    }
+
+    private initialize() {
+        this.goToHashLocation();
+
+        this.watchOnceForSave(this.rule);
+        this.watchOnceForSave(this.module);
     }
 
     /**
@@ -98,7 +102,7 @@ class State {
     public switchDraft(draft: IDraft) {
         if (isRule(draft)) {
             const isSameDraft = draft.item.id === this.rule.item.id;
-            this.rule = draft;
+            Object.assign(this.rule, draft);
 
             if (!isSameDraft) {
                 if (draft.isNew) this.watchOnceForSave(this.rule);
@@ -108,7 +112,7 @@ class State {
             this.switchTab(Tab.Rules);
         } else {
             const isSameDraft = draft.item.id === this.module.item.id;
-            this.module = draft as IDraft<ItemType.Module>;
+            Object.assign(this.module, draft);
 
             if (!isSameDraft) {
                 if (draft.isNew) this.watchOnceForSave(this.module);
@@ -128,7 +132,8 @@ class State {
      */
     public cleanDrafts() {
         storage.drafts.forEach((draft) => {
-            if (!isUnsaved(draft)) storage.removeDraft(draft);
+            if (!isUnsaved(draft) && this.rule.item.id !== draft.item.id)
+                storage.removeDraft(draft);
         });
     }
 
@@ -218,19 +223,37 @@ class State {
         switch (hash) {
             case 'rule':
                 const ruleDraft = storage.getDraftFromId(detail);
-                if (ruleDraft && isRule(ruleDraft)) this.switchDraft(ruleDraft);
-                else {
-                    const draft = storage.createDraftFromType(ItemType.Rule);
-                    this.switchDraft(draft);
+                if (ruleDraft && isRule(ruleDraft)) {
+                    this.switchDraft(ruleDraft);
+                    break;
                 }
+
+                const rule = storage.getItemFromId(detail);
+                if (rule && isRule(rule)) {
+                    const newRuleDraft = storage.createDraftFromItem(rule);
+                    this.switchDraft(newRuleDraft);
+                    break;
+                }
+
+                const newRuleDraft = storage.createDraftFromType(ItemType.Rule);
+                this.switchDraft(newRuleDraft);
                 break;
             case 'module':
                 const moduleDraft = storage.getDraftFromId(detail);
-                if (moduleDraft && !isRule(moduleDraft)) this.switchDraft(moduleDraft);
-                else {
-                    const draft = storage.createDraftFromType(ItemType.Module);
-                    this.switchDraft(draft);
+                if (moduleDraft && !isRule(moduleDraft)) {
+                    this.switchDraft(moduleDraft);
+                    break;
                 }
+
+                const module = storage.getItemFromId(detail);
+                if (module && !isRule(module)) {
+                    const newModuleDraft = storage.createDraftFromItem(module);
+                    this.switchDraft(newModuleDraft);
+                    break;
+                }
+
+                const newModuleDraft = storage.createDraftFromType(ItemType.Module);
+                this.switchDraft(newModuleDraft);
                 break;
             case 'settings':
                 if (detail && has(SettingsSection, detail))

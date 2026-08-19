@@ -18,10 +18,9 @@ const rules = computed(() =>
 const hasChanged = ref(false);
 
 function reloadTab() {
-    if (tab.value?.id) {
-        browser.tabs.reload(tab.value?.id);
-        hasChanged.value = false;
-    }
+    if (!tab.value?.id) return;
+    browser.tabs.reload(tab.value?.id);
+    hasChanged.value = false;
 }
 
 function onRuleListChange() {
@@ -31,7 +30,7 @@ function onRuleListChange() {
 function onRuleListOpen(rule: IRule) {
     if (!tab.value?.url) return;
     const optionUrl = new URL(browser.runtime.getURL('/options.html'));
-    optionUrl.hash = 'r:' + rule.id;
+    optionUrl.hash = 'rule:' + rule.id;
     window.open(optionUrl);
 }
 </script>

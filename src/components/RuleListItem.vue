@@ -69,8 +69,8 @@ function onSwitchClick(e: MouseEvent) {
     <div
         :class="
             cn(
-                'hover:bg-primary/20 group flex w-full flex-row items-center justify-between gap-2 px-4 py-4',
-                { 'bg-primary/20': props.opened, 'cursor-pointer': !props.opened },
+                'hover:bg-primary/20 group flex w-full flex-row items-center justify-between gap-2 border-l-2 border-transparent px-4 py-4 transition-colors',
+                { 'bg-primary/20 border-accent': props.opened, 'cursor-pointer': !props.opened },
             )
         "
         @click="open"
