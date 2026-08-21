@@ -23,6 +23,27 @@ export default {
         FIND: 'Find',
         REMOVE: 'Remove',
     },
+    ABOUT: {
+        CREDITS: 'Credits',
+        CREDITS_DESCRIPTION: 'Open source libraries used by this extension',
+        ENABLE_SCRIPTS: 'Enable user scripts',
+        ENABLE_SCRIPTS_DESCRIPTION:
+            'Chrome requires the "Allow User Scripts" permission for JavaScript rules to run. Developer mode is no longer required.',
+        ENABLE_SCRIPTS_STEP_1: 'Open chrome://extensions/',
+        ENABLE_SCRIPTS_STEP_2: 'Locate "User Javascript and CSS"',
+        ENABLE_SCRIPTS_STEP_3: 'Enable "Allow User Scripts"',
+        GITHUB: 'GitHub',
+        GITHUB_DESCRIPTION: 'Source code and issue tracker for this extension',
+        LINKS: 'Links',
+        PREVIOUS_DOCS: 'Documentation',
+        PREVIOUS_EXTENSION: 'Previous extension',
+        PREVIOUS_EXTENSION_DESCRIPTION:
+            'This project is a rebuild of the original "User JavaScript and CSS" extension (v3.1.2) by tenRabbits.',
+        PREVIOUS_IMPORT: 'Import your data',
+        PREVIOUS_IMPORT_DESCRIPTION: 'Your rules can be migrated via Settings → Storage.',
+        PREVIOUS_STORE: 'Chrome Web Store',
+        VERSION: 'Version',
+    },
     DIALOG: {
         CONFIRM: {
             CANCEL: 'Cancel',

@@ -21,6 +21,25 @@ export default interface Messages {
         FIND: string;
         REMOVE: string;
     };
+    ABOUT: {
+        CREDITS: string;
+        CREDITS_DESCRIPTION: string;
+        ENABLE_SCRIPTS: string;
+        ENABLE_SCRIPTS_DESCRIPTION: string;
+        ENABLE_SCRIPTS_STEP_1: string;
+        ENABLE_SCRIPTS_STEP_2: string;
+        ENABLE_SCRIPTS_STEP_3: string;
+        GITHUB: string;
+        GITHUB_DESCRIPTION: string;
+        LINKS: string;
+        PREVIOUS_DOCS: string;
+        PREVIOUS_EXTENSION: string;
+        PREVIOUS_EXTENSION_DESCRIPTION: string;
+        PREVIOUS_IMPORT: string;
+        PREVIOUS_IMPORT_DESCRIPTION: string;
+        PREVIOUS_STORE: string;
+        VERSION: string;
+    };
     DIALOG: {
         CONFIRM: {
             CANCEL: string;

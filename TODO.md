@@ -237,12 +237,13 @@
 
 ## 9. Options Page — About Tab
 
-**Status: ⬜ STUB** (AboutTab is template-only)
+**Status: ✅ Implemented** (extension info, links, previous extension, credits, user scripts)
 
-- [ ] Extension version + build info
-- [ ] Links to documentation, GitHub, Chrome Web Store
-- [ ] Credits / licenses
-- [ ] "Enable developer mode" instructions (with screenshots, like original had)
+- [x] Extension version + build info (manifest name, version, description)
+- [x] Links to GitHub (this project) and to the previous extension (docs + Chrome Web Store)
+- [x] Credits / licenses (open source libraries used)
+- [x] "Enable user scripts" instructions (chrome://extensions + Allow User Scripts, text-only — no
+      screenshots bundled)
 
 ---
 

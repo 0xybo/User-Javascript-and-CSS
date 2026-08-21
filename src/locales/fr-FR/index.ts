@@ -23,6 +23,28 @@ export default {
         FIND: 'Rechercher',
         REMOVE: 'Supprimer',
     },
+    ABOUT: {
+        CREDITS: 'Crédits',
+        CREDITS_DESCRIPTION: 'Bibliothèques open source utilisées par cette extension',
+        ENABLE_SCRIPTS: 'Activer les scripts utilisateur',
+        ENABLE_SCRIPTS_DESCRIPTION:
+            'Chrome exige la permission « Autoriser les scripts utilisateur » pour que les règles JavaScript fonctionnent. Le mode développeur n’est plus obligatoire.',
+        ENABLE_SCRIPTS_STEP_1: 'Ouvrez chrome://extensions/',
+        ENABLE_SCRIPTS_STEP_2: 'Trouvez « User Javascript and CSS »',
+        ENABLE_SCRIPTS_STEP_3: 'Activez « Autoriser les scripts utilisateur »',
+        GITHUB: 'GitHub',
+        GITHUB_DESCRIPTION: 'Code source et suivi des problèmes de cette extension',
+        LINKS: 'Liens',
+        PREVIOUS_DOCS: 'Documentation',
+        PREVIOUS_EXTENSION: 'Extension précédente',
+        PREVIOUS_EXTENSION_DESCRIPTION:
+            'Ce projet est une réécriture de l’extension originale « User JavaScript and CSS » (v3.1.2) de tenRabbits.',
+        PREVIOUS_IMPORT: 'Importer vos données',
+        PREVIOUS_IMPORT_DESCRIPTION:
+            'Vos règles peuvent être migrées via Paramètres → Stockage.',
+        PREVIOUS_STORE: 'Chrome Web Store',
+        VERSION: 'Version',
+    },
     DIALOG: {
         CONFIRM: {
             CANCEL: 'Annuler',
