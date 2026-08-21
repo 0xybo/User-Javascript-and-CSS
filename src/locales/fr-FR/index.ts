@@ -40,8 +40,7 @@ export default {
         PREVIOUS_EXTENSION_DESCRIPTION:
             'Ce projet est une réécriture de l’extension originale « User JavaScript and CSS » (v3.1.2) de tenRabbits.',
         PREVIOUS_IMPORT: 'Importer vos données',
-        PREVIOUS_IMPORT_DESCRIPTION:
-            'Vos règles peuvent être migrées via Paramètres → Stockage.',
+        PREVIOUS_IMPORT_DESCRIPTION: 'Vos règles peuvent être migrées via Paramètres → Stockage.',
         PREVIOUS_STORE: 'Chrome Web Store',
         VERSION: 'Version',
     },
@@ -83,7 +82,7 @@ export default {
             },
             STYLE: {
                 DESCRIPTION:
-                    "L'éditeur de style support SCSS et donc par extension CSS. Si le style de contient aucun charactère '{};', le mode SASS est activé.",
+                    "L'éditeur de style support SCSS et donc par extension CSS. Si le style de contient aucune accolade ou point-virgule, le mode SASS est activé.",
                 TITLE: 'Style',
             },
         },

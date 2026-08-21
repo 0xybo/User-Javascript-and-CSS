@@ -82,7 +82,7 @@ export default {
             },
             STYLE: {
                 DESCRIPTION:
-                    'The style editor supports SCSS and, by extension, CSS. If the style does not contain any ‘{};’ characters, SASS mode is enabled. The style is then compiled into CSS when saved.',
+                    'The style editor supports SCSS and, by extension, CSS. If the style does not contain any braces and semicolons, SASS mode is enabled. The style is then compiled into CSS when saved.',
                 TITLE: 'Style',
             },
         },

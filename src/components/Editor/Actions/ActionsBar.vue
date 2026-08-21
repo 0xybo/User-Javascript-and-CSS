@@ -30,26 +30,31 @@ const storage = useStorage();
 const props = defineProps<{
     type: FileType;
 }>();
-const type = computed(() =>
-    props.type === FileType.Css || props.type === FileType.Scss ? 'STYLE' : 'SCRIPT',
-);
-const content = computed(() => {
+
+const { type, content } = (() => {
     switch (props.type) {
         case FileType.Typescript:
         case FileType.Javascript:
-            return state.rule.files[state.rule.item.script.id];
+            return {
+                type: 'SCRIPT',
+                content: state.rule.files[state.rule.item.script.id],
+            };
         case FileType.Css:
         case FileType.Scss:
-            return state.rule.files[state.rule.item.style.id];
+            return { type: 'STYLE', content: state.rule.files[state.rule.item.style.id] };
         default:
-            return '';
+            return { type: 'SCRIPT', content: '' };
     }
-});
-const title = computed(() => t(`COMMON.${type.value}`));
-const tooltip = computed(() => ({
-    title: t(`EDITOR.ACTION_PANEL.${type.value}.TITLE`),
-    description: t(`EDITOR.ACTION_PANEL.${type.value}.DESCRIPTION`),
-}));
+})() as {
+    type: 'SCRIPT' | 'STYLE';
+    content: string;
+};
+
+const title = t(`COMMON.${type}`);
+const tooltip = {
+    title: t(`EDITOR.ACTION_PANEL.${type}.TITLE`),
+    description: t(`EDITOR.ACTION_PANEL.${type}.DESCRIPTION`),
+};
 
 const preview = reactive({
     opened: false,
@@ -68,9 +73,13 @@ const preview = reactive({
     }),
 });
 
+/**
+ * Handles the click event for the beautify button.
+ */
 async function onBeautifyButtonClick() {
     const fileId =
         props.type === FileType.Typescript ? state.rule.item.script.id : state.rule.item.style.id;
+
     state.rule.files[fileId] = await prettier.format(state.rule.files[fileId], {
         parser: props.type === FileType.Typescript ? 'typescript' : 'css',
         plugins: [typecriptPlugin, estreePlugin, scssPlugin],
