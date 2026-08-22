@@ -5,6 +5,7 @@ import Separator from '@/components/ui/separator/Separator.vue';
 import useState from '@/composables/options/useState';
 import useTranslation from '@/composables/useTranslation';
 import { SettingsSection } from '@/lib/options/settings';
+import { BrowserType, getBrowserType } from '@/lib/utils';
 import {
     BookOpenIcon,
     ExternalLinkIcon,
@@ -61,14 +62,9 @@ const CREDITS = [
     '@vueuse/core',
 ];
 
-/**
- * The steps required to enable user scripts in Chrome.
- */
-const ENABLE_SCRIPTS_STEPS = [
-    t('ABOUT.ENABLE_SCRIPTS_STEP_1'),
-    t('ABOUT.ENABLE_SCRIPTS_STEP_2'),
-    t('ABOUT.ENABLE_SCRIPTS_STEP_3'),
-];
+const browserType = getBrowserType();
+const extensionsUrl =
+    browserType === BrowserType.CHROMIUM ? 'chrome://extensions/' : 'about:addons';
 
 /**
  * Switches to the Storage settings section, where data from the previous extension can be imported.
@@ -167,7 +163,24 @@ function goToStorage() {
                 {{ t('ABOUT.ENABLE_SCRIPTS_DESCRIPTION') }}
             </p>
             <ol class="list-decimal space-y-1 pl-5 text-sm">
-                <li v-for="step in ENABLE_SCRIPTS_STEPS" :key="step">{{ step }}</li>
+                <li>
+                    {{ t('ABOUT.ENABLE_SCRIPTS_STEP_1') }}
+                    <a
+                        :href="extensionsUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-accent inline-flex hover:underline"
+                        @click.prevent="browser.tabs.create({ url: extensionsUrl })"
+                    >
+                        {{ extensionsUrl }}
+                        <ExternalLinkIcon
+                            :size="14"
+                            class="text-muted-foreground ml-1 shrink-0 translate-y-1/4"
+                        />
+                    </a>
+                </li>
+                <li>{{ t('ABOUT.ENABLE_SCRIPTS_STEP_2') }}</li>
+                <li>{{ t('ABOUT.ENABLE_SCRIPTS_STEP_3') }}</li>
             </ol>
         </section>
 

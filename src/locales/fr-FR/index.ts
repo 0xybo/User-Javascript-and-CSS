@@ -29,7 +29,7 @@ export default {
         ENABLE_SCRIPTS: 'Activer les scripts utilisateur',
         ENABLE_SCRIPTS_DESCRIPTION:
             'Chrome exige la permission « Autoriser les scripts utilisateur » pour que les règles JavaScript fonctionnent. Le mode développeur n’est plus obligatoire.',
-        ENABLE_SCRIPTS_STEP_1: 'Ouvrez chrome://extensions/',
+        ENABLE_SCRIPTS_STEP_1: 'Ouvrez ',
         ENABLE_SCRIPTS_STEP_2: 'Trouvez « User Javascript and CSS »',
         ENABLE_SCRIPTS_STEP_3: 'Activez « Autoriser les scripts utilisateur »',
         GITHUB: 'GitHub',

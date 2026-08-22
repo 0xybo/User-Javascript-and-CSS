@@ -333,3 +333,37 @@ export function formatBytes(bytes: number, decimals: number = 1): string {
     const value = bytes / 1024 ** i;
     return `${value.toFixed(i === 0 ? 0 : decimals)} ${units[i]}`;
 }
+
+export enum BrowserName {
+    CHROME = 'chrome',
+    FIREFOX = 'firefox',
+    EDGE = 'edge',
+    OPERA = 'opera',
+    SAFARI = 'safari',
+    UNKNOWN = 'unknown',
+}
+
+export enum BrowserType {
+    CHROMIUM = 'chromium',
+    GECKO = 'gecko',
+    WEBKIT = 'webkit',
+    UNKNOWN = 'unknown',
+}
+
+/**
+ * Detects the browser type based on the `import.meta.env.BROWSER` environment variable.
+ *
+ * @returns The detected browser type as a value of the {@link BrowserType} enum.
+ */
+export function getBrowserType() {
+    const target = import.meta.env.BROWSER;
+
+    switch (target) {
+        case 'chrome':
+            return BrowserType.CHROMIUM;
+        case 'firefox':
+            return BrowserType.GECKO;
+        default:
+            return BrowserType.UNKNOWN;
+    }
+}
