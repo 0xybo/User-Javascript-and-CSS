@@ -462,6 +462,12 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
       transitions). Simple/Advanced tabs build the pattern; shared list shows positive matches and negative
       exclusions with validity icons/tooltips, regex preview and remove. Writes back to the rule `patterns`
       string.
+- [x] **ISSUES #21** — injection attempts into unsupported pages (`chrome-extension://`,
+      `chrome://`, Web Store...). `filterRulesByUrl` matched restricted URLs (empty patterns match
+      everything, inverted patterns match anything failing their regex), then the CSS paths and
+      fallback JS injection threw permission errors on every navigation. Fixed with an
+      `isInjectableUrl()` allowlist (http/https minus Chrome Web Store hosts) gating
+      `filterRulesByUrl` — covers background triggers, badge count and popup listing.
 - [ ] **MonacoEditor.vue:37** — theme hardcoded to `'vs-dark'` (`TODO à changer`)
 - [x] **compiler/typescript.ts** — `format()` bug fixed (now correctly called with `output`)
 - [ ] **compiler/scss.ts** — syntax errors (wrong import, wrong return type)
