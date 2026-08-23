@@ -1,10 +1,11 @@
-import { MaybeRef, reactive, unref, watch } from '#imports';
+import { reactive, watch } from '#imports';
 import { SettingsSection } from '@/lib/options/settings';
 import { Panel, Tab, TAB_TO_PANEL_MAP } from '@/lib/options/tab';
 import { IDraft, ItemType } from '@/lib/storage/types';
 import { isModuleUnsaved, isRule, isRuleUnsaved, isUnsaved } from '@/lib/storage/utils';
 import { has } from '@/lib/utils';
 import { useThrottleFn } from '@vueuse/core';
+import type { Reactive } from 'vue';
 import { useDraft } from '../useDraft';
 import { useStorage } from '../useStorage';
 
@@ -35,20 +36,25 @@ class State {
         return isModuleUnsaved(this.module);
     }
 
-    private _ruleDraftWatcher: ReturnType<typeof watch> | null = null;
-    private _moduleDraftWatcher: ReturnType<typeof watch> | null = null;
+    private ruleDraftWatcher: ReturnType<typeof watch> | null = null;
+    private moduleDraftWatcher: ReturnType<typeof watch> | null = null;
+    /**
+     * The reactive proxy of the State instance. This is used to ensure that matutations to the
+     * state are reactive and trigger updates in Vue components.
+     */
+    private reactive: State;
 
     constructor() {
         storage.onLoaded(() => this.initialize());
 
-        return reactive(this) as unknown as State;
+        return (this.reactive = reactive(this) as unknown as State);
     }
 
     private initialize() {
         this.goToHashLocation();
 
-        this.watchOnceForSave(this.rule);
-        this.watchOnceForSave(this.module);
+        this.watchOnceForSave(this.reactive.rule);
+        this.watchOnceForSave(this.reactive.module);
     }
 
     /**
@@ -57,13 +63,12 @@ class State {
      *
      * @param draft The draft to watch for changes.
      */
-    private watchOnceForSave(draft: MaybeRef<IDraft>) {
-        const noRefDraft = unref(draft);
+    private watchOnceForSave(draft: Reactive<IDraft>) {
         watch(
-            noRefDraft.item,
+            draft.item,
             () => {
-                storage.saveDraft(noRefDraft);
-                this.watchForSave(noRefDraft);
+                storage.saveDraft(draft);
+                this.watchForSave(draft);
             },
             { once: true },
         );
@@ -75,20 +80,19 @@ class State {
      * @param draft The draft to watch for changes.
      * @returns A function that can be called to stop watching the draft.
      */
-    private watchForSave(draft: MaybeRef<IDraft>) {
-        const noRefDraft = unref(draft);
+    private watchForSave(draft: Reactive<IDraft>) {
         const watchHandler = watch(
-            noRefDraft.item,
-            useThrottleFn(() => storage.saveDraft(noRefDraft), 500),
+            draft.item,
+            useThrottleFn(() => storage.saveDraft(draft), 500),
         );
 
-        if (isRule(noRefDraft)) {
-            if (this._ruleDraftWatcher) this._ruleDraftWatcher();
-            return (this._ruleDraftWatcher = watchHandler);
+        if (isRule(draft)) {
+            if (this.ruleDraftWatcher) this.ruleDraftWatcher();
+            return (this.ruleDraftWatcher = watchHandler);
         }
 
-        if (this._moduleDraftWatcher) this._moduleDraftWatcher();
-        return (this._moduleDraftWatcher = watchHandler);
+        if (this.moduleDraftWatcher) this.moduleDraftWatcher();
+        return (this.moduleDraftWatcher = watchHandler);
     }
 
     /**
@@ -99,24 +103,24 @@ class State {
      *
      * @param draft The draft to switch to.
      */
-    public switchDraft(draft: IDraft) {
+    public switchDraft(draft: Reactive<IDraft>) {
         if (isRule(draft)) {
             const isSameDraft = draft.item.id === this.rule.item.id;
-            Object.assign(this.rule, draft);
+            this.reactive.rule = draft;
 
             if (!isSameDraft) {
-                if (draft.isNew) this.watchOnceForSave(this.rule);
-                else this.watchForSave(this.rule);
+                if (draft.isNew) this.watchOnceForSave(this.reactive.rule);
+                else this.watchForSave(this.reactive.rule);
             }
 
             this.switchTab(Tab.Rules);
         } else {
             const isSameDraft = draft.item.id === this.module.item.id;
-            Object.assign(this.module, draft);
+            this.reactive.module = draft as Reactive<IDraft<ItemType.Module>>;
 
             if (!isSameDraft) {
-                if (draft.isNew) this.watchOnceForSave(this.module);
-                else this.watchForSave(this.module);
+                if (draft.isNew) this.watchOnceForSave(this.reactive.module);
+                else this.watchForSave(this.reactive.module);
             }
 
             this.switchTab(Tab.Modules);
@@ -132,7 +136,7 @@ class State {
      */
     public cleanDrafts() {
         storage.drafts.forEach((draft) => {
-            if (!isUnsaved(draft) && this.rule.item.id !== draft.item.id)
+            if (!isUnsaved(draft) && this.reactive.rule.item.id !== draft.item.id)
                 storage.removeDraft(draft);
         });
     }
@@ -154,7 +158,7 @@ class State {
      * changes will be saved to the corresponding rule in storage.
      */
     public saveRuleDraft() {
-        storage.saveRuleDraft(this.rule);
+        storage.saveRuleDraft(this.reactive.rule);
     }
 
     /**
@@ -163,7 +167,7 @@ class State {
      * changes will be saved to the corresponding module in storage.
      */
     public saveModuleDraft() {
-        storage.saveModuleDraft(this.module);
+        storage.saveModuleDraft(this.reactive.module);
     }
 
     /**
@@ -173,9 +177,9 @@ class State {
      * @param tab The tab to switch to.
      */
     public switchTab(tab: Tab | null) {
-        this.tab = tab;
+        this.reactive.tab = tab;
 
-        if (tab && tab in TAB_TO_PANEL_MAP) this.panel = TAB_TO_PANEL_MAP[tab]!;
+        if (tab && tab in TAB_TO_PANEL_MAP) this.reactive.panel = TAB_TO_PANEL_MAP[tab]!;
 
         this.updateHash();
     }
@@ -187,7 +191,7 @@ class State {
      * @param section The settings section to switch to.
      */
     public switchSettingsSection(section: SettingsSection | null) {
-        this.settingsSection = section;
+        this.reactive.settingsSection = section;
         this.switchTab(Tab.Settings);
     }
 
@@ -200,16 +204,17 @@ class State {
      * - For about: #about
      */
     private updateHash() {
-        switch (this.tab) {
+        switch (this.reactive.tab) {
             case Tab.Rules:
-                location.hash = 'rule:' + this.rule.item.id;
+                location.hash = 'rule:' + this.reactive.rule.item.id;
                 break;
             case Tab.Modules:
-                location.hash = 'module:' + this.module.item.id;
+                location.hash = 'module:' + this.reactive.module.item.id;
                 break;
             case Tab.Settings:
                 location.hash =
-                    'settings' + (this.settingsSection ? ':' + this.settingsSection : '');
+                    'settings' +
+                    (this.reactive.settingsSection ? ':' + this.reactive.settingsSection : '');
                 break;
             case Tab.About:
                 break;
