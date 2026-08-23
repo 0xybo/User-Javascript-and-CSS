@@ -8,10 +8,23 @@ const emits = defineEmits<{
     open: [IRule];
 }>();
 
+/**
+ * Handles the change event for a rule list item. It emits a 'change' event with the rule and its
+ * new value.
+ *
+ * @param rule - The rule that has changed.
+ * @param value - The new value of the rule (true for enabled, false for disabled
+ */
 function onRuleListItemChange(rule: IRule, value: boolean) {
     emits('change', rule, value);
 }
 
+/**
+ * Handles the open event for a rule list item. It emits an 'open' event with the rule that was
+ * opened.
+ *
+ * @param rule - The rule that was opened.
+ */
 function onRuleListItemOpen(rule: IRule) {
     emits('open', rule);
 }

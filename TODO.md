@@ -71,7 +71,10 @@
     - [x] Inject all enabled CSS via `scripting.insertCSS()`
 - [x] **Rule injection via `chrome.userScripts` API (primary path)**
     - [x] Register JS rules as user scripts (`world: "MAIN"`)
-    - [ ] Register CSS rules as user scripts (inject `<style>` element)
+    - [x] Register CSS rules as user scripts (inject `<style>` element) — companion script
+          `<id>:css` at `document_start`, all frames, deterministic element id
+          `ujc-css-<ruleId>` with a MutationObserver guard; skipped when the rule uses the
+          API-injected path (`style.injected`)
     - [x] Handle `document_start` vs `document_end` timing
     - [x] Firefox: request `"userScripts"` as optional_permission at runtime
 - [x] **CSS injection via `chrome.scripting.insertCSS` (fallback/alternative)**
@@ -86,6 +89,9 @@
 - [x] **Fallback JS injection via `scripting.executeScript`**
     - [x] Use `world: "MAIN"` when `userScripts` API unavailable
     - [x] Handle all frames (`jsDeep` / recursive flag)
+    - [x] Gate per-tab re-injection on `isPersistentlyRegistered()` so fallback rules keep
+          being injected on every navigation (previously `isRegistered()` also matched the
+          fallback marker, which silently disabled fallback injection)
 - [ ] **Message handling**
     - [ ] `update:rules` → re-register scripts + update tab CSS
     - [ ] `update:settings` → apply settings globally
@@ -162,8 +168,11 @@
 - [ ] **Real-time JavaScript syntax checking** via web worker
 - [ ] **SCSS/SASS snippets**
 - [ ] **Customizable editor keybindings** (Vim, Emacs, Sublime for Ace)
-- [ ] **CSS `!important` toggle** — wrap all CSS with `!important`
-- [ ] **CSS live reload toggle** — auto-reinject CSS on change without page refresh
+- [x] **CSS `!important` toggle** — applied at compile time (`compileSCSS({ important })` from
+      the draft save pipeline); re-saving a rule with the toggle flips regenerates the compiled CSS
+- [x] **CSS live reload toggle** — CSS changes are re-applied to every matching open tab from the
+      background storage watcher (differential: unchanged rules are not touched; `page:update`
+      SPA updates reuse existing injections instead of flashing)
 
 ### Rule Management
 
@@ -178,7 +187,10 @@
 - [ ] **Rule search/filter input** — exists in UI but no filtering logic
 - [ ] **Duplicate rule** functionality (original had this)
 - [ ] **Drag-and-drop reordering** of rules (original had this)
-- [ ] **Rule flags panel**: deepCSS, isoCSS, jsDeep, jsIso, jsAtStart, styleImportant
+- [x] **Rule flags panel**: deepCSS, isoCSS, jsDeep, jsIso, jsAtStart, styleImportant — toggles in
+      `ActionsBar.vue`, persisted in the schema, honored by the injection engine (`isolated` →
+      `USER_SCRIPT`/`ISOLATED` world, `recursive` → all frames, `atStart` → `document_start`/
+      `injectImmediately`, `injected` → API vs programmatic `<style>`, `important` → compile time)
 - [ ] **Rule status indicators**: error/warning badges on rule items
 - [ ] **Rule icon indicators**: show JS/CSS type per rule
 
@@ -385,12 +397,12 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
 | Content script (document_start)            | ✅       | ✅     | Done                      |
 | SPA navigation detection (Navigation API)  | ✅       | ✅     | Done (+ history/fallback) |
 | CSS injection via scripting.insertCSS      | ✅       | ✅     | Done                      |
-| JS injection via userScripts API           | ✅       | ✅     | Done (with fallback)      |
+| JS injection via userScripts API           | ✅       | ✅     | Done (all flags + fallback) |
 | MAIN/USER_SCRIPT world selection           | ✅       | ✅     | Done                      |
 | URL pattern matching (glob/regex)          | ✅       | ✅     | Done in lib               |
 | Rule CRUD                                  | ✅       | ✅     | Done                      |
 | Rule enable/disable toggle                 | ✅       | ✅     | Done                      |
-| Rule flags (deep, iso, atStart, important) | ✅       | 🔶     | Partially in schema       |
+| Rule flags (deep, iso, atStart, important) | ✅       | ✅     | Done (injection engine)   |
 | Popup: matching rules list                 | ✅       | ✅     | Done                      |
 | Popup: toggle rules                        | ✅       | ✅     | Done                      |
 | Popup: tab reload                          | ✅       | 🔶     | After toggle only         |
@@ -398,7 +410,7 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
 | Options: 14 themes                         | ✅       | 🔶     | Hardcoded vs-dark         |
 | Options: JS snippets                       | 35+      | ⬜     | Not started               |
 | Options: SCSS/SASS compilation             | ✅       | ⬜     | Not started               |
-| Options: CSS !important toggle             | ✅       | 🔶     | In schema, not wired      |
+| Options: CSS !important toggle             | ✅       | ✅     | Done (compile time)       |
 | Options: drag-and-drop reorder             | ✅       | ⬜     | Not started               |
 | Options: duplicate rule                    | ✅       | ⬜     | Not started               |
 | Real-time syntax checking                  | ✅       | ✅     | Monaco built-in           |
@@ -413,6 +425,16 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
 ---
 
 ## 20. Bugs & Known Issues
+
+- [x] **ISSUES #18** — CSS never applied to the page. `TabManager` called
+      `scripting.insertCSS`/`removeCSS` with an invalid payload (`codes: [code]`, `tabId` at the
+      top level) instead of `{ target: { tabId }, css }`; every call threw and was swallowed.
+      Rewrote `tab-manager.ts` (dual-mode tracking: scripting API vs programmatic `<style>`
+      element), rewrote `injector.ts` (honors `isolated`/`recursive`/`atStart`; companion
+      `<id>:css` user scripts for programmatic CSS; exclusion patterns kept), and reworked the
+      background orchestration (differential registration + fingerprinting, registration moved
+      inside `storage.onLoaded`, `applyRuleCss` routing, SPA-aware `page:open`/`page:update`
+      handling, fallback JS gate fix via `isPersistentlyRegistered`).
 
 - [x] **ISSUES #7/#8** — no changes detected when editing a rule (fixed: removed falsy-content guards in
       `isRuleUnsaved`/`isModuleUnsaved`, and `ruleUnsaved`/`moduleUnsaved` are now getters instead of

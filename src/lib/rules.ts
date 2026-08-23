@@ -13,14 +13,6 @@ import { IRule } from './storage/types';
 export function filterRulesByUrl(rules: IRule[], url: string) {
     const nornamlizedUrl = url.replace('://www.', '://');
 
-    // Logger.debug(`Filtering rules for URL: ${url} (normalized: ${nornamlizedUrl})`);
-    // Logger.debug(`Total rules: ${rules.length}`);
-    // Logger.debug(
-    //     `Matching rules: ${rules.filter((rule) => rule.patterns === '' || matchRuleByUrl(rule, nornamlizedUrl)).length}`,
-    // );
-
-    // return rules.filter((rule) => rule.patterns === '' || matchRuleByUrl(rule, nornamlizedUrl));
-
     return rules.filter((rule) => {
         if (rule.patterns === '') return true;
 

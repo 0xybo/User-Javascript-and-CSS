@@ -31,30 +31,38 @@ const props = defineProps<{
     type: FileType;
 }>();
 
-const { type, content } = (() => {
+const type = computed(() => {
     switch (props.type) {
         case FileType.Typescript:
         case FileType.Javascript:
-            return {
-                type: 'SCRIPT',
-                content: state.rule.files[state.rule.item.script.id],
-            };
+            return 'SCRIPT';
         case FileType.Css:
         case FileType.Scss:
-            return { type: 'STYLE', content: state.rule.files[state.rule.item.style.id] };
+            return 'STYLE';
         default:
-            return { type: 'SCRIPT', content: '' };
+            return 'SCRIPT';
     }
-})() as {
-    type: 'SCRIPT' | 'STYLE';
-    content: string;
-};
+});
 
-const title = t(`COMMON.${type}`);
-const tooltip = {
-    title: t(`EDITOR.ACTION_PANEL.${type}.TITLE`),
-    description: t(`EDITOR.ACTION_PANEL.${type}.DESCRIPTION`),
-};
+const content = computed(() => {
+    switch (props.type) {
+        case FileType.Typescript:
+        case FileType.Javascript:
+            return state.rule.files[state.rule.item.script.id];
+        case FileType.Css:
+        case FileType.Scss:
+            return state.rule.files[state.rule.item.style.id];
+        default:
+            return '';
+    }
+});
+
+const title = computed(() => t(`COMMON.${type.value}`));
+
+const tooltip = computed(() => ({
+    title: t(`EDITOR.ACTION_PANEL.${type.value}.TITLE`),
+    description: t(`EDITOR.ACTION_PANEL.${type.value}.DESCRIPTION`),
+}));
 
 const preview = reactive({
     opened: false,

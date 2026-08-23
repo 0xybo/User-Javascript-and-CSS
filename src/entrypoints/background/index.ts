@@ -25,6 +25,8 @@ export default defineBackground({
             // Track the script state we last registered so re-applying storage changes only
             // touches the rules whose scripts actually changed (issue #16).
             const knownScripts = new Map<string, string>();
+            // Same idea for the companion user scripts injecting programmatic CSS.
+            const knownStyles = new Map<string, string>();
 
             const scriptFingerprint = (rule: IRule): string =>
                 JSON.stringify([
@@ -36,6 +38,31 @@ export default defineBackground({
                     rule.patterns,
                 ]);
 
+            const styleFingerprint = (rule: IRule): string =>
+                JSON.stringify([
+                    rule.enabled,
+                    rule.style.compiled,
+                    rule.style.injected,
+                    rule.patterns,
+                ]);
+
+            /**
+             * Applies a rule's CSS to a tab following its `injected` flag: enabled →
+             * user-origin stylesheet through the scripting API; disabled → programmatic
+             * `<style>` element. Disabled or empty rules get their CSS removed.
+             *
+             * @param tabId The identifier of the tab to apply the rule's CSS to.
+             * @param rule The rule whose style must be applied.
+             */
+            async function applyRuleCss(tabId: number, rule: IRule) {
+                if (!rule.style.compiled) {
+                    await tabManager.removeCSS(tabId, rule.id);
+                    return;
+                }
+                if (rule.style.injected) await tabManager.injectCSS(tabId, rule);
+                else await tabManager.injectStyleElement(tabId, rule);
+            }
+
             storage.onLoaded(async () => {
                 // Automatic cloud synchronization (alarm-based)
                 setupSyncScheduler();
@@ -43,17 +70,19 @@ export default defineBackground({
                 // Badge on the extension icon (number of matching rules)
                 await setupBadge();
 
+                // Register persistent user scripts for all enabled rules — scripts and the
+                // companion style scripts of programmatic CSS rules.
+                for (const rule of storage.rules as IRule[]) {
+                    if (!rule.enabled) continue;
+                    await injector.registerScript(rule);
+                    await injector.registerStyleScript(rule);
+                    knownScripts.set(rule.id, scriptFingerprint(rule));
+                    knownStyles.set(rule.id, styleFingerprint(rule));
+                }
+
                 // Sync initial injections
                 await syncInjections();
             });
-
-            // Register userScripts for all rules
-            for (const rule of storage.rules) {
-                if (rule.enabled && rule.script.compiled) {
-                    await injector.registerScript(rule);
-                    knownScripts.set(rule.id, scriptFingerprint(rule));
-                }
-            }
 
             // Storage changes from other contexts → re-sync
             browser.storage.local.onChanged.addListener(
@@ -95,7 +124,37 @@ export default defineBackground({
                             }
                         }
 
-                        // Re-inject CSS into tabs for affected rules
+                        // Unregister companion style scripts that disappeared, were disabled,
+                        // emptied or switched to the API-injected path
+                        for (const ruleId of [...knownStyles.keys()]) {
+                            const rule = rules.find((r) => r.id === ruleId);
+                            const shouldRegister =
+                                rule &&
+                                rule.enabled &&
+                                !!rule.style.compiled &&
+                                !rule.style.injected;
+                            if (!shouldRegister || styleFingerprint(rule) !== knownStyles.get(ruleId)) {
+                                await injector.unregisterStyleScript(ruleId);
+                                knownStyles.delete(ruleId);
+                            }
+                        }
+
+                        // Register new style scripts or ones whose content/path changed
+                        for (const rule of rules) {
+                            if (
+                                !rule.enabled ||
+                                !rule.style.compiled ||
+                                rule.style.injected
+                            )
+                                continue;
+                            const fingerprint = styleFingerprint(rule);
+                            if (knownStyles.get(rule.id) !== fingerprint) {
+                                await injector.registerStyleScript(rule);
+                                knownStyles.set(rule.id, fingerprint);
+                            }
+                        }
+
+                        // Re-apply CSS into tabs for affected rules
                         const tabs = await browser.tabs.query({});
                         for (const tab of tabs) {
                             if (!tab.id || !tab.url) continue;
@@ -107,9 +166,7 @@ export default defineBackground({
                                 new Set(matching.map((r) => r.id)),
                             );
                             for (const rule of matching) {
-                                if (rule.style.compiled) {
-                                    await tabManager.injectCSS(tab.id, rule);
-                                }
+                                await applyRuleCss(tab.id, rule);
                             }
                         }
 
@@ -122,7 +179,7 @@ export default defineBackground({
                 ),
             );
 
-            // Tab navigation → re-inject CSS (userScripts persist)
+            // Tab navigation → re-apply CSS (userScripts persist)
             browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
                 if (changeInfo.status !== 'complete' || !tab.url || !tab.id) return;
 
@@ -131,10 +188,8 @@ export default defineBackground({
                 );
 
                 for (const rule of matching) {
-                    if (rule.style.compiled) {
-                        await tabManager.injectCSS(tabId, rule);
-                    }
-                    if (rule.script.compiled && !injector.isRegistered(rule.id)) {
+                    await applyRuleCss(tabId, rule);
+                    if (rule.script.compiled && !injector.isPersistentlyRegistered(rule.id)) {
                         await injector.injectFallback(tabId, rule);
                     }
                 }
@@ -153,24 +208,29 @@ export default defineBackground({
                 await updateBadgeForTab(tabId, tab.url);
             });
 
-            // Messages from content script → re-inject for SPA navigation
+            // Messages from content script → re-apply for SPA navigation
             browser.runtime.onMessage.addListener(async (message, sender) => {
                 if (!sender.tab?.id) return;
                 if (message.type !== 'page:open' && message.type !== 'page:update') return;
 
                 const tabId = sender.tab.id;
                 const url = sender.tab.url || message.url;
-                await tabManager.removeAllForTab(tabId);
-
                 const matching = filterRulesByUrl(storage.rules as IRule[], url).filter(
                     (r) => r.enabled,
                 );
 
+                // A full navigation recreates the document: drop stale tracking. An SPA
+                // update keeps the DOM, so existing injections are updated in place instead.
+                if (message.type === 'page:open') await tabManager.removeAllForTab(tabId);
+                else
+                    await tabManager.pruneForTab(
+                        tabId,
+                        new Set(matching.map((r) => r.id)),
+                    );
+
                 for (const rule of matching) {
-                    if (rule.style.compiled) {
-                        await tabManager.injectCSS(tabId, rule);
-                    }
-                    if (rule.script.compiled && !injector.isRegistered(rule.id)) {
+                    await applyRuleCss(tabId, rule);
+                    if (rule.script.compiled && !injector.isPersistentlyRegistered(rule.id)) {
                         await injector.injectFallback(tabId, rule);
                     }
                 }
@@ -187,9 +247,7 @@ export default defineBackground({
                         (r) => r.enabled,
                     );
                     for (const rule of matching) {
-                        if (rule.style.compiled) {
-                            await tabManager.injectCSS(tab.id, rule);
-                        }
+                        await applyRuleCss(tab.id, rule);
                     }
                 }
             }
