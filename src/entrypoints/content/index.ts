@@ -17,7 +17,7 @@ export default defineContentScript({
 
         // Navigation API (modern SPA)
         if (window.navigation) {
-            navigation.addEventListener('navigatesuccess', () => {
+            window.navigation.addEventListener('navigatesuccess', () => {
                 notifyBackground('page:update');
             });
         }

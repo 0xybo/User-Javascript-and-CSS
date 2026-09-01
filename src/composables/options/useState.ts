@@ -83,7 +83,10 @@ class State {
     private watchForSave(draft: Reactive<IDraft>) {
         const watchHandler = watch(
             draft.item,
-            useThrottleFn(() => storage.saveDraft(draft), 500),
+            useThrottleFn(() => {
+                if (storage.isUpdating) return;
+                storage.saveDraft(draft);
+            }, 500),
         );
 
         if (isRule(draft)) {

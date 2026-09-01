@@ -191,6 +191,7 @@ export function migrateLegacyStorage(raw: PlainObject): IStorage {
                 important: Boolean(oldContent.styleImportant),
             },
             enabled: !flags.includes('off'),
+            autoFixPatterns: true,
         };
     });
 

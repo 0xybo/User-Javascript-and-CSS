@@ -290,11 +290,14 @@ export async function compress(settings: IStorage): Promise<string[]> {
  * @returns True if the draft has unsaved changes, false otherwise.
  */
 export function isRuleUnsaved(draft: IDraft<IRule>): boolean {
-    return (
+    const hasPendingFiles =
         (draft.files[draft.item.script.id] ?? '') !== (draft.item.script.content ?? '') ||
-        (draft.files[draft.item.style.id] ?? '') !== (draft.item.style.content ?? '') ||
-        (draft.isNew && Object.values(draft.files).some((content) => content !== ''))
-    );
+        (draft.files[draft.item.style.id] ?? '') !== (draft.item.style.content ?? '');
+    const hasNewContent =
+        draft.isNew &&
+        (Object.values(draft.files).some((content) => content !== '') ||
+            !!draft.item.patterns.trim());
+    return hasPendingFiles || hasNewContent;
 }
 
 /**
