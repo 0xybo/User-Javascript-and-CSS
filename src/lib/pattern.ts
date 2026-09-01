@@ -317,7 +317,7 @@ export class Patterns {
 
     static extractName(rule: IRule): string {
         const patternList = new Patterns(rule);
-        return patternList.list.shift()?.pattern || '';
+        return patternList.list[0]?.pattern || '';
     }
 
     push(...items: (string | Pattern)[]): number {
