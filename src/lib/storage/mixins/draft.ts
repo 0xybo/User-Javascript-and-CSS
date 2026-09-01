@@ -1,9 +1,8 @@
-import { reactive } from '#imports';
 // import { compileSCSS } from '@/lib/compiler/scss';
 import { compileSCSS } from '@/lib/compiler/scss';
 import { compileTS } from '@/lib/compiler/typescript';
 import { Logger } from '../../logger';
-import { clone, type Constructor } from '../../utils';
+import { type Constructor } from '../../utils';
 import { IDraft, IItem, IRule, ItemType, type IModule } from '../types';
 import { DEFAULTS, isModule, isRule } from '../utils';
 import type { StorageServiceSync } from './sync';
@@ -26,7 +25,7 @@ export function StorageServiceDraftsMixin<T extends StorageServiceSync>(Base: T)
         createDraftFromItem<TItem extends IItem>(item: TItem): IDraft<TItem> {
             const draft = DEFAULTS.DRAFT<TItem>();
             if (isModule(item)) {
-                const module = clone(item);
+                const module = item;
                 Object.assign(draft, {
                     isNew: false,
                     item: module,
@@ -45,10 +44,8 @@ export function StorageServiceDraftsMixin<T extends StorageServiceSync>(Base: T)
                     },
                 });
             }
-            const reactiveDraft = reactive(draft);
-            this.drafts.push(reactiveDraft);
 
-            return reactiveDraft as IDraft<TItem>;
+            return draft;
         }
 
         /**
@@ -66,12 +63,10 @@ export function StorageServiceDraftsMixin<T extends StorageServiceSync>(Base: T)
                     [rule.style.id]: rule.style.content,
                 };
             } else {
-                draft.item = reactive(DEFAULTS.MODULE());
+                draft.item = DEFAULTS.MODULE();
             }
-            const reactiveDraft = reactive(draft);
-            this.drafts.push(reactiveDraft);
 
-            return reactiveDraft as IDraft<TType>;
+            return draft;
         }
 
         /**
@@ -91,14 +86,17 @@ export function StorageServiceDraftsMixin<T extends StorageServiceSync>(Base: T)
          * @param draft The draft to save.
          */
         async saveRuleDraft(draft: IDraft<IRule>) {
+            const rule = draft.item;
             if (draft.isNew) {
-                if (!this.rules.some((r) => r.id === draft.item.id)) this.rules.push(draft.item);
+                if (!this.rules.some((r) => r.id === rule.id)) this.rules.push(rule);
                 draft.isNew = false;
             }
 
-            const rule = draft.item;
             const scriptContent = draft.files[rule.script.id];
             const styleContent = draft.files[rule.style.id];
+
+            const contentChanged =
+                rule.script.content !== scriptContent || rule.style.content !== styleContent;
 
             rule.script.content = scriptContent;
             rule.style.content = styleContent;
@@ -125,7 +123,10 @@ export function StorageServiceDraftsMixin<T extends StorageServiceSync>(Base: T)
                 }
             } else rule.style.compiled = '';
 
-            rule.updated = Date.now();
+            // Only stamp the updated timestamp when the rule actually changed. Stamping it on every
+            // save would mutate the very object being watched by the draft watcher (draft.item is
+            // the same reference as the stored rule), re-triggering a save → an endless save loop.
+            if (contentChanged && !this.isUpdating) rule.updated = Date.now();
         }
 
         /**
@@ -136,7 +137,8 @@ export function StorageServiceDraftsMixin<T extends StorageServiceSync>(Base: T)
          */
         async saveModuleDraft(draft: IDraft<IModule>) {
             if (draft.isNew) {
-                if (!this.modules.some((m) => m.id === draft.item.id)) this.modules.push(draft.item);
+                if (!this.modules.some((m) => m.id === draft.item.id))
+                    this.modules.push(draft.item);
                 draft.isNew = false;
             }
 

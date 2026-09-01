@@ -1,4 +1,4 @@
-import { browser, computed, nextTick, reactive, ref } from '#imports';
+import { browser, computed, nextTick, reactive } from '#imports';
 import { PlainObject } from '@/types/json';
 import { useDebounceFn, useThrottleFn } from '@vueuse/core';
 import { watch, type ComputedRef } from 'vue';
@@ -16,40 +16,42 @@ export class StorageServiceBase {
      * Information about the storage, including metadata such as the last updated timestamp and the
      * emitter ID.
      */
-    info = reactive(DEFAULTS.INFO()) as IInfo;
+    info = DEFAULTS.INFO() as IInfo;
     /**
      * User settings for the storage, including preferences and configurations.
      */
-    settings = reactive(DEFAULTS.SETTINGS()) as ISettings;
+    settings = DEFAULTS.SETTINGS() as ISettings;
     /**
      * A reactive array of rules stored in the storage.
      */
-    rules = reactive(DEFAULTS.RULES()) as IRule[];
+    rules = DEFAULTS.RULES() as IRule[];
     /**
      * A reactive array of modules stored in the storage.
      */
-    modules = reactive(DEFAULTS.MODULES()) as IModule[];
+    modules = DEFAULTS.MODULES() as IModule[];
     /**
      * A reactive array of drafts stored in the storage.
      */
-    drafts = reactive(DEFAULTS.DRAFTS()) as IDraft[];
+    drafts = DEFAULTS.DRAFTS() as IDraft[];
     /**
      * A flag indicating whether the storage has been loaded.
      */
-    loaded = ref(false);
+    loaded = false;
 
     /**
      * A computed property that returns the current storage state. This is a reactive object
      * that reflects the current state of the storage, including info, settings, rules, modules,
      * and drafts.
      */
-    current: IStorage = reactive({
-        info: this.info,
-        settings: this.settings,
-        rules: this.rules,
-        modules: this.modules,
-        drafts: this.drafts,
-    });
+    get current() {
+        return {
+            info: this.info,
+            settings: this.settings,
+            rules: this.rules,
+            modules: this.modules,
+            drafts: this.drafts,
+        };
+    }
 
     /**
      * A computed property that watches the current storage state for changes. This is used for
@@ -61,13 +63,23 @@ export class StorageServiceBase {
      * A reactive object that holds information about the last known state of the remote storage.
      * This is used to determine if the local storage is more recent than the remote storage when syncing.
      */
-    protected remoteInfo = reactive(DEFAULTS.REMOTE_INFO());
+    protected remoteInfo = DEFAULTS.REMOTE_INFO();
 
     /**
      * A flag indicating whether the storage is currently being updated. This is used to prevent concurrent
      * updates and ensure that the storage is saved in a consistent state.
      */
     private updating: Promise<void> | null = null;
+
+    /**
+     * Whether the storage is currently mid-update (loading/merging/saving). Watchers on the
+     * reactive storage state should not trigger a save while this is true, otherwise a save that
+     * mutates the watched state (e.g. stamping an updated timestamp) re-triggers the watcher,
+     * producing an endless save loop.
+     */
+    public get isUpdating(): boolean {
+        return this.updating !== null;
+    }
 
     /**
      * Starts the updating process by creating a new promise that resolves when the update is
@@ -87,8 +99,13 @@ export class StorageServiceBase {
             });
     }
 
+    private reactive: StorageServiceBase;
+
     constructor() {
+        this.reactive = reactive(this) as unknown as StorageServiceBase;
         this.onLoaded(this.initializeStorageWatchers.bind(this));
+
+        return this.reactive;
     }
 
     /**
@@ -99,8 +116,13 @@ export class StorageServiceBase {
      * @param callback The callback function to be called when the storage is loaded.
      */
     public onLoaded(callback: () => void) {
-        if (this.loaded.value) callback();
-        else watch(this.loaded, (loaded) => loaded && callback(), { once: true });
+        if (this.loaded) callback();
+        else
+            watch(
+                () => this.reactive.loaded,
+                (loaded) => loaded && callback(),
+                { once: true },
+            );
     }
 
     /**
@@ -129,7 +151,12 @@ export class StorageServiceBase {
 
         const debouncedSave = useDebounceFn(() => this.save(), 200, { maxWait: 1000 });
         watch(
-            [this.drafts, this.rules, this.modules, this.settings],
+            [
+                this.reactive.drafts,
+                this.reactive.rules,
+                this.reactive.modules,
+                this.reactive.settings,
+            ],
             () => this.updating || debouncedSave(),
             { deep: true },
         );
@@ -178,7 +205,7 @@ export class StorageServiceBase {
         this.rules.splice(0, this.rules.length, ...parsed.rules);
         this.modules.splice(0, this.modules.length, ...parsed.modules);
         this.drafts.splice(0, this.drafts.length, ...parsed.drafts);
-        this.loaded.value = true;
+        this.loaded = true;
     }
 
     /**

@@ -1,5 +1,6 @@
-import { reactive, watch, type Reactive } from 'vue';
+import { reactive, type Reactive } from 'vue';
 import type { IRule } from './storage/types';
+import { WatchersHandler } from './utils/watchers';
 
 /**
  * Enumeration of the different methods that can be used to specify URL patterns in rules. The
@@ -41,7 +42,7 @@ export interface PatternBuildOptions {
     invert: boolean;
 }
 
-export class Pattern {
+export class Pattern extends WatchersHandler {
     pattern: string = '';
     scheme: PatternScheme = PatternScheme.All;
     domain: string = '';
@@ -53,17 +54,18 @@ export class Pattern {
     error: UrlPatternErrorCode | null = null;
 
     constructor(raw: string) {
+        super();
+
         this.pattern = raw;
 
         const instance = reactive(this) as unknown as Pattern;
 
-        watch(
+        this.watch(
             () => instance.pattern,
             () => instance.updateFromRaw(),
-            { immediate: true, flush: 'sync' },
         );
 
-        watch(
+        this.watch(
             () => [
                 instance.scheme,
                 instance.domain,
@@ -72,8 +74,9 @@ export class Pattern {
                 instance.invert,
             ],
             () => instance.updateFromParts(),
-            { flush: 'sync' },
         );
+
+        this.updateFromRaw();
 
         return instance;
     }
@@ -266,20 +269,26 @@ export class Pattern {
     }
 }
 
-export class Patterns {
+export class Patterns extends WatchersHandler {
     private list: Reactive<Pattern[]> = reactive([]);
 
     private rule: Reactive<IRule>;
 
+    // debug
+    private internal_id = Math.random().toString(36).slice(2, 8);
+
     constructor(rule: Reactive<IRule>) {
+        super();
+
         this.rule = rule;
 
-        watch(
+        this.watch(
             () => rule.patterns,
-            (newPatterns) => this.refresh(newPatterns),
-            { immediate: true, flush: 'sync' },
+            (newPatterns) => this.updatePatterns(newPatterns),
         );
-        watch(this.list, () => (this.rule.patterns = this.toString()));
+        this.watch(this.list, () => this.updateRaw(), { deep: true });
+
+        this.updatePatterns(rule.patterns);
 
         return reactive(this) as unknown as Patterns;
     }
@@ -316,8 +325,12 @@ export class Patterns {
     }
 
     static extractName(rule: IRule): string {
-        const patternList = new Patterns(rule);
-        return patternList.list[0]?.pattern || '';
+        return (
+            rule.patterns
+                .split(/[;,]/)
+                .map((s) => s.trim())
+                .filter(Boolean)[0] || ''
+        );
     }
 
     push(...items: (string | Pattern)[]): number {
@@ -339,13 +352,20 @@ export class Patterns {
         return this.list.every((p) => p.isValid);
     }
 
-    refresh(patterns: string | string[]): void {
+    updatePatterns(patterns: string | string[] | undefined): void {
+        if (!patterns) patterns = this.rule.patterns;
         if (typeof patterns === 'string')
             patterns = patterns
                 .split(/[;,]/)
                 .map((s) => s.trim())
                 .filter(Boolean);
 
-        this.list.splice(0, this.list.length, ...patterns.map((p) => new Pattern(p)));
+        this.whileWatchersPaused(() =>
+            this.list.splice(0, this.list.length, ...patterns.map((p) => new Pattern(p))),
+        );
+    }
+
+    updateRaw() {
+        this.whileWatchersPaused(() => (this.rule.patterns = this.toString()));
     }
 }
