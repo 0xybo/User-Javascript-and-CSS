@@ -308,10 +308,12 @@ export function isRuleUnsaved(draft: IDraft<IRule>): boolean {
  * @returns True if the draft has unsaved changes, false otherwise.
  */
 export function isModuleUnsaved(draft: IDraft<IModule>): boolean {
-    return (
-        draft.item.files.some((file) => (file.content ?? '') !== (draft.files[file.id] ?? '')) ||
-        (draft.isNew && Object.values(draft.files).some((content) => content !== ''))
+    const hasPendingFiles = draft.item.files.some(
+        (file) => !file.src && (file.content ?? '') !== (draft.files[file.id] ?? ''),
     );
+    const hasNewContent =
+        draft.isNew && Object.values(draft.files).some((content) => content !== '');
+    return hasPendingFiles || hasNewContent;
 }
 
 /**
