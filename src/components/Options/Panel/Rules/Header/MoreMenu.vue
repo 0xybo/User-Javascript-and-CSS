@@ -69,12 +69,12 @@ function onCheckboxUpdated(value: boolean | 'indeterminate') {
             class="w-min min-w-(--reka-popover-trigger-width) px-0 py-2"
         >
             <Label
-                class="group hover:bg-secondary text-foreground flex cursor-pointer flex-row items-center gap-2 px-4 py-2 font-normal"
+                class="hover:bg-secondary text-foreground flex cursor-pointer flex-row items-center gap-2 px-4 py-2 font-normal"
             >
                 <Checkbox
                     :default-value="(state.rule.item as IRule).enabled"
                     @update:model-value="onCheckboxUpdated"
-                    class="border-accent group-hover: data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground size-5 border-2"
+                    class="border-accent data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground size-5 border-2"
                 />
                 <div class="w-full">
                     {{ t('RULES.ENABLED') }}
@@ -86,11 +86,11 @@ function onCheckboxUpdated(value: boolean | 'indeterminate') {
                 class="max-w-60 text-sm"
             >
                 <Label
-                    class="group hover:bg-secondary text-foreground flex cursor-pointer flex-row items-center gap-2 px-4 py-2 font-normal"
+                    class="hover:bg-secondary text-foreground flex cursor-pointer flex-row items-center gap-2 px-4 py-2 font-normal"
                 >
                     <Checkbox
                         v-model="state.rule.item.sync"
-                        class="border-accent group-hover: data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground size-5 border-2"
+                        class="border-accent data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground size-5 border-2"
                     />
 
                     <div class="w-full">
@@ -101,14 +101,14 @@ function onCheckboxUpdated(value: boolean | 'indeterminate') {
             <Separator class="my-2" />
             <Button
                 :disabled="!state.ruleUnsaved"
-                class="group hover:bg-secondary text-foregrond flex flex-row items-center gap-2 rounded-none px-4 py-2 font-normal"
+                class="hover:bg-secondary text-foregrond flex flex-row items-center gap-2 rounded-none px-4 py-2 font-normal"
                 @click="onRevertButtonClick"
             >
                 <Undo2Icon class="size-5" />
                 {{ t('RULES.REVERT') }}
             </Button>
             <Button
-                class="group hover:bg-destructive/10 text-destructive flex w-full flex-row items-center justify-start gap-2 rounded-none px-4 py-2 font-normal"
+                class="hover:bg-destructive/10 text-destructive flex w-full flex-row items-center justify-start gap-2 rounded-none px-4 py-2 font-normal"
                 @click="onRemoveButtonClick"
             >
                 <Trash2Icon class="size-5" />

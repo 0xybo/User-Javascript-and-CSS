@@ -11,6 +11,7 @@ const props = withDefaults(
         triggerProps?: TooltipTriggerProps;
         content?: string;
         class?: HTMLAttributes['class'];
+        asChild?: boolean;
     }>(),
     {
         contentProps: () => ({}),
@@ -22,7 +23,7 @@ const props = withDefaults(
 
 <template>
     <Tooltip v-bind="props.rootProps">
-        <TooltipTrigger v-bind="props.triggerProps">
+        <TooltipTrigger :as-child="!!props.asChild" v-bind="props.triggerProps">
             <slot />
         </TooltipTrigger>
 
