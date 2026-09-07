@@ -7,7 +7,7 @@ import InputGroupAddon from '@/components/ui/input-group/InputGroupAddon.vue';
 import InputGroupInput from '@/components/ui/input-group/InputGroupInput.vue';
 import Label from '@/components/ui/label/Label.vue';
 import useState from '@/composables/options/useState';
-import { useToast } from '@/composables/useToast';
+import { ToastVariant, useToast } from '@/composables/useToast';
 import useTranslation from '@/composables/useTranslation.ts';
 import { FileType } from '@/lib/storage/types';
 import { cn } from '@/lib/tailwind';
@@ -17,7 +17,7 @@ import ModuleMoreMenu from './ModuleMoreMenu.vue';
 
 const t = useTranslation();
 const state = useState();
-const { push } = useToast();
+const toast = useToast();
 
 /** Whether the current module contains at least one imported (remote) file. */
 const hasRemoteFiles = computed(() => state.module.item.files.some((f) => f.src));
@@ -29,9 +29,8 @@ const hasRemoteFiles = computed(() => state.module.item.files.some((f) => f.src)
 function onSaveButtonClick() {
     const wasNew = state.module.isNew;
     state.saveModuleDraft();
-    push({
+    toast.success({
         title: t(wasNew ? 'TOAST.MODULE_CREATED' : 'TOAST.MODULE_UPDATED'),
-        variant: 'success',
     });
 }
 
@@ -49,9 +48,9 @@ function addFile(type: FileType) {
  */
 async function onRefreshAllClick() {
     const { failed } = await state.refreshAllModuleFiles();
-    push({
+    toast.push({
         title: t(failed === 0 ? 'TOAST.MODULE_REFRESHED' : 'TOAST.MODULE_REFRESH_FAILED'),
-        variant: failed === 0 ? 'success' : 'error',
+        variant: failed === 0 ? ToastVariant.Success : ToastVariant.Error,
     });
 }
 </script>

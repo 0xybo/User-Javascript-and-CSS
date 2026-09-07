@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { browser, onMounted, ref, watch } from '#imports';
-import { useDebounceFn } from '@vueuse/core';
 import Button from '@/components/ui/button/Button.vue';
 import Label from '@/components/ui/label/Label.vue';
 import Separator from '@/components/ui/separator/Separator.vue';
@@ -8,12 +7,13 @@ import { useStorage } from '@/composables/useStorage';
 import { useToast } from '@/composables/useToast';
 import useTranslation from '@/composables/useTranslation';
 import { detectLegacyStorage, migrateLegacyStorage } from '@/lib/storage/migrate';
+import { useDebounceFn } from '@vueuse/core';
 import { DownloadIcon, HistoryIcon, Trash2Icon, UploadIcon } from 'lucide-vue-next';
 import SpaceUsageBar from './SpaceUsageBar.vue';
 
 const t = useTranslation();
 const storage = useStorage();
-const { push } = useToast();
+const toast = useToast();
 
 /** Maximum number of bytes available in the `storage.local` area. */
 const LOCAL_QUOTA = browser.storage.local.QUOTA_BYTES ?? 10 * 1024 * 1024;
@@ -50,7 +50,7 @@ function onExportJSON() {
     a.download = `user-js-css-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    push({ title: t('TOAST.SETTINGS_EXPORTED'), variant: 'success' });
+    toast.success({ title: t('TOAST.SETTINGS_EXPORTED') });
 }
 
 /**
@@ -69,11 +69,11 @@ function onImportJSON(file: File | undefined) {
             storage.rules.splice(0, storage.rules.length, ...(data.rules || []));
             storage.modules.splice(0, storage.modules.length, ...(data.modules || []));
             await storage.save();
-            push({ title: t('TOAST.SETTINGS_IMPORTED'), variant: 'success' });
+            toast.success({ title: t('TOAST.SETTINGS_IMPORTED') });
             await refreshUsage();
         } catch (err) {
             console.error('Import failed:', err);
-            push({ title: t('TOAST.SETTINGS_IMPORT_ERROR'), variant: 'error' });
+            toast.error({ title: t('TOAST.SETTINGS_IMPORT_ERROR') });
         }
     };
     reader.readAsText(file);
@@ -88,17 +88,17 @@ async function onImportLegacy() {
     try {
         const raw = (await browser.storage.local.get()) as Record<string, unknown>;
         if (!detectLegacyStorage(raw)) {
-            push({ title: t('TOAST.SETTINGS_LEGACY_NOT_FOUND'), variant: 'info' });
+            toast.info({ title: t('TOAST.SETTINGS_LEGACY_NOT_FOUND') });
             return;
         }
         const confirmed = window.confirm(t('SETTINGS.IMPORT_LEGACY_CONFIRM'));
         if (!confirmed) return;
         await storage.importData(migrateLegacyStorage(raw));
-        push({ title: t('TOAST.SETTINGS_LEGACY_IMPORTED'), variant: 'success' });
+        toast.success({ title: t('TOAST.SETTINGS_LEGACY_IMPORTED') });
         await refreshUsage();
     } catch (err) {
         console.error('Legacy import failed:', err);
-        push({ title: t('TOAST.SETTINGS_LEGACY_IMPORT_ERROR'), variant: 'error' });
+        toast.error({ title: t('TOAST.SETTINGS_LEGACY_IMPORT_ERROR') });
     }
 }
 
@@ -110,7 +110,7 @@ async function onWipeData() {
     const confirmed = window.confirm(t('SETTINGS.WIPE_CONFIRM'));
     if (!confirmed) return;
     await storage.reset();
-    push({ title: t('TOAST.SETTINGS_RESET'), variant: 'info' });
+    toast.info({ title: t('TOAST.SETTINGS_RESET') });
     await refreshUsage();
 }
 </script>
@@ -172,11 +172,7 @@ async function onWipeData() {
             </div>
         </div>
 
-        <SpaceUsageBar
-            :used="usedBytes"
-            :quota="LOCAL_QUOTA"
-            :title="t('SETTINGS.STORAGE_USED')"
-        />
+        <SpaceUsageBar :used="usedBytes" :quota="LOCAL_QUOTA" :title="t('SETTINGS.STORAGE_USED')" />
 
         <div class="text-muted-foreground text-xs">
             <ul class="list-disc pl-5">

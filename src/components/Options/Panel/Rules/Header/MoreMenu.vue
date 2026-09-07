@@ -18,7 +18,7 @@ import { ref } from 'vue';
 const t = useTranslation();
 const state = useState();
 const storage = useStorage();
-const { push } = useToast();
+const toast = useToast();
 /** Whether the popover is opened */
 const isOpened = ref(false);
 
@@ -29,7 +29,7 @@ function onRemoveButtonClick() {
     storage.removeItem(state.rule.item);
     state.switchToNewDraft(ItemType.Rule);
     isOpened.value = false;
-    push({ title: t('TOAST.RULE_REMOVED'), variant: 'info' });
+    toast.info({ title: t('TOAST.RULE_REMOVED') });
 }
 
 /**
@@ -49,9 +49,8 @@ function onRevertButtonClick() {
 function onCheckboxUpdated(value: boolean | 'indeterminate') {
     if (value === 'indeterminate') return;
     (state.rule.item as IRule).enabled = value;
-    push({
+    toast.info({
         title: t(value ? 'TOAST.RULE_ENABLED' : 'TOAST.RULE_DISABLED'),
-        variant: 'info',
     });
 }
 </script>

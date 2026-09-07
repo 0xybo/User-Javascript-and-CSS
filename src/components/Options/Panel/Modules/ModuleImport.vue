@@ -24,7 +24,7 @@ const t = useTranslation();
 const state = useState();
 const storage = useStorage();
 const dialog = useDialog();
-const { push } = useToast();
+const toast = useToast();
 const input = useTemplateRef<HTMLInputElement>('input');
 
 /** The visual presentation of the trigger button: as a toolbar item or a sidebar link. */
@@ -142,13 +142,13 @@ async function doImport() {
         } else {
             file = await state.importModuleFile(value, mode.value);
         }
-        push({ title: t('TOAST.MODULE_IMPORTED'), description: file.name, variant: 'success' });
+        toast.success({ title: t('TOAST.MODULE_IMPORTED'), description: file.name });
         isOpen.value = false;
         source.value = '';
         preview.value = { status: 'idle' };
     } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
-        push({ title: t('TOAST.MODULE_IMPORT_FAILED'), description: message, variant: 'error' });
+        toast.error({ title: t('TOAST.MODULE_IMPORT_FAILED'), description: message });
     } finally {
         importing.value = false;
     }

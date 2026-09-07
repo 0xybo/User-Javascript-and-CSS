@@ -20,7 +20,7 @@ const emits = defineEmits<{
 }>();
 const state = useState();
 const storage = useStorage();
-const { push } = useToast();
+const toast = useToast();
 const t = useTranslation();
 
 /** The name of the rule. */
@@ -52,7 +52,9 @@ function onSwitchChange(value: boolean) {
     emits('change', value);
     if (value) emits('enable');
     else emits('disable');
-    push({ title: t(value ? 'TOAST.RULE_ENABLED' : 'TOAST.RULE_DISABLED'), variant: 'info' });
+    toast.success({
+        title: t(value ? 'TOAST.RULE_ENABLED' : 'TOAST.RULE_DISABLED'),
+    });
 }
 
 /**

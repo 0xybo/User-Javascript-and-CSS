@@ -15,7 +15,7 @@ import UrlMatchContainer from './Header/UrlMatchContainer.vue';
 
 const t = useTranslation();
 const state = useState();
-const { push } = useToast();
+const toast = useToast();
 
 /**
  * Handles the click event on the save button. Saves the current rule draft and displays a toast
@@ -24,9 +24,8 @@ const { push } = useToast();
 function onSaveButtonClick() {
     const wasNew = state.rule.isNew;
     state.saveRuleDraft();
-    push({
+    toast.success({
         title: t(wasNew ? 'TOAST.RULE_CREATED' : 'TOAST.RULE_UPDATED'),
-        variant: 'success',
     });
 }
 </script>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { browser, computed, onMounted, ref, watch } from '#imports';
-import { useDebounceFn } from '@vueuse/core';
 import Button from '@/components/ui/button/Button.vue';
 import Label from '@/components/ui/label/Label.vue';
 import Select from '@/components/ui/select/Select.vue';
@@ -15,13 +14,13 @@ import { useStorage } from '@/composables/useStorage';
 import { useToast } from '@/composables/useToast';
 import useTranslation from '@/composables/useTranslation';
 import { RemoteSettingsInfo, SyncFrequency, SyncMethod } from '@/lib/storage/types';
-import { formatBytes } from '@/lib/utils';
+import { useDebounceFn } from '@vueuse/core';
 import { CloudDownloadIcon, CloudUploadIcon } from 'lucide-vue-next';
 import SpaceUsageBar from './SpaceUsageBar.vue';
 
 const t = useTranslation();
 const storage = useStorage();
-const { push } = useToast();
+const toast = useToast();
 const dialog = useDialog();
 
 const NO_EMITTER = '—';
@@ -148,10 +147,10 @@ async function onUploadSync() {
     try {
         await storage.upload(true);
         await refreshRemote();
-        push({ title: t('TOAST.SYNC_UPLOAD_SUCCESS'), variant: 'success' });
+        toast.success({ title: t('TOAST.SYNC_UPLOAD_SUCCESS') });
     } catch (e) {
         console.error('Sync upload failed:', e);
-        push({ title: t('TOAST.SYNC_UPLOAD_ERROR'), variant: 'error' });
+        toast.error({ title: t('TOAST.SYNC_UPLOAD_ERROR') });
     }
 }
 
@@ -166,10 +165,10 @@ async function onDownloadSync() {
     try {
         await storage.download(true);
         await refreshRemote();
-        push({ title: t('TOAST.SYNC_DOWNLOAD_SUCCESS'), variant: 'success' });
+        toast.success({ title: t('TOAST.SYNC_DOWNLOAD_SUCCESS') });
     } catch (e) {
         console.error('Sync download failed:', e);
-        push({ title: t('TOAST.SYNC_DOWNLOAD_ERROR'), variant: 'error' });
+        toast.error({ title: t('TOAST.SYNC_DOWNLOAD_ERROR') });
     }
 }
 
@@ -257,10 +256,7 @@ onMounted(refreshRemote);
                     :quota="SYNC_QUOTA"
                     :title="t('SETTINGS.SYNC_STORAGE_USED')"
                 >
-                    <p
-                        v-if="syncLimitReached"
-                        class="text-destructive text-xs"
-                    >
+                    <p v-if="syncLimitReached" class="text-destructive text-xs">
                         {{ t('SETTINGS.SYNC_STORAGE_LIMIT_REACHED') }}
                     </p>
                     <p v-else-if="syncNearLimit" class="text-warning text-xs">

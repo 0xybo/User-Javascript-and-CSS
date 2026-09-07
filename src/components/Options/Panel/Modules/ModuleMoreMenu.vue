@@ -18,7 +18,7 @@ import { ref } from 'vue';
 const t = useTranslation();
 const state = useState();
 const storage = useStorage();
-const { push } = useToast();
+const toast = useToast();
 const isOpened = ref(false);
 
 /**
@@ -28,7 +28,7 @@ function onRemoveButtonClick() {
     storage.removeItem(state.module.item);
     state.switchToNewDraft(ItemType.Module);
     isOpened.value = false;
-    push({ title: t('TOAST.MODULE_REMOVED'), variant: 'info' });
+    toast.info({ title: t('TOAST.MODULE_REMOVED') });
 }
 
 /**

@@ -23,7 +23,7 @@ import {
 
 const t = useTranslation();
 const state = useState();
-const { push } = useToast();
+const toast = useToast();
 const { copy } = useClipboard();
 
 /** The list of files of the current module, in display order. */
@@ -161,20 +161,20 @@ function onModelUpdate(file: IFile, value: string) {
 async function refreshFile(file: IFile) {
     try {
         await state.refreshModuleFile(file.id);
-        push({ title: t('TOAST.MODULE_REFRESHED'), description: file.name, variant: 'success' });
+        toast.success({ title: t('TOAST.MODULE_REFRESHED'), description: file.name });
     } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
-        push({ title: t('TOAST.MODULE_REFRESH_FAILED'), description: message, variant: 'error' });
+        toast.error({ title: t('TOAST.MODULE_REFRESH_FAILED'), description: message });
     }
 }
 
 async function copyToClipboard(text: string) {
     try {
         await copy(text);
-        push({ title: t('TOAST.COPIED_TO_CLIPBOARD'), description: text, variant: 'success' });
+        toast.success({ title: t('TOAST.COPIED_TO_CLIPBOARD'), description: text });
     } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
-        push({ title: t('TOAST.COPY_FAILED'), description: message, variant: 'error' });
+        toast.error({ title: t('TOAST.COPY_FAILED'), description: message });
     }
 }
 </script>
