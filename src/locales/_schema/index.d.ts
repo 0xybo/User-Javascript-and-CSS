@@ -1,9 +1,11 @@
 export default interface Messages {
     COMMON: {
         ABOUT: string;
+        CANCEL: string;
         CLOSE: string;
         DRAFT: string;
         MODULES: string;
+        NEW_MODULE: string;
         NEW_RULES: string;
         OPTIONS: string;
         RULES: string;
@@ -20,6 +22,7 @@ export default interface Messages {
         STYLE: string;
         FIND: string;
         REMOVE: string;
+        COPY: string;
     };
     ABOUT: {
         CREDITS: string;
@@ -133,6 +136,39 @@ export default interface Messages {
         SYNC: string;
         SYNC_DESCRIPTION: string;
     };
+    MODULES: {
+        NAME: string;
+        NAME_EXAMPLE: string;
+        PACKAGE: string;
+        PACKAGE_EXAMPLE: string;
+        FILES: string;
+        FILE: string;
+        ADD_JS: string;
+        ADD_CSS: string;
+        REMOVE_FILE: string;
+        TYPE: string;
+        EMPTY: string;
+        PLACEHOLDER_JS: string;
+        PLACEHOLDER_CSS: string;
+        REVERT: string;
+        USED_BY: string;
+        IMPORT: string;
+        IMPORTS: string;
+        QUICK_IMPORT: string;
+        IMPORT_TITLE: string;
+        IMPORT_PACKAGE: string;
+        IMPORT_URL: string;
+        IMPORT_PREVIEW: string;
+        IMPORT_EMPTY: string;
+        PACKAGE_PLACEHOLDER: string;
+        URL_PLACEHOLDER: string;
+        REFRESH: string;
+        REFRESH_ALL: string;
+        COLLAPSE: string;
+        EXPAND: string;
+        REMOTE: string;
+        REMOTE_LINK_COPY: WithNamedArgs<['url']>;
+    };
     SETTINGS: {
         BADGE_COUNT: string;
         BADGE_COUNT_DESCRIPTION: string;
@@ -230,6 +266,10 @@ export default interface Messages {
         MODULE_CREATED: string;
         MODULE_DISABLED: string;
         MODULE_ENABLED: string;
+        MODULE_IMPORTED: string;
+        MODULE_IMPORT_FAILED: string;
+        MODULE_REFRESHED: string;
+        MODULE_REFRESH_FAILED: string;
         MODULE_REMOVED: string;
         MODULE_UPDATED: string;
         RULE_CREATED: string;
@@ -248,6 +288,8 @@ export default interface Messages {
         SYNC_DOWNLOAD_SUCCESS: string;
         SYNC_UPLOAD_ERROR: string;
         SYNC_UPLOAD_SUCCESS: string;
+        COPIED_TO_CLIPBOARD: string;
+        COPY_FAILED: string;
     };
     URL_MATCH: {
         TITLE: string;

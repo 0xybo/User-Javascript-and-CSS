@@ -1,7 +1,8 @@
 import { reactive, watch } from '#imports';
+import { ImportMode, npmPackageName, suggestModuleName } from '@/lib/module-import';
 import { SettingsSection } from '@/lib/options/settings';
 import { Panel, Tab, TAB_TO_PANEL_MAP } from '@/lib/options/tab';
-import { IDraft, ItemType } from '@/lib/storage/types';
+import { FileType, IDraft, ItemType, type IFile, type IModule } from '@/lib/storage/types';
 import { isModuleUnsaved, isRule, isRuleUnsaved, isUnsaved } from '@/lib/storage/utils';
 import { has } from '@/lib/utils';
 import { useThrottleFn } from '@vueuse/core';
@@ -171,6 +172,83 @@ class State {
      */
     public saveModuleDraft() {
         storage.saveModuleDraft(this.reactive.module);
+    }
+
+    /**
+     * Adds a new file of the given type to the current module draft.
+     *
+     * @param type The type of file to add (JavaScript or CSS).
+     */
+    public addModuleFile(type: FileType) {
+        storage.addModuleFile(this.reactive.module, type);
+    }
+
+    /**
+     * Removes a file from the current module draft by its id.
+     *
+     * @param fileId The id of the file to remove.
+     */
+    public removeModuleFile(fileId: string) {
+        storage.removeModuleFile(this.reactive.module, fileId);
+    }
+
+    /**
+     * Imports a file into the current module draft from a URL or an npm module name.
+     *
+     * @param source The URL or npm module name to import.
+     * @param mode How the source is interpreted ('auto' detects URL vs package).
+     * @returns The newly created file.
+     */
+    public importModuleFile(source: string, mode: ImportMode = 'auto'): Promise<IFile> {
+        return storage.importModuleFile(this.reactive.module, source, mode);
+    }
+
+    /**
+     * Creates a new module draft named after the import source, switches to it and imports the
+     * file into it. In package mode the module's `package` field is also set from the source.
+     * The draft auto-save watcher persists the module on change, so the import is saved right away
+     * like any edited "New Module".
+     *
+     * @param source The URL or npm module name to import.
+     * @param mode How the source is interpreted ('auto' detects URL vs package).
+     * @returns The newly created file.
+     */
+    public async quickImportModule(source: string, mode: ImportMode = 'auto'): Promise<IFile> {
+        const draft = storage.createDraftFromType(ItemType.Module);
+        const item = draft.item as IModule;
+        item.name = suggestModuleName(source, mode);
+        if (mode === 'package') {
+            const pkg = npmPackageName(source);
+            if (pkg) item.package = pkg;
+        }
+        this.switchDraft(draft);
+        return this.importModuleFile(source, mode);
+    }
+
+    /**
+     * Re-fetches the content of a remote file of the current module draft from its source URL.
+     *
+     * @param fileId The id of the remote file to refresh.
+     * @returns The refreshed file.
+     */
+    public refreshModuleFile(fileId: string): Promise<IFile> {
+        return storage.refreshModuleFile(this.reactive.module, fileId);
+    }
+
+    /**
+     * Re-fetches the content of every remote file of the current module draft from its source URL.
+     *
+     * @returns The number of files that refreshed successfully and the number that failed.
+     */
+    public async refreshAllModuleFiles(): Promise<{ succeeded: number; failed: number }> {
+        const files = this.reactive.module.item.files.filter((f) => f.src);
+        const results = await Promise.allSettled(
+            files.map((f) => storage.refreshModuleFile(this.reactive.module, f.id)),
+        );
+        return {
+            succeeded: results.filter((r) => r.status === 'fulfilled').length,
+            failed: results.filter((r) => r.status === 'rejected').length,
+        };
     }
 
     /**

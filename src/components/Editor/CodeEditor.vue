@@ -13,8 +13,10 @@ const props = withDefaults(
         resizing?: boolean;
         readonly?: boolean;
         actionsBar?: boolean;
+        settings?: boolean;
+        preview?: boolean;
     }>(),
-    { resizing: false, readonly: false, actionsBar: true },
+    { resizing: false, readonly: false, actionsBar: true, settings: true, preview: true },
 );
 const model = defineModel<string>({ required: true });
 </script>
@@ -29,6 +31,12 @@ const model = defineModel<string>({ required: true });
             :placeholder="props.placeholder"
             :readonly="props.readonly"
         />
-        <ActionsBar v-if="props.actionsBar" :type="props.language" />
+        <ActionsBar
+            v-if="props.actionsBar"
+            :type="props.language"
+            :settings="props.settings"
+            :preview="props.preview"
+            v-model="model"
+        />
     </div>
 </template>

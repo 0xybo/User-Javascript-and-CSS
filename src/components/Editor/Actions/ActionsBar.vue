@@ -29,7 +29,11 @@ const state = useState();
 const storage = useStorage();
 const props = defineProps<{
     type: FileType;
+    settings?: boolean;
+    preview?: boolean;
 }>();
+
+const model = defineModel<string>();
 
 const type = computed(() => {
     switch (props.type) {
@@ -44,18 +48,7 @@ const type = computed(() => {
     }
 });
 
-const content = computed(() => {
-    switch (props.type) {
-        case FileType.Typescript:
-        case FileType.Javascript:
-            return state.rule.files[state.rule.item.script.id];
-        case FileType.Css:
-        case FileType.Scss:
-            return state.rule.files[state.rule.item.style.id];
-        default:
-            return '';
-    }
-});
+const content = computed(() => model.value ?? '');
 
 const title = computed(() => t(`COMMON.${type.value}`));
 
@@ -82,14 +75,14 @@ const preview = reactive({
 });
 
 /**
- * Handles the click event for the beautify button.
+ * Handles the click event for the beautify button. The formatted text is written back to the
+ * editor model, which the parent binds to the appropriate draft buffer (rule or module file).
  */
 async function onBeautifyButtonClick() {
-    const fileId =
-        props.type === FileType.Typescript ? state.rule.item.script.id : state.rule.item.style.id;
-
-    state.rule.files[fileId] = await prettier.format(state.rule.files[fileId], {
-        parser: props.type === FileType.Typescript ? 'typescript' : 'css',
+    if (!model.value) return;
+    model.value = await prettier.format(model.value, {
+        parser:
+            props.type === FileType.Css || props.type === FileType.Scss ? 'css' : 'typescript',
         plugins: [typecriptPlugin, estreePlugin, scssPlugin],
         tabWidth: storage.settings.editor.tabSize,
     });
@@ -98,18 +91,17 @@ async function onBeautifyButtonClick() {
 /**
  * Handles the click event for the preview button.
  *
- * If the file type is TypeScript, it compiles the TypeScript code and sets the preview content.
- * If the file type is CSS, it compiles the SCSS code and sets the preview content.
+ * If the file type is a script, it compiles the source (TypeScript or JavaScript) and sets the
+ * preview content. If the file type is a style, it compiles the SCSS code and sets the preview
+ * content.
  * If the compilation fails, it opens a dialog to inform the user about the error.
  */
 async function onPreviewButtonClick() {
-    if (props.type === FileType.Typescript) {
-        const id = state.rule.item.script.id;
-        const result = await compileTS(state.rule.files[id]);
+    if (props.type === FileType.Typescript || props.type === FileType.Javascript) {
+        const result = await compileTS(content.value);
         preview.content = result.output;
     } else {
-        const id = state.rule.item.style.id;
-        const result = await compileSCSS(state.rule.files[id], {
+        const result = await compileSCSS(content.value, {
             important: state.rule.item.style.important,
         });
         preview.content = result.output;
@@ -156,7 +148,9 @@ async function onPreviewButtonClick() {
             }"
             @click="onBeautifyButtonClick"
         />
-        <template v-if="props.type === FileType.Css || props.type === FileType.Scss">
+        <template
+            v-if="(props.type === FileType.Css || props.type === FileType.Scss) && props.settings"
+        >
             <ActionButton
                 :icon="TerminalIcon"
                 :tooltip="{
@@ -176,7 +170,7 @@ async function onPreviewButtonClick() {
                 v-model:active="state.rule.item.style.important"
             />
         </template>
-        <template v-else>
+        <template v-else-if="props.settings">
             <ActionButton
                 :icon="BoxIcon"
                 :tooltip="{
@@ -210,6 +204,7 @@ async function onPreviewButtonClick() {
             :tooltip="{
                 title: t('EDITOR.PREVIEW'),
             }"
+            v-if="props.preview"
             @click="onPreviewButtonClick"
             :disabled="!content"
         />

@@ -209,16 +209,45 @@
 
 ## 7. Options Page — Modules Tab
 
-**Status: ⬜ STUBS** (ModuleContainer, ModuleHeader, ModuleReview are template-only)
+**Status: 🔶 Implemented — CRUD + remote imports + flexible editors; advanced features pending**
 
-- [ ] **Module CRUD** — create, edit, delete JS/CSS modules
-- [ ] **Module editor** — code editor for module content (reuse `CodeEditor`)
-- [ ] **Attach modules to rules** — select which modules a rule uses
+- [x] **Module CRUD** — create, edit, delete JS/CSS modules
+    - [x] `ModulesTab.vue` (sidebar): module list w/ search + "New module" button (reuses the
+          existing draft/dialog flow)
+    - [x] `ModuleListItem.vue` / `ModuleList.vue`: list rows with unsaved-change dot, name + file
+          summary (JS/CSS), open on click
+    - [x] `ModuleContainer.vue` (panel root): assembles `ModuleHeader` + `ModuleEditors` +
+          `ModuleReview`, Ctrl+S save
+    - [x] `ModuleHeader.vue`: name + package inputs, "Add JavaScript / Add CSS" buttons, Save
+          button (toast on create/updated), `ModuleMoreMenu`
+    - [x] `ModuleMoreMenu.vue`: sync checkbox, revert, remove
+    - [x] `ModuleReview.vue`: "Used by" — lists rules that attach this module
+    - [x] Storage helpers: `addModuleFile` / `removeModuleFile` (in `draft.ts`) + `State`
+          delegates, i18n `MODULES.*` keys (en + fr)
+- [x] **Module editor** — code editor for module content (reuse `CodeEditor`)
+- [x] **Flexible editor layout** — per-file panels built on the shadcn/reka **vertical**
+      `ResizablePanelGroup` (`size-unit="px"`, min 90px, `collapsible` slot API collapsing to
+      80px), with **resize handles** between files, header **drag-and-drop reorder**, and a
+      chevron **collapse** toggle
+- [x] **Per-file ActionsBar extension** — local module files now get a working **Beautify** action
+      (plus preview/settings on the rule editors): `ActionsBar` operates on the editor model
+      instead of being hard-wired to the rule draft files
+- [x] **Import dialog** — `ModuleImport.vue` opens a dialog (toolbar "Imports" + sidebar "Quick
+      import") with a **package / url toggle**, a source input and a **live debounced preview**
+      (fetches via jsDelivr CDN / URL through `src/lib/module-import.ts`, then shows the content,
+      a spinner or an error). **Import** resolves the source, detects JS/CSS from the URL and
+      content-type, and adds it as a read-only **remote** file (`src` set, editor `readonly`, no
+      `ActionsBar`). In **quick mode** a new module named after the package/url is created and
+      switched to (existing "New Module" draft-conflict is handled by a confirm dialog)
+- [x] **Refresh** — per-file refresh button on remote files + "Refresh" toolbar button re-fetching
+      all imported files (`refreshModuleFile` / `refreshAllModuleFiles`); `saveModuleDraft` skips
+      `src` files so imported content isn't wiped on save
+- [x] **Attach modules to rules** — select which modules a rule uses (`ModulesMenu.vue` already
+      worked on the rule side)
 - [ ] **Module sharing** — modules can depend on other modules
-- [ ] **Import modules from internet**: npm packages, URLs, GitHub repos
+- [ ] **Import modules from internet**: GitHub repos, multi-file packages
 - [ ] **Import from local files**: zip, js, css, html
 - [ ] **Export modules** for sharing/backup
-- [ ] **Module list in sidebar** — ModulesTab stub → full implementation
 - [ ] **Module-to-module dependency resolution**
 
 ---
@@ -282,10 +311,10 @@
 
 ### Preview Dialog
 
-- [ ] **🔶 Preview compilation** — currently commented out in ActionsBar
-- [ ] Compile TypeScript → JS, SCSS → CSS
-- [ ] Show compiled output in read-only editor
-- [ ] Show compilation errors
+- [x] **Preview compilation** — compile the current script (TS/JS → JS) or style (SCSS → CSS) and
+      show the output in a read-only editor dialog (`ActionsBar.onPreviewButtonClick` →
+      `PreviewDialog`)
+- [x] Show compilation errors (dialog with the error message when the compilation yields nothing)
 
 ---
 
@@ -418,7 +447,7 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
 | i18n (en, ru)                              | ✅       | ✅     | en, fr done               |
 | Cloud sync (browser.storage.sync)          | ⬜       | ✅     | Extends original          |
 | Cloud sync (Google Drive etc.)             | ⬜       | 🔶     | Schema exists             |
-| Modules/libraries tab                      | ⬜       | 🔶     | Stubs exist               |
+| Modules/libraries tab                      | ⬜       | 🔶     | CRUD+editor done; import/export pending |
 | Extended settings                          | ⬜       | ✅     | Editor, theme, ext, sync  |
 | jQuery as web accessible resource          | ✅       | ⬜     | Not started               |
 
@@ -468,8 +497,18 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
       fallback JS injection threw permission errors on every navigation. Fixed with an
       `isInjectableUrl()` allowlist (http/https minus Chrome Web Store hosts) gating
       `filterRulesByUrl` — covers background triggers, badge count and popup listing.
+- [x] **ISSUES #19** — infinite save loop in settings page (root cause: `saveRuleDraft`
+      stamped `rule.updated = Date.now()` on the same object the draft watcher watched, so each
+      save re-triggered itself. Fixed: `isUpdating` guard on `watchForSave`, and `saveRuleDraft`
+      only stamps `updated` on an actual content change)
+- [x] **ISSUES #20** — new rule not saved when typing pattern (root cause: `isRuleUnsaved`
+      ignored `patterns`, so `cleanDrafts()` discarded a new rule that only had a typed URL
+      pattern. Fixed: new rules with a non-empty `patterns` string now count as unsaved)
 - [ ] **MonacoEditor.vue:37** — theme hardcoded to `'vs-dark'` (`TODO à changer`)
 - [x] **compiler/typescript.ts** — `format()` bug fixed (now correctly called with `output`)
+- [x] **ActionsBar.vue** — preview compilation wired (compiles the current editor content and
+      opens `PreviewDialog`); Beautify formats the editor model so it works for **rule and module
+      files** alike
 - [ ] **compiler/scss.ts** — syntax errors (wrong import, wrong return type)
 - [ ] **sortRules.ts** — "Updated" sort doesn't work (`// FIX`)
 - [ ] **ActionsBar.vue** — preview compilation commented out
@@ -521,4 +560,5 @@ Original extension had a JavaScript syntax checker web worker (`worker-javascrip
 - [x] Toast on settings **exported** / **imported** / **reset** (`StorageSection.vue`)
 - [x] Toast on cloud sync **upload / download** success and failure (`CloudSyncSection.vue`)
 - [x] i18n `TOAST_*` keys in `en` + `fr` (incl. module keys)
-- [ ] Module toasts — blocked until Module CRUD UI is implemented (section 7 stubs)
+- [x] Module toasts — toast on module **created / updated / removed** (Save button +
+      `ModuleMoreMenu.vue`; see section 7)
