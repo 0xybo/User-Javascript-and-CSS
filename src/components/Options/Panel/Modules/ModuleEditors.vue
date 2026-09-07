@@ -216,6 +216,7 @@ async function copyToClipboard(text: string) {
                                 class="hover:bg-secondary h-6 w-6"
                                 :title="isCollapsed ? t('MODULES.EXPAND') : t('MODULES.COLLAPSE')"
                                 @click.stop="isCollapsed ? expand() : collapse()"
+                                :disabled="files.length === 1"
                             >
                                 <ChevronRightIcon v-if="isCollapsed" :size="14" />
                                 <ChevronDownIcon v-else :size="14" />
