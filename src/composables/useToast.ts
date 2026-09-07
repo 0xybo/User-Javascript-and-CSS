@@ -3,7 +3,11 @@ import { reactive } from '#imports';
 /**
  * The visual style of a toast notification.
  */
-export type ToastVariant = 'success' | 'error' | 'info';
+export enum ToastVariant {
+    Success = 'success',
+    Error = 'error',
+    Info = 'info',
+}
 
 /**
  * A single toast notification displayed in the toast viewport.
@@ -50,11 +54,21 @@ function push(options: ToastOptions): string {
         id,
         title: options.title,
         description: options.description,
-        variant: options.variant ?? 'success',
+        variant: options.variant ?? ToastVariant.Success,
         duration: options.duration ?? 3500,
     });
     setTimeout(() => remove(id), options.duration ?? 3500);
     return id;
+}
+
+/**
+ * Creates a function that displays a toast notification with the specified visual style.
+ *
+ * @param variant The visual style of the toast.
+ * @returns A function that displays a toast notification with the specified visual style.
+ */
+function withVariant(variant: ToastVariant) {
+    return (options: Omit<ToastOptions, 'variant'>) => push({ ...options, variant });
 }
 
 /**
@@ -77,5 +91,12 @@ function remove(id: string) {
  * push({ title: 'Rule saved', variant: 'success' });
  */
 export function useToast() {
-    return { toasts, push, remove };
+    return {
+        toasts,
+        push,
+        remove,
+        success: withVariant(ToastVariant.Success),
+        error: withVariant(ToastVariant.Error),
+        info: withVariant(ToastVariant.Info),
+    };
 }

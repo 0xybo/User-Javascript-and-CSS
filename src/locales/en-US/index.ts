@@ -312,6 +312,13 @@ export default {
         SYNC_UPLOAD_SUCCESS: 'Settings uploaded to the cloud',
         COPIED_TO_CLIPBOARD: 'Copied to clipboard',
         COPY_FAILED: 'Failed to copy to clipboard',
+        EDITOR: {
+            BEAUTIFY_ERROR: {
+                DESCRIPTION:
+                    'An error occurred while beautifying the code. This is often due to a syntax error in the code.',
+                TITLE: 'Beautify error',
+            },
+        },
     },
     URL_MATCH: {
         TITLE: 'URL match',

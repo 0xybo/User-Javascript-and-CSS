@@ -320,6 +320,13 @@ export default {
         SYNC_UPLOAD_SUCCESS: 'Paramètres envoyés vers le cloud',
         COPIED_TO_CLIPBOARD: 'Copié dans le presse-papiers',
         COPY_FAILED: 'Échec de la copie dans le presse-papiers',
+        EDITOR: {
+            BEAUTIFY_ERROR: {
+                DESCRIPTION:
+                    "Une erreur est survenue lors du formatage du code. C'est souvent dû à une erreur de syntaxe dans le code.",
+                TITLE: 'Erreur de formatage',
+            },
+        },
     },
     URL_MATCH: {
         TITLE: "Correspondance d'URL",

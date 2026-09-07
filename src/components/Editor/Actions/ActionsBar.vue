@@ -5,6 +5,7 @@ import TooltipWrapper from '@/components/TooltipWrapper.vue';
 import { useDialog } from '@/composables/options/useDialog.ts';
 import useState from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
+import { useToast } from '@/composables/useToast.ts';
 import useTranslation from '@/composables/useTranslation.ts';
 import { compileSCSS } from '@/lib/compiler/scss';
 import { compileTS } from '@/lib/compiler/typescript';
@@ -32,6 +33,7 @@ const props = defineProps<{
     settings?: boolean;
     preview?: boolean;
 }>();
+const toast = useToast();
 
 const model = defineModel<string>();
 
@@ -80,12 +82,19 @@ const preview = reactive({
  */
 async function onBeautifyButtonClick() {
     if (!model.value) return;
-    model.value = await prettier.format(model.value, {
-        parser:
-            props.type === FileType.Css || props.type === FileType.Scss ? 'css' : 'typescript',
-        plugins: [typecriptPlugin, estreePlugin, scssPlugin],
-        tabWidth: storage.settings.editor.tabSize,
-    });
+    try {
+        model.value = await prettier.format(model.value, {
+            parser:
+                props.type === FileType.Css || props.type === FileType.Scss ? 'css' : 'typescript',
+            plugins: [typecriptPlugin, estreePlugin, scssPlugin],
+            tabWidth: storage.settings.editor.tabSize,
+        });
+    } catch (error) {
+        toast.error({
+            title: t('TOAST.EDITOR.BEAUTIFY_ERROR.TITLE'),
+            description: t('TOAST.EDITOR.BEAUTIFY_ERROR.DESCRIPTION'),
+        });
+    }
 }
 
 /**

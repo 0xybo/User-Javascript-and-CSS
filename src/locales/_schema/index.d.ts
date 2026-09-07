@@ -290,6 +290,12 @@ export default interface Messages {
         SYNC_UPLOAD_SUCCESS: string;
         COPIED_TO_CLIPBOARD: string;
         COPY_FAILED: string;
+        EDITOR: {
+            BEAUTIFY_ERROR: {
+                DESCRIPTION: string;
+                TITLE: string;
+            };
+        };
     };
     URL_MATCH: {
         TITLE: string;
