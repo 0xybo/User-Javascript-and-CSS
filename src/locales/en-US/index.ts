@@ -174,7 +174,7 @@ export default {
         IMPORT_TITLE: 'Import script or style from package or url',
         IMPORT_PACKAGE: 'From package',
         IMPORT_URL: 'From URL',
-        IMPORT_PREVIEW: 'Preview',
+        IMPORT_PREVIEW: 'Preview (max 20000 characters)',
         IMPORT_EMPTY: 'Enter a package or url to preview',
         PACKAGE_PLACEHOLDER: 'Package or module name, ex. jquery\\@3.7.1',
         URL_PLACEHOLDER:

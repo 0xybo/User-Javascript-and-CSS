@@ -174,7 +174,7 @@ export default {
         IMPORT_TITLE: 'Importer un script ou un style depuis un paquet ou une URL',
         IMPORT_PACKAGE: 'Depuis un paquet',
         IMPORT_URL: 'Depuis une URL',
-        IMPORT_PREVIEW: 'Aperçu',
+        IMPORT_PREVIEW: 'Aperçu (max 20000 caractères)',
         IMPORT_EMPTY: 'Saisissez un paquet ou une URL pour prévisualiser',
         PACKAGE_PLACEHOLDER: 'Nom du paquet ou du module, ex. jquery\\@3.7.1',
         URL_PLACEHOLDER:
