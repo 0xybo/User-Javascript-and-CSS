@@ -3,7 +3,8 @@ import { PlainObject } from '@/types/json';
 import { useDebounceFn, useThrottleFn } from '@vueuse/core';
 import { watch, type ComputedRef } from 'vue';
 import { Logger } from '../logger';
-import { deepMerge, diff, IS_DEVELOPMENT, printDiff } from '../utils';
+import { deepMerge, diff, printDiff } from '../utils';
+import { IS_DEVELOPMENT } from '../utils/development';
 import { IDraft, IInfo, IModule, IRule, ISettings, IStorage, StorageChanges } from './types';
 import { clean, DEFAULTS, EMITTER, parse } from './utils';
 

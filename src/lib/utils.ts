@@ -6,16 +6,6 @@ import { PlainObject } from '../types/json';
 export type Constructor<T = {}> = new (...args: any[]) => T;
 
 /**
- * A constant indicating whether the application is running in development mode.
- */
-export const IS_DEVELOPMENT = import.meta.env.DEV;
-
-/**
- * A constant indicating whether the application is running in production mode.
- */
-export const IS_PRODUCTION = import.meta.env.PROD;
-
-/**
  * Picks the specified keys from an object and returns a new object with only those keys.
  *
  * @param obj The object to pick keys from.

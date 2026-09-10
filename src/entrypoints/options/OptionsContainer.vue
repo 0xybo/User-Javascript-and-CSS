@@ -10,7 +10,7 @@ import { watchThemePalette } from '@/composables/useTheme';
 import { Panel } from '@/lib/options/tab';
 import type { IDraft } from '@/lib/storage/types';
 import { isUnsaved } from '@/lib/storage/utils';
-import { deepMerge, IS_DEVELOPMENT } from '@/lib/utils';
+import { declareGlobalForDevelopment } from '@/lib/utils/development';
 import { useEventListener } from '@vueuse/core';
 
 watchThemePalette();
@@ -20,7 +20,8 @@ const storage = useStorage();
 
 // In development mode, the storage instance is merged into the global object for easier access
 // and debugging.
-if (IS_DEVELOPMENT) deepMerge(globalThis, { ujc: { state, storage } });
+declareGlobalForDevelopment('storage', storage);
+declareGlobalForDevelopment('state', state);
 
 /**
  * Handles the beforeunload event to warn the user about unsaved drafts.
