@@ -100,7 +100,7 @@ export class StorageServiceBase {
             });
     }
 
-    private reactive: StorageServiceBase;
+    protected reactive: StorageServiceBase;
 
     constructor() {
         this.reactive = reactive(this) as unknown as StorageServiceBase;

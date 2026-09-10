@@ -1,6 +1,14 @@
-// import { compileSCSS } from '@/lib/compiler/scss';
 import { compileSCSS } from '@/lib/compiler/scss';
 import { compileTS } from '@/lib/compiler/typescript';
+import {
+    buildBindingLines,
+    buildModuleRuntime,
+    compileModuleEsm,
+    moduleImports,
+    rewriteModuleImports,
+    type ModuleImportRef,
+    type ModuleKind,
+} from '@/lib/module-format';
 import {
     detectFileType,
     fetchFile,
@@ -8,11 +16,12 @@ import {
     resolveSource,
     type ImportMode,
 } from '@/lib/module-import';
+import { watch } from 'vue';
 import { Logger } from '../../logger';
 import { type Constructor } from '../../utils';
 import { zFile } from '../schema';
 import { FileType, IDraft, IItem, IRule, ItemType, type IFile, type IModule } from '../types';
-import { DEFAULTS, isModule, isRule } from '../utils';
+import { DEFAULTS, isModule, isRule, isUnsaved } from '../utils';
 import type { StorageServiceSync } from './sync';
 
 /**
@@ -53,6 +62,9 @@ export function StorageServiceDraftsMixin<T extends StorageServiceSync>(Base: T)
                 });
             }
 
+            this.drafts.push(draft);
+            this.applyWatchersToDraft(this.reactive.drafts[this.reactive.drafts.length - 1]);
+
             return draft;
         }
 
@@ -72,9 +84,74 @@ export function StorageServiceDraftsMixin<T extends StorageServiceSync>(Base: T)
                 };
             } else {
                 draft.item = DEFAULTS.MODULE();
+                draft.files = Object.fromEntries(
+                    (draft.item as IModule).files
+                        .filter((f) => !f.src)
+                        .map((f) => [f.id, f.content]),
+                );
             }
 
+            this.drafts.push(draft);
+            this.applyWatchersToDraft(this.reactive.drafts[this.reactive.drafts.length - 1]);
+
             return draft;
+        }
+
+        /**
+         * Applies watchers to the specified draft.
+         *
+         * @param draft The draft to apply watchers to.
+         */
+        private applyWatchersToDraft(draft: IDraft) {
+            this.watchFirstChangeForSave(draft);
+            this.watchForUnsavedChanges(draft);
+        }
+
+        /**
+         * Watches the specified draft for its first change, triggering a save when the change occurs.
+         *
+         * @param draft The draft to watch for its first change.
+         */
+        private watchFirstChangeForSave(draft: IDraft) {
+            watch(
+                draft.item,
+                () => {
+                    this.saveDraft(draft);
+                    this.watchForSave(draft);
+                },
+                { once: true },
+            );
+        }
+
+        /**
+         * Watches the specified draft for changes, triggering a save whenever a change occurs.
+         *
+         * @param draft The draft to watch for changes.
+         */
+        private watchForSave(draft: IDraft) {
+            watch(
+                draft.item,
+                () => {
+                    this.saveDraft(draft);
+                    this.watchForSave(draft);
+                },
+                { deep: true },
+            );
+        }
+
+        /**
+         * Watches the specified draft for unsaved changes, updating the `changed` property accordingly.
+         *
+         * @param draft The draft to watch for unsaved changes.
+         */
+        private watchForUnsavedChanges(draft: IDraft) {
+            watch(
+                draft,
+                () => {
+                    draft.changed = isUnsaved(draft);
+                },
+                { deep: true },
+            );
         }
 
         /**

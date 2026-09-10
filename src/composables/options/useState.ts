@@ -1,11 +1,10 @@
-import { reactive, watch } from '#imports';
+import { reactive } from '#imports';
 import { ImportMode, npmPackageName, suggestModuleName } from '@/lib/module-import';
 import { SettingsSection } from '@/lib/options/settings';
 import { Panel, Tab, TAB_TO_PANEL_MAP } from '@/lib/options/tab';
 import { FileType, IDraft, ItemType, type IFile, type IModule } from '@/lib/storage/types';
 import { isModuleUnsaved, isRule, isRuleUnsaved, isUnsaved } from '@/lib/storage/utils';
 import { has } from '@/lib/utils';
-import { useThrottleFn } from '@vueuse/core';
 import type { Reactive } from 'vue';
 import { useDraft } from '../useDraft';
 import { useStorage } from '../useStorage';
@@ -37,8 +36,6 @@ class State {
         return isModuleUnsaved(this.module);
     }
 
-    private ruleDraftWatcher: ReturnType<typeof watch> | null = null;
-    private moduleDraftWatcher: ReturnType<typeof watch> | null = null;
     /**
      * The reactive proxy of the State instance. This is used to ensure that matutations to the
      * state are reactive and trigger updates in Vue components.
@@ -53,50 +50,6 @@ class State {
 
     private initialize() {
         this.goToHashLocation();
-
-        this.watchOnceForSave(this.reactive.rule);
-        this.watchOnceForSave(this.reactive.module);
-    }
-
-    /**
-     * Watches the provided draft for changes and saves it to storage when it changes.
-     * It also updates the location hash to reflect the current draft.
-     *
-     * @param draft The draft to watch for changes.
-     */
-    private watchOnceForSave(draft: Reactive<IDraft>) {
-        watch(
-            draft.item,
-            () => {
-                storage.saveDraft(draft);
-                this.watchForSave(draft);
-            },
-            { once: true },
-        );
-    }
-
-    /**
-     * Watches the provided draft for changes and saves it to storage when it changes.
-     *
-     * @param draft The draft to watch for changes.
-     * @returns A function that can be called to stop watching the draft.
-     */
-    private watchForSave(draft: Reactive<IDraft>) {
-        const watchHandler = watch(
-            draft.item,
-            useThrottleFn(() => {
-                if (storage.isUpdating) return;
-                storage.saveDraft(draft);
-            }, 500),
-        );
-
-        if (isRule(draft)) {
-            if (this.ruleDraftWatcher) this.ruleDraftWatcher();
-            return (this.ruleDraftWatcher = watchHandler);
-        }
-
-        if (this.moduleDraftWatcher) this.moduleDraftWatcher();
-        return (this.moduleDraftWatcher = watchHandler);
     }
 
     /**
@@ -109,24 +62,10 @@ class State {
      */
     public switchDraft(draft: Reactive<IDraft>) {
         if (isRule(draft)) {
-            const isSameDraft = draft.item.id === this.rule.item.id;
             this.reactive.rule = draft;
-
-            if (!isSameDraft) {
-                if (draft.isNew) this.watchOnceForSave(this.reactive.rule);
-                else this.watchForSave(this.reactive.rule);
-            }
-
             this.switchTab(Tab.Rules);
         } else {
-            const isSameDraft = draft.item.id === this.module.item.id;
             this.reactive.module = draft as Reactive<IDraft<ItemType.Module>>;
-
-            if (!isSameDraft) {
-                if (draft.isNew) this.watchOnceForSave(this.reactive.module);
-                else this.watchForSave(this.reactive.module);
-            }
-
             this.switchTab(Tab.Modules);
         }
 
@@ -304,6 +243,14 @@ class State {
         }
     }
 
+    /**
+     * Reads the location hash and switches the current state of the options page accordingly.
+     * It parses the hash and determines whether to switch to a rule, module, settings section,
+     * or about tab.
+     * If the hash is invalid or does not correspond to any known state, it defaults to the rules
+     * tab.
+     * This method is called during initialization to restore the state from the URL.
+     */
     private goToHashLocation() {
         const [hash, detail] = location.hash.slice(1).split(':');
         switch (hash) {
