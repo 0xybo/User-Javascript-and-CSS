@@ -2,7 +2,7 @@
 // import { useDraft } from '@/composables/useDraft';
 import { computed } from '#imports';
 import useState from '@/composables/options/useState.ts';
-import { useStorage } from '@/composables/useStorage';
+import { useStorage } from '@/composables/useStorage.ts';
 import { useToast } from '@/composables/useToast';
 import useTranslation from '@/composables/useTranslation.ts';
 import { getName } from '@/lib/rules';
@@ -27,8 +27,6 @@ const t = useTranslation();
 const name = computed(() => getName(props.rule));
 /** The draft associated with the rule. */
 const draft = computed(() => storage.getDraftFromItem(props.rule));
-/** Whether the current draft is associated with the rule. */
-const isCurrentDraft = computed(() => draft.value?.item.id === state.rule.item.id);
 /** Whether the rule has been changed or is new. */
 const hasChanged = computed(() => draft.value?.changed || draft.value?.isNew);
 
