@@ -1,31 +1,42 @@
 <script setup lang="ts">
 import { computed } from '#imports';
+import useState from '@/composables/options/useState';
 import { useStorage } from '@/composables/useStorage';
 import useTranslation from '@/composables/useTranslation';
-import { IModule } from '@/lib/storage/types';
+import { IModule, type IRule } from '@/lib/storage/types';
 
+const state = useState();
 const props = defineProps<{ module: IModule }>();
 const storage = useStorage();
 const t = useTranslation();
 
 /** The rules that reference this module in their `modules` list. */
-const usedBy = computed(() => storage.rules.filter((rule) => rule.modules.includes(props.module.id)));
+const usedBy = computed(() =>
+    storage.rules.filter((rule) => rule.modules.includes(props.module.id)),
+);
+
+function switchToRule(rule: IRule) {
+    const draft = storage.getDraftFromItem(rule) || storage.createDraftFromItem(rule);
+
+    state.switchDraft(draft);
+}
 </script>
 
 <template>
-    <div v-if="usedBy.length" class="border-t bg-muted/30 p-3">
-        <p class="text-muted-foreground mb-2 text-xs font-medium uppercase tracking-wider">
+    <div v-if="usedBy.length" class="bg-muted/30 flex flex-row items-center border-t p-3">
+        <span class="text-muted-foreground mr-2 text-xs font-medium tracking-wider uppercase">
             {{ t('MODULES.USED_BY') }}
-        </p>
-        <ul class="flex flex-col gap-1">
-            <li
-                v-for="rule in usedBy"
-                :key="rule.id"
-                class="flex items-center gap-2 text-sm"
+        </span>
+        <template v-for="rule in usedBy" :key="rule.id">
+            <div
+                class="flex cursor-pointer items-center gap-2 rounded-md p-0 text-sm hover:underline"
+                @click.prevent.stop="switchToRule(rule)"
             >
-                <span class="size-1.5 rounded-full bg-accent shrink-0" />
                 <span class="truncate">{{ rule.name || rule.id }}</span>
-            </li>
-        </ul>
+            </div>
+            <span v-if="rule !== usedBy[usedBy.length - 1]" class="text-muted-foreground">
+                ,&nbsp;
+            </span>
+        </template>
     </div>
 </template>
