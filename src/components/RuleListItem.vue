@@ -53,7 +53,7 @@ function onSwitchChange(value: boolean) {
     if (value) emits('enable');
     else emits('disable');
     toast.success({
-        title: t(value ? 'TOAST.RULE_ENABLED' : 'TOAST.RULE_DISABLED'),
+        title: t(value ? 'TOAST.RULE.ENABLED' : 'TOAST.RULE.DISABLED'),
     });
 }
 

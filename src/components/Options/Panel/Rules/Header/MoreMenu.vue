@@ -29,7 +29,7 @@ function onRemoveButtonClick() {
     storage.removeItem(state.rule.item);
     state.switchToNewDraft(ItemType.Rule);
     isOpened.value = false;
-    toast.info({ title: t('TOAST.RULE_REMOVED') });
+    toast.info({ title: t('TOAST.RULE.REMOVED') });
 }
 
 /**
@@ -50,7 +50,7 @@ function onCheckboxUpdated(value: boolean | 'indeterminate') {
     if (value === 'indeterminate') return;
     (state.rule.item as IRule).enabled = value;
     toast.info({
-        title: t(value ? 'TOAST.RULE_ENABLED' : 'TOAST.RULE_DISABLED'),
+        title: t(value ? 'TOAST.RULE.ENABLED' : 'TOAST.RULE.DISABLED'),
     });
 }
 </script>

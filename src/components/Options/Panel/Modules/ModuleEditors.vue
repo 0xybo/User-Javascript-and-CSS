@@ -161,20 +161,20 @@ function onModelUpdate(file: IFile, value: string) {
 async function refreshFile(file: IFile) {
     try {
         await state.refreshModuleFile(file.id);
-        toast.success({ title: t('TOAST.MODULE_REFRESHED'), description: file.name });
+        toast.success({ title: t('TOAST.MODULE.REFRESHED'), description: file.name });
     } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
-        toast.error({ title: t('TOAST.MODULE_REFRESH_FAILED'), description: message });
+        toast.error({ title: t('TOAST.MODULE.REFRESH_FAILED'), description: message });
     }
 }
 
 async function copyToClipboard(text: string) {
     try {
         await copy(text);
-        toast.success({ title: t('TOAST.COPIED_TO_CLIPBOARD'), description: text });
+        toast.success({ title: t('TOAST.COPY.SUCCEEDED'), description: text });
     } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
-        toast.error({ title: t('TOAST.COPY_FAILED'), description: message });
+        toast.error({ title: t('TOAST.COPY.FAILED'), description: message });
     }
 }
 </script>

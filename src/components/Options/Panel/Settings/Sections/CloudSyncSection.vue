@@ -147,10 +147,10 @@ async function onUploadSync() {
     try {
         await storage.upload(true);
         await refreshRemote();
-        toast.success({ title: t('TOAST.SYNC_UPLOAD_SUCCESS') });
+        toast.success({ title: t('TOAST.SYNC.UPLOAD_SUCCESS') });
     } catch (e) {
         console.error('Sync upload failed:', e);
-        toast.error({ title: t('TOAST.SYNC_UPLOAD_ERROR') });
+        toast.error({ title: t('TOAST.SYNC.UPLOAD_ERROR') });
     }
 }
 
@@ -165,10 +165,10 @@ async function onDownloadSync() {
     try {
         await storage.download(true);
         await refreshRemote();
-        toast.success({ title: t('TOAST.SYNC_DOWNLOAD_SUCCESS') });
+        toast.success({ title: t('TOAST.SYNC.DOWNLOAD_SUCCESS') });
     } catch (e) {
         console.error('Sync download failed:', e);
-        toast.error({ title: t('TOAST.SYNC_DOWNLOAD_ERROR') });
+        toast.error({ title: t('TOAST.SYNC.DOWNLOAD_ERROR') });
     }
 }
 

@@ -263,33 +263,44 @@ export default interface Messages {
         WORD_WRAP_DESCRIPTION: string;
     };
     TOAST: {
-        MODULE_CREATED: string;
-        MODULE_DISABLED: string;
-        MODULE_ENABLED: string;
-        MODULE_IMPORTED: string;
-        MODULE_IMPORT_FAILED: string;
-        MODULE_REFRESHED: string;
-        MODULE_REFRESH_FAILED: string;
-        MODULE_REMOVED: string;
-        MODULE_UPDATED: string;
-        RULE_CREATED: string;
-        RULE_DISABLED: string;
-        RULE_ENABLED: string;
-        RULE_REMOVED: string;
-        RULE_UPDATED: string;
-        SETTINGS_EXPORTED: string;
-        SETTINGS_IMPORT_ERROR: string;
-        SETTINGS_IMPORTED: string;
-        SETTINGS_LEGACY_IMPORTED: string;
-        SETTINGS_LEGACY_IMPORT_ERROR: string;
-        SETTINGS_LEGACY_NOT_FOUND: string;
-        SETTINGS_RESET: string;
-        SYNC_DOWNLOAD_ERROR: string;
-        SYNC_DOWNLOAD_SUCCESS: string;
-        SYNC_UPLOAD_ERROR: string;
-        SYNC_UPLOAD_SUCCESS: string;
-        COPIED_TO_CLIPBOARD: string;
-        COPY_FAILED: string;
+        MODULE: {
+            CREATED: string;
+            DISABLED: string;
+            ENABLED: string;
+            IMPORTED: string;
+            IMPORT_FAILED: string;
+            REFRESHED: string;
+            REFRESH_FAILED: string;
+            REMOVED: string;
+            UPDATED: string;
+        };
+        RULE: {
+            CREATED: string;
+            DISABLED: string;
+            ENABLED: string;
+            REMOVED: string;
+            UPDATED: string;
+            NOT_FOUND: string;
+        };
+        SETTINGS: {
+            EXPORTED: string;
+            IMPORT_ERROR: string;
+            IMPORTED: string;
+            LEGACY_IMPORTED: string;
+            LEGACY_IMPORT_ERROR: string;
+            LEGACY_NOT_FOUND: string;
+            RESET: string;
+        };
+        SYNC: {
+            DOWNLOAD_ERROR: string;
+            DOWNLOAD_SUCCESS: string;
+            UPLOAD_ERROR: string;
+            UPLOAD_SUCCESS: string;
+        };
+        COPY: {
+            SUCCEEDED: string;
+            FAILED: string;
+        };
         EDITOR: {
             BEAUTIFY_ERROR: {
                 DESCRIPTION: string;

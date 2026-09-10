@@ -142,13 +142,13 @@ async function doImport() {
         } else {
             file = await state.importModuleFile(value, mode.value);
         }
-        toast.success({ title: t('TOAST.MODULE_IMPORTED'), description: file.name });
+        toast.success({ title: t('TOAST.MODULE.IMPORTED'), description: file.name });
         isOpen.value = false;
         source.value = '';
         preview.value = { status: 'idle' };
     } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
-        toast.error({ title: t('TOAST.MODULE_IMPORT_FAILED'), description: message });
+        toast.error({ title: t('TOAST.MODULE.IMPORT_FAILED'), description: message });
     } finally {
         importing.value = false;
     }

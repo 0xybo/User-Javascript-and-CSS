@@ -25,7 +25,7 @@ function onSaveButtonClick() {
     const wasNew = state.rule.isNew;
     state.saveRuleDraft();
     toast.success({
-        title: t(wasNew ? 'TOAST.RULE_CREATED' : 'TOAST.RULE_UPDATED'),
+        title: t(wasNew ? 'TOAST.RULE.CREATED' : 'TOAST.RULE.UPDATED'),
     });
 }
 </script>

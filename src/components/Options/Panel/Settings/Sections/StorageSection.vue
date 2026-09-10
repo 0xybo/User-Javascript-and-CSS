@@ -50,7 +50,7 @@ function onExportJSON() {
     a.download = `user-js-css-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success({ title: t('TOAST.SETTINGS_EXPORTED') });
+    toast.success({ title: t('TOAST.SETTINGS.EXPORTED') });
 }
 
 /**
@@ -69,11 +69,11 @@ function onImportJSON(file: File | undefined) {
             storage.rules.splice(0, storage.rules.length, ...(data.rules || []));
             storage.modules.splice(0, storage.modules.length, ...(data.modules || []));
             await storage.save();
-            toast.success({ title: t('TOAST.SETTINGS_IMPORTED') });
+            toast.success({ title: t('TOAST.SETTINGS.IMPORTED') });
             await refreshUsage();
         } catch (err) {
             console.error('Import failed:', err);
-            toast.error({ title: t('TOAST.SETTINGS_IMPORT_ERROR') });
+            toast.error({ title: t('TOAST.SETTINGS.IMPORT_ERROR') });
         }
     };
     reader.readAsText(file);
@@ -88,17 +88,17 @@ async function onImportLegacy() {
     try {
         const raw = (await browser.storage.local.get()) as Record<string, unknown>;
         if (!detectLegacyStorage(raw)) {
-            toast.info({ title: t('TOAST.SETTINGS_LEGACY_NOT_FOUND') });
+            toast.info({ title: t('TOAST.SETTINGS.LEGACY_NOT_FOUND') });
             return;
         }
         const confirmed = window.confirm(t('SETTINGS.IMPORT_LEGACY_CONFIRM'));
         if (!confirmed) return;
         await storage.importData(migrateLegacyStorage(raw));
-        toast.success({ title: t('TOAST.SETTINGS_LEGACY_IMPORTED') });
+        toast.success({ title: t('TOAST.SETTINGS.LEGACY_IMPORTED') });
         await refreshUsage();
     } catch (err) {
         console.error('Legacy import failed:', err);
-        toast.error({ title: t('TOAST.SETTINGS_LEGACY_IMPORT_ERROR') });
+        toast.error({ title: t('TOAST.SETTINGS.LEGACY_IMPORT_ERROR') });
     }
 }
 
@@ -110,7 +110,7 @@ async function onWipeData() {
     const confirmed = window.confirm(t('SETTINGS.WIPE_CONFIRM'));
     if (!confirmed) return;
     await storage.reset();
-    toast.info({ title: t('TOAST.SETTINGS_RESET') });
+    toast.info({ title: t('TOAST.SETTINGS.RESET') });
     await refreshUsage();
 }
 </script>

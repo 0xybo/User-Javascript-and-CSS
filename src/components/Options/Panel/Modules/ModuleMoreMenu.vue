@@ -28,7 +28,7 @@ function onRemoveButtonClick() {
     storage.removeItem(state.module.item);
     state.switchToNewDraft(ItemType.Module);
     isOpened.value = false;
-    toast.info({ title: t('TOAST.MODULE_REMOVED') });
+    toast.info({ title: t('TOAST.MODULE.REMOVED') });
 }
 
 /**

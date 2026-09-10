@@ -30,7 +30,7 @@ function onSaveButtonClick() {
     const wasNew = state.module.isNew;
     state.saveModuleDraft();
     toast.success({
-        title: t(wasNew ? 'TOAST.MODULE_CREATED' : 'TOAST.MODULE_UPDATED'),
+        title: t(wasNew ? 'TOAST.MODULE.CREATED' : 'TOAST.MODULE.UPDATED'),
     });
 }
 
@@ -49,7 +49,7 @@ function addFile(type: FileType) {
 async function onRefreshAllClick() {
     const { failed } = await state.refreshAllModuleFiles();
     toast.push({
-        title: t(failed === 0 ? 'TOAST.MODULE_REFRESHED' : 'TOAST.MODULE_REFRESH_FAILED'),
+        title: t(failed === 0 ? 'TOAST.MODULE.REFRESHED' : 'TOAST.MODULE.REFRESH_FAILED'),
         variant: failed === 0 ? ToastVariant.Success : ToastVariant.Error,
     });
 }
